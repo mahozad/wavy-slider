@@ -1,0 +1,15 @@
+.library-name a {
+    position: relative;
+    margin-left: 55px;
+}
+
+.library-name a::before {
+    content: '';
+    background: url("../images/logo-icon.svg") center no-repeat;
+    background-size: contain;
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    top: -12px;
+    left: -52px;
+}
