@@ -76,7 +76,7 @@ kotlin {
 
 android {
     namespace = "ir.mahozad.multiplatform"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         minSdk = 21
     }
