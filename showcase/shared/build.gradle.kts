@@ -8,7 +8,7 @@ plugins {
 kotlin {
     jvm("desktop")
     js(compiler = IR) { browser() }
-    android()
+    androidTarget()
     // Remember to uncomment kotlin("native.cocoapods") above as well
     // iosX64()
     // iosArm64()
