@@ -1,4 +1,4 @@
-package ir.mahozad.multiplatform
+package ir.mahozad.multiplatform.material
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import ir.mahozad.multiplatform.generateHeightFactors
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*

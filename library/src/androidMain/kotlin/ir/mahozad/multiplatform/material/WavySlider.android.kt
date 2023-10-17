@@ -1,4 +1,4 @@
-package ir.mahozad.multiplatform
+package ir.mahozad.multiplatform.material
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
