@@ -8,10 +8,12 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.MutatorMutex
-import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.MutatorMutex
+import androidx.compose.material.SliderColors
+import androidx.compose.material.SliderDefaults
+import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,12 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -78,17 +84,6 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth).he
 internal expect val defaultTrackThickness: Dp
 internal expect val defaultWaveSize: Dp
 
-@Composable
-internal expect fun focusModifier(requester: (FocusRequester?) -> Unit): Modifier
-
-@Composable
-internal expect fun keyEventModifier(
-    enabled: Boolean,
-    value: Float,
-    isRtl: Boolean,
-    onValueChangeState: State<(Float) -> Unit>
-): Modifier
-
 /**
  * A wavy slider much like the <a href="https://material.io/components/sliders" class="external" target="_blank">Material Design slider</a>.
  *
@@ -141,7 +136,8 @@ fun WavySlider(
 
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val onValueChangeState = rememberUpdatedState(onValueChange)
-    var focusRequester: FocusRequester? = remember { null }
+    val onValueChangeFinishedState = rememberUpdatedState(onValueChangeFinished)
+    val focusRequester = remember { FocusRequester() }
     BoxWithConstraints(
         modifier
             .minimumInteractiveComponentSize()
@@ -152,9 +148,9 @@ fun WavySlider(
                 onValueChange,
                 onValueChangeFinished
             )
-            .then(focusModifier { focusRequester = it })
+            .focusRequester(focusRequester)
             .focusable(enabled, interactionSource)
-            .then(keyEventModifier(enabled, value, isRtl, onValueChangeState))
+            .slideOnKeyEvents(enabled, value, isRtl, onValueChangeState, onValueChangeFinishedState)
     ) {
         val widthPx = constraints.maxWidth.toFloat()
         val maxPx: Float
@@ -171,14 +167,14 @@ fun WavySlider(
         fun scaleToOffset(userValue: Float) =
             scale(0f, 1f, userValue, minPx, maxPx)
 
-        val rawOffset = remember { mutableStateOf(scaleToOffset(value)) }
-        val pressOffset = remember { mutableStateOf(0f) }
+        val rawOffset = remember { mutableFloatStateOf(scaleToOffset(value)) }
+        val pressOffset = remember { mutableFloatStateOf(0f) }
 
         val draggableState = remember(minPx, maxPx, 0f..1f) {
             SliderDraggableState {
-                rawOffset.value = (rawOffset.value + it + pressOffset.value)
-                pressOffset.value = 0f
-                val offsetInTrack = rawOffset.value.coerceIn(minPx, maxPx)
+                rawOffset.floatValue = (rawOffset.floatValue + it + pressOffset.floatValue)
+                pressOffset.floatValue = 0f
+                val offsetInTrack = rawOffset.floatValue.coerceIn(minPx, maxPx)
                 onValueChangeState.value.invoke(scaleToUserValue(offsetInTrack))
             }
         }
@@ -186,7 +182,7 @@ fun WavySlider(
         CorrectValueSideEffect(::scaleToOffset, 0f..1f, minPx..maxPx, rawOffset, value)
 
         val gestureEndAction = rememberUpdatedState { _: Float ->
-            focusRequester?.requestFocus()
+            focusRequester.requestFocus()
             if (!draggableState.isDragging) {
                 // check ifDragging in case the change is still in progress (touch -> drag case)
                 onValueChangeFinished?.invoke()
@@ -233,6 +229,88 @@ fun WavySlider(
             waveThickness,
             animationDirection
         )
+    }
+}
+
+// TODO: Edge case - losing focus on slider while key is pressed will end up with onValueChangeFinished not being invoked
+private fun Modifier.slideOnKeyEvents(
+    enabled: Boolean,
+    value: Float,
+    isRtl: Boolean,
+    onValueChangeState: State<(Float) -> Unit>,
+    onValueChangeFinishedState: State<(() -> Unit)?>
+): Modifier {
+    return this.onKeyEvent {
+        if (!enabled) return@onKeyEvent false
+
+        when (it.type) {
+            KeyEventType.KeyDown -> {
+                // A user is not limited by a step length (delta) when using touch or mouse.
+                // But it is not possible to adjust the value continuously when using keyboard buttons -
+                // the delta has to be discrete. In this case, 1% of the valueRange seems to make sense.
+                val delta = 1f / 100
+                when {
+                    it.isDirectionUp -> {
+                        onValueChangeState.value((value + delta).coerceIn(0f..1f))
+                        true
+                    }
+
+                    it.isDirectionDown -> {
+                        onValueChangeState.value((value - delta).coerceIn(0f..1f))
+                        true
+                    }
+
+                    it.isDirectionRight -> {
+                        val sign = if (isRtl) -1 else 1
+                        onValueChangeState.value((value + sign * delta).coerceIn(0f..1f))
+                        true
+                    }
+
+                    it.isDirectionLeft -> {
+                        val sign = if (isRtl) -1 else 1
+                        onValueChangeState.value((value - sign * delta).coerceIn(0f..1f))
+                        true
+                    }
+
+                    it.isHome -> {
+                        onValueChangeState.value(0f)
+                        true
+                    }
+
+                    it.isMoveEnd -> {
+                        onValueChangeState.value(1f)
+                        true
+                    }
+
+                    it.isPgUp -> {
+                        val page = 10
+                        onValueChangeState.value((value - page * delta).coerceIn(0f..1f))
+                        true
+                    }
+
+                    it.isPgDn -> {
+                        val page = 10
+                        onValueChangeState.value((value + page * delta).coerceIn(0f..1f))
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
+            KeyEventType.KeyUp -> {
+                if (it.isDirectionDown || it.isDirectionUp || it.isDirectionRight
+                    || it.isDirectionLeft || it.isHome || it.isMoveEnd || it.isPgUp || it.isPgDn
+                ) {
+                    onValueChangeFinishedState.value?.invoke()
+                    true
+                } else {
+                    false
+                }
+            }
+
+            else -> false
+        }
     }
 }
 
