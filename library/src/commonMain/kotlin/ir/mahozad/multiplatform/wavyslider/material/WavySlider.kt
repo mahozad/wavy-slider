@@ -1,4 +1,4 @@
-package ir.mahozad.multiplatform.material
+package ir.mahozad.multiplatform.wavyslider.material
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -41,7 +41,10 @@ import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import ir.mahozad.multiplatform.generateHeightFactors
+import ir.mahozad.multiplatform.wavyslider.*
+import ir.mahozad.multiplatform.wavyslider.generateHeightFactors
+import ir.mahozad.multiplatform.wavyslider.isDirectionLeft
+import ir.mahozad.multiplatform.wavyslider.isPgDn
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
@@ -49,40 +52,13 @@ import kotlin.math.*
 // TODO: Add wave velocity property (speed + direction)
 // TODO: Add ability to stop the wave animation manually with a boolean property
 // TODO: Stop the wave animation when the wave height is zero
-// TODO: Add Material 3 variant
-
-/**
- * The direction of wave movement.
- *
- * By default, and also when set to [WaveAnimationDirection.UNSPECIFIED],
- * it moves from right to left on LTR layouts and from left to right on RTL layouts.
- */
-enum class WaveAnimationDirection {
-    /**
-     * Always move from right to left regardless of the layout direction.
-     */
-    RTL,
-    /**
-     * Always move from left to right regardless of the layout direction.
-     */
-    LTR,
-    /**
-     * Based on layout direction; on LTR move from right to left and on RTL move from left to right.
-     */
-    UNSPECIFIED
-}
 
 private val ThumbRadius = 10.dp
 private val ThumbRippleRadius = 24.dp
 private val ThumbDefaultElevation = 1.dp
 private val ThumbPressedElevation = 6.dp
-private val TrackHeight = 4.dp
-private val SliderHeight = 48.dp
 private val SliderMinWidth = 144.dp // TODO: clarify min width
-private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth).heightIn(max = SliderHeight)
-
-internal expect val defaultTrackThickness: Dp
-internal expect val defaultWaveSize: Dp
+private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 
 /**
  * A wavy slider much like the <a href="https://material.io/components/sliders" class="external" target="_blank">Material Design slider</a>.
@@ -218,10 +194,9 @@ fun WavySlider(
             maxPx - minPx,
             interactionSource,
             modifier = press.then(drag),
-//
-//
-//
-//
+            /////////////////
+            /////////////////
+            /////////////////
             trackThickness,
             shouldFlatten,
             waveLength,
@@ -322,10 +297,9 @@ private fun SliderImpl(
     width: Float,
     interactionSource: MutableInteractionSource,
     modifier: Modifier,
-//
-//
-//
-//
+    /////////////////
+    /////////////////
+    /////////////////
     trackThickness: Dp?,
     shouldFlatten: Boolean,
     waveWidth: Dp,
@@ -334,11 +308,9 @@ private fun SliderImpl(
     animationDirection: WaveAnimationDirection
 ) {
     Box(modifier.then(DefaultSliderConstraints)) {
-        val trackStrokeWidth: Float
         val thumbPx: Float
         val widthDp: Dp
         with(LocalDensity.current) {
-            trackStrokeWidth = TrackHeight.toPx()
             thumbPx = ThumbRadius.toPx()
             widthDp = width.toDp()
         }
@@ -352,11 +324,9 @@ private fun SliderImpl(
             enabled,
             positionFraction,
             thumbPx,
-            trackStrokeWidth,
-//
-//
-//
-//
+            /////////////////
+            /////////////////
+            /////////////////
             trackThickness,
             shouldFlatten,
             waveWidth,
@@ -375,11 +345,9 @@ private fun Track(
     enabled: Boolean,
     positionFractionEnd: Float,
     thumbPx: Float,
-    trackStrokeWidth: Float,
-//
-//
-//
-//
+    /////////////////
+    /////////////////
+    /////////////////
     trackThickness: Dp?,
     shouldFlatten: Boolean,
     waveWidth: Dp,
@@ -407,7 +375,11 @@ private fun Track(
                 repeatMode = RepeatMode.Restart
             )
         )
-    Canvas(Modifier.fillMaxWidth().height(48.dp)) {
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(waveHeight /* To prevent wave from being clipped */)
+    ) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)
         val sliderRight = Offset(size.width - thumbPx, center.y)
@@ -505,17 +477,6 @@ private fun BoxScope.SliderThumb(
         )
     }
 }
-
-// Scale x1 from a1..b1 range to a2..b2 range
-private fun scale(a1: Float, b1: Float, x1: Float, a2: Float, b2: Float) =
-    lerp(a2, b2, calcFraction(a1, b1, x1))
-
-// Calculate the 0..1 fraction that `pos` value represents between `a` and `b`
-private fun calcFraction(a: Float, b: Float, pos: Float) =
-    (if (b - a == 0f) 0f else (pos - a) / (b - a)).coerceIn(0f, 1f)
-
-private fun lerp(start: Float, stop: Float, fraction: Float) =
-    (start * (1 - fraction) + stop * fraction)
 
 @Composable
 private fun CorrectValueSideEffect(

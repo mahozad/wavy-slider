@@ -1,4 +1,4 @@
-package ir.mahozad.multiplatform
+package ir.mahozad.multiplatform.wavyslider
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

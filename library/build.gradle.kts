@@ -58,6 +58,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(compose.foundation)
+                api(compose.material3)
                 api(compose.material)
                 api(compose.runtime)
             }

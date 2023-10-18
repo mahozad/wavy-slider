@@ -1,4 +1,4 @@
-package ir.mahozad.multiplatform.material
+package ir.mahozad.multiplatform.wavyslider
 
 import android.view.KeyEvent.*
 import androidx.compose.ui.input.key.KeyEvent
@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 internal actual val defaultTrackThickness: Dp = 8.dp
+
 internal actual val defaultWaveSize: Dp = 24.dp
 
 internal actual val KeyEvent.isDirectionUp: Boolean
