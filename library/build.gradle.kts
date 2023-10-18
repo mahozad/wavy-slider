@@ -26,7 +26,7 @@ kotlin {
     // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
     // for the targets that Compose Multiplatform supports
 
-    androidTarget() { publishLibraryVariants("release") }
+    androidTarget { publishLibraryVariants("release") }
     // Windows, Linux, macOS (with Java runtime)
     jvm(name = "desktop" /* Renames jvm to desktop */)
     js(compiler = IR) {
@@ -34,7 +34,8 @@ kotlin {
         browser()
     }
 
-    //// Native targets:
+    // wasm { browser() }
+
     // Native targets:
     // macosX64()
     // macosArm64()
