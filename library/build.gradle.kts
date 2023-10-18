@@ -35,15 +35,21 @@ kotlin {
     }
 
     //// Native targets:
+    // Native targets:
     // macosX64()
     // macosArm64()
-    //// Building for IOS target requires a machine running macOS
-    //// See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
-    // ios {
-    //     binaries {
-    //         framework {
-    //             baseName = "wavy-slider"
-    //         }
+
+    // Building and publishing for IOS target requires a machine running macOS;
+    // otherwise, the .klib will not be produced and the compiler also warns about that.
+    // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
+    // listOf(
+    //     iosX64(),
+    //     iosArm64(),
+    //     iosSimulatorArm64()
+    // ).forEach { iosTarget ->
+    //     iosTarget.binaries.framework {
+    //         baseName = "library"
+    //         isStatic = true
     //     }
     // }
 
@@ -69,8 +75,18 @@ kotlin {
         // See above
         // val macosArm64Main by getting {}
         // val macosX64Main by getting {}
-        // val iosMain by getting {}
-        // val iosTest by getting {}
+        // val iosMain by creating {
+        //     dependsOn(commonMain)
+        // }
+        // val iosX64Main by getting {
+        //     dependsOn(iosMain)
+        // }
+        // val iosArm64Main by getting {
+        //     dependsOn(iosMain)
+        // }
+        // val iosSimulatorArm64Main by getting {
+        //     dependsOn(iosMain)
+        // }
     }
 }
 
