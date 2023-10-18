@@ -98,7 +98,7 @@ val javadocJar by tasks.registering(Jar::class) {
 }
 
 tasks.dokkaHtml {
-    // outputDirectory = buildDir.resolve("dokka")
+    // outputDirectory = layout.buildDirectory.get().resolve("dokka")
     offlineMode = false
     moduleName = "Wavy Slider"
 
@@ -143,7 +143,7 @@ publishing {
     repositories {
         maven {
             name = "CustomLocal"
-            url = uri("file://${buildDir}/local-repository")
+            url = uri("file://${layout.buildDirectory.get()}/local-repository")
         }
         maven {
             name = "MavenCentral"
