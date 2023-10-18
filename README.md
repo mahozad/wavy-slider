@@ -104,13 +104,12 @@ dependencies {
 ## Demo in real world applications
 See the [showcase](showcase) directory for example apps in various platforms using the library.
 
+## Similar alternative library
+https://github.com/galaxygoldfish/waveslider
+It is not multiplatform and also occasionally glitches (the last time I checked).
+
 ## Misc
-
 When animation direction is ltr, the tail sometimes is not long enough
-
-App screenshot with shadows supporting transparency was taken with shotty v2.0
-
-Similar library: https://github.com/galaxygoldfish/waveslider
 
 Android 13 music player: https://android.googlesource.com/platform/packages/apps/Music/
 
