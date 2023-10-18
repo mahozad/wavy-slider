@@ -34,7 +34,8 @@ kotlin {
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
-                api("ir.mahozad.multiplatform:wavy-slider:0.0.1")
+                // api("ir.mahozad.multiplatform:wavy-slider:x.y.z")
+                api(project(":wavy-slider"))
             }
         }
         val androidMain by getting {

@@ -1,7 +1,7 @@
 package showcase
 
 import androidx.compose.runtime.*
-import ir.mahozad.multiplatform.WavySlider
+import ir.mahozad.multiplatform.material.WavySlider
 
 @Composable
 fun App() {
