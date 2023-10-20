@@ -42,10 +42,8 @@ import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import ir.mahozad.multiplatform.wavyslider.*
-import ir.mahozad.multiplatform.wavyslider.generateHeightFactors
-import ir.mahozad.multiplatform.wavyslider.isDirectionLeft
-import ir.mahozad.multiplatform.wavyslider.isPgDn
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
@@ -380,7 +378,10 @@ private fun Track(
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(waveHeight /* To prevent wave from being clipped */)
+            // To take into account the wave height in component overall height,
+            // and to prevent the extremes of the wave from being partially clipped,
+            // and to make sure proper component layout when waveHeight is 0.dp
+            .height(max(waveHeight, 48.dp))
     ) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)
