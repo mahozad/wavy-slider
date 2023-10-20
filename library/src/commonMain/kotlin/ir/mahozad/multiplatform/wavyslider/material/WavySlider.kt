@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.MutatorMutex
+import androidx.compose.material.Slider
 import androidx.compose.material.SliderColors
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.minimumInteractiveComponentSize
@@ -63,7 +64,7 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 /**
  * A wavy slider much like the <a href="https://material.io/components/sliders" class="external" target="_blank">Material Design slider</a>.
  *
- * By setting [waveHeight] to `0.dp` it becomes just a regular Material slider.
+ * By setting [waveHeight] to `0.dp` it becomes just a regular Material [Slider].
  *
  * This component can also be used as a progress bar.
  *

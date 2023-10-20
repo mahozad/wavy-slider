@@ -48,6 +48,9 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
 private val ThumbDefaultElevation = 1.dp
 private val ThumbPressedElevation = 6.dp
 
+/**
+ * See the other overloaded Composable for documentations.
+ */
 @Composable
 fun WavySlider(
     value: Float,
@@ -103,7 +106,7 @@ fun WavySlider(
 /**
  * A wavy slider much like the <a href="https://material.io/components/sliders" class="external" target="_blank">Material Design slider</a>.
  *
- * By setting [waveHeight] to `0.dp` it becomes just a regular Material slider.
+ * By setting [waveHeight] to `0.dp` it becomes just a regular Material [Slider].
  *
  * This component can also be used as a progress bar.
  *
