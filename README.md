@@ -3,13 +3,13 @@
 ![Latest Maven Central release]
 
 <div align="center">
-    <img src="demo.svg" />
+    <img src="demo.svg" alt="Decorative demo"/>
 </div>
 
 <br>
 
 <div align="center">
-    <img src="assets/demo-movie.gif" />
+    <img src="assets/demo-movie.gif"  alt="Real-world demo"/>
 </div>
 
 # Wavy slider
@@ -47,7 +47,7 @@ kotlin {
 // ...
 ```
 
-If your app includes targets that are not supported by the library,
+If you have targets that are not supported by the library,
 add the library separately to each supported target:
 
 ```kotlin
@@ -65,10 +65,12 @@ kotlin {
     // etc.
 ```
 
-Using the wavy slider is much like using the Material Slider (set `waveHeight` to `0.dp` to turn it into a flat slider):
+Using the WavySlider is much like using the Material Slider
+(set `waveHeight` to `0.dp` to turn it into a flat slider):
 
 ```kotlin
 import ir.mahozad.multiplatform.wavyslider.material/*OR material3*/.WavySlider
+
 @Composable
 fun MyComposable() {
     var fraction by remember { mutableStateOf(0.5f) }
@@ -86,16 +88,17 @@ fun MyComposable() {
 ```
 
 ## IOS support
-The library should support IOS but building and publishing IOS variants requires a macOS machine.
-Currently, I do not have access to a macOS (physical or virtual).
+The library should support IOS, but I currently do not have access to a macOS (physical or virtual)
+to build and publish the IOS variant.
 If you have a macOS and want the library on IOS as well do this:
   - Download (clone) the repository from GitHub
-  - Uncomment everything commented in `kotlin {` block of [the library build file](library/build.gradle.kts)
+  - Uncomment IOS-related code in `kotlin {` block of [the library build file](library/build.gradle.kts)
   - `cd` to the project root directory
   - Execute `./gradlew publishAllPublicationsToCustomLocalRepository`
 
 The result library will be available in *\<project\>/library/build/local-repository/*.
-Copy the directory from *local-repository/* to somewhere else and use it instead of the official library:
+Copy the directory from *local-repository/* to somewhere else (like your project)
+and use it instead of the official library:
 ```kotlin
 dependencies {
     implementation(fileTree("path/to/the/directory"))
@@ -106,11 +109,11 @@ dependencies {
 See the [showcase](showcase) directory for example apps in various platforms using the library.
 
 ## Similar alternative library
-https://github.com/galaxygoldfish/waveslider
+https://github.com/galaxygoldfish/waveslider  
 It is not multiplatform and also occasionally glitches (the last time I checked).
 
 ## Misc
-When animation direction is ltr, the tail sometimes is not long enough
+When animation direction is LTR, the tail sometimes is not long enough
 
 Android 13 music player: https://android.googlesource.com/platform/packages/apps/Music/
 
