@@ -1,3 +1,5 @@
+The [logo-styles.css](logo-styles.css) and [logo-icon.svg](logo-icon.svg) are used for Kdoc (Dokka).
+
 To generate the [demo-movie.gif](demo-movie.gif) did as follows:
 
 1. Downloaded AutoMouse Pro 1.0.5

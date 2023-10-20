@@ -30,7 +30,7 @@ For a single-platform project (Android or Desktop or JS):
 
 ```kotlin
 dependencies {
-    implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.0.1")
+    implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
 }
 ```
 
@@ -41,7 +41,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.0.1")
+                implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
             }
         }
 // ...
@@ -54,12 +54,12 @@ add the library separately to each supported target:
 kotlin {
     val desktopMain by getting {
         dependencies {
-            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.0.1")
+            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
         }
     }
     val androidMain by getting {
         dependencies {
-            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.0.1")
+            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
         }
     }
     // etc.
@@ -68,6 +68,7 @@ kotlin {
 Using the wavy slider is much like using the Material Slider (set `waveHeight` to `0.dp` to turn it into a flat slider):
 
 ```kotlin
+import ir.mahozad.multiplatform.wavyslider.material/*OR material3*/.WavySlider
 @Composable
 fun MyComposable() {
     var fraction by remember { mutableStateOf(0.5f) }
