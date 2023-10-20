@@ -83,7 +83,7 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
  * appearance / behavior of this WavySlider in different [Interaction]s.
  * @param colors [SliderColors] that will be used to determine the color of the WavySlider parts in
  * different state. See [SliderDefaults.colors] to customize.
- * @param waveLength the distance over which the wave's shape repeats
+ * @param waveLength the distance over which the wave's shape repeats (must be > 0.dp)
  * @param waveHeight the total height of the wave (from crest to trough) (in other words, amplitude * 2)
  * @param waveThickness the thickness of the active line (whether animated or not)
  * @param trackThickness the thickness of the inactive line
@@ -108,6 +108,7 @@ fun WavySlider(
     animationDirection: WaveAnimationDirection = WaveAnimationDirection.UNSPECIFIED,
     shouldFlatten: Boolean = false
 ) {
+    require(waveLength > 0.dp)
     // TODO: Add valueRange (and steps if it makes sense) to the parameters for feature-parity with Slider
 
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl

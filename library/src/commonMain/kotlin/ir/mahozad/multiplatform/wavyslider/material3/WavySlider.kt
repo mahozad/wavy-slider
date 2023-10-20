@@ -1,25 +1,15 @@
 package ir.mahozad.multiplatform.wavyslider.material3
 
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.MutatorMutex
-import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.DragScope
-import androidx.compose.foundation.gestures.DraggableState
-import androidx.compose.foundation.gestures.GestureCancellationException
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.hoverable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
@@ -30,7 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
@@ -44,8 +37,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
-import ir.mahozad.multiplatform.wavyslider.defaultTrackThickness
-import ir.mahozad.multiplatform.wavyslider.defaultWaveSize
 import ir.mahozad.multiplatform.wavyslider.lerp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -132,7 +123,7 @@ fun WavySlider(
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
  * for this WavySlider. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the appearance / behavior of this WavySlider in different states.
- * @param waveLength the distance over which the wave's shape repeats
+ * @param waveLength the distance over which the wave's shape repeats (must be > 0.dp)
  * @param waveHeight the total height of the wave (from crest to trough) (in other words, amplitude * 2)
  * @param waveThickness the thickness of the active line (whether animated or not)
  * @param trackThickness the thickness of the inactive line
@@ -477,6 +468,8 @@ object WavySliderDefaults {
         animationDirection: WaveAnimationDirection,
         shouldFlatten: Boolean
     ) {
+        require(waveLength > 0.dp)
+
         val inactiveTrackColor = colors.trackColor(enabled, active = false)
         val activeTrackColor = colors.trackColor(enabled, active = true)
         val waveHeightAnimated by animateFloatAsState(waveHeight.value, tween(1000, easing = LinearEasing))
