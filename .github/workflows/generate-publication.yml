@@ -1,0 +1,45 @@
+name: Generate publication
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-publication:
+    name: Generate library publication
+    # Should be macOS to be able to create IOS variants as well
+    runs-on: macos-latest
+    env:
+      # For information about signing.* properties,
+      # see comments on signing { ... } block in the library build file
+      SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      SIGNING_KEY_CONTENT_BASE64: ${{ secrets.SIGNING_KEY_CONTENT_BASE64 }}
+      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      GITHUB_USERNAME: ${{ secrets.GIT_HUB_USERNAME }}
+      GITHUB_TOKEN: ${{ secrets.GIT_HUB_TOKEN }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Set up a specific Java version
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin" # OR adopt OR microsoft OR...
+          java-version: "17"
+      - name: Decode the private GPG key file stored in GitHub secrets
+        run: echo $SIGNING_KEY_CONTENT_BASE64 | base64 -d > private-key.gpg
+      - name: Generate publication
+        run: >
+          ./gradlew publishAllPublicationsToCustomLocalRepository
+          -Psigning.secretKeyRingFile="../private-key.gpg"
+          -Psigning.password="$SIGNING_PASSWORD"
+          -Psigning.keyId="$SIGNING_KEY_ID"
+          --stacktrace
+      - name: Store the publication at the bottom of the workflow summary page
+        uses: actions/upload-artifact@v3
+        with:
+          name: resultPublication
+          path: |
+            library/build/local-repository/

@@ -1,3 +1,4 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
@@ -22,10 +23,9 @@ buildscript {
 group = "ir.mahozad.multiplatform"
 version = "0.3.0"
 
+// See https://central.sonatype.com/namespace/org.jetbrains.compose.material
+// for the targets that Compose Multiplatform supports
 kotlin {
-    // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
-    // for the targets that Compose Multiplatform supports
-
     androidTarget { publishLibraryVariants("release") }
     // Windows, Linux, macOS (with Java runtime)
     jvm(name = "desktop" /* Renames jvm to desktop */)
@@ -33,26 +33,24 @@ kotlin {
         nodejs()
         browser()
     }
+    // Building and publishing for IOS target requires a machine running macOS;
+    // otherwise, the .klib will not be produced and the compiler warns about that.
+    // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "library"
+            isStatic = true
+        }
+    }
 
     // wasm { browser() }
-
     // Native targets:
     // macosX64()
     // macosArm64()
-
-    // Building and publishing for IOS target requires a machine running macOS;
-    // otherwise, the .klib will not be produced and the compiler also warns about that.
-    // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
-    // listOf(
-    //     iosX64(),
-    //     iosArm64(),
-    //     iosSimulatorArm64()
-    // ).forEach { iosTarget ->
-    //     iosTarget.binaries.framework {
-    //         baseName = "library"
-    //         isStatic = true
-    //     }
-    // }
 
     sourceSets {
         commonMain.dependencies {
@@ -70,21 +68,12 @@ kotlin {
         val desktopTest by getting {}
         val jsMain by getting {}
         val jsTest by getting {}
+        val iosX64Main by getting {}
+        val iosArm64Main by getting {}
+        val iosSimulatorArm64Main by getting {}
         // See above
         // val macosArm64Main by getting {}
         // val macosX64Main by getting {}
-        // val iosMain by creating {
-        //     dependsOn(commonMain)
-        // }
-        // val iosX64Main by getting {
-        //     dependsOn(iosMain)
-        // }
-        // val iosArm64Main by getting {
-        //     dependsOn(iosMain)
-        // }
-        // val iosSimulatorArm64Main by getting {
-        //     dependsOn(iosMain)
-        // }
     }
 }
 
@@ -103,6 +92,17 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
         targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+    }
+}
+
+tasks.withType<PublishToMavenRepository> {
+    val isMac = getCurrentOperatingSystem().isMacOsX
+    onlyIf {
+        if (!isMac) logger.error("""
+            Publishing the library requires macOS to be able to generate IOS artifacts.
+            Run the task in a mac or in a GitHub Actions mac environment instead.
+        """)
+        isMac
     }
 }
 
@@ -153,10 +153,11 @@ val properties = Properties().apply {
 }
 // For information about signing.* properties,
 // see comments on signing { ... } block below
-extra["ossrhUsername"] = properties["ossrh.username"] as? String ?: error("ossrh.username")
-extra["ossrhPassword"] = properties["ossrh.password"] as? String ?: error("ossrh.password")
-extra["githubUsername"] = properties["github.username"] as? String ?: error("github.username")
-extra["githubToken"] = properties["github.token"] as? String ?: error("github.token")
+val environment: Map<String, String?> = System.getenv()
+extra["ossrhUsername"] = properties["ossrh.username"] as? String ?: environment["OSSRH_USERNAME"]
+extra["ossrhPassword"] = properties["ossrh.password"] as? String ?: environment["OSSRH_PASSWORD"]
+extra["githubUsername"] = properties["github.username"] as? String ?: environment["GITHUB_USERNAME"]
+extra["githubToken"] = properties["github.token"] as? String ?: environment["GITHUB_TOKEN"]
 
 publishing {
     repositories {

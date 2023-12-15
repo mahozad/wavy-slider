@@ -20,13 +20,13 @@ Some users call it the **sperm**.
 
 The library can be used in [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) projects like
 a regular [Material Slider](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#Slider(kotlin.Float,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.ranges.ClosedFloatingPointRange,kotlin.Int,kotlin.Function0,androidx.compose.material3.SliderColors,androidx.compose.foundation.interaction.MutableInteractionSource)).  
-Supported target platforms are Android, Desktop, and JavaScript (see below for IOS).
+Supported target platforms are Android, IOS, Desktop, and JavaScript.
 
 It can also be used in a regular single-platform Android project using Jetpack Compose or (possibly) XML views.
 
 ## Getting started
 
-For a single-platform project (Android or Desktop or JS):
+For a single-platform project (Android or IOS or Desktop or JS):
 
 ```kotlin
 dependencies {
@@ -80,24 +80,6 @@ fun MyComposable() {
         animationDirection = UNSPECIFIED, // Defaults to UNSPECIFIED
         onValueChange = { fraction = it }
     )
-}
-```
-
-## IOS support
-The library should support IOS, but I currently do not have access to a macOS (physical or virtual)
-to build and publish the IOS variant.
-If you have a macOS and want the library on IOS as well do this:
-  - Download (clone) the repository from GitHub
-  - Uncomment IOS-related code in `kotlin {` block of [the library build file](library/build.gradle.kts)
-  - `cd` to the project root directory
-  - Execute `./gradlew publishAllPublicationsToCustomLocalRepository`
-
-The result library will be available in *\<project\>/library/build/local-repository/*.
-Copy the directory from *local-repository/* to somewhere else (like your project)
-and use it instead of the official library:
-```kotlin
-dependencies {
-    implementation(fileTree("path/to/the/directory"))
 }
 ```
 
