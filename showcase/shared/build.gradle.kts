@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("org.jetbrains.compose")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.android.library)
     // kotlin("native.cocoapods")
 }
 
@@ -40,9 +40,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:${extra["activity-compose.version"]}")
-                api("androidx.appcompat:appcompat:${extra["appcompat.version"]}")
-                api("androidx.core:core-ktx:${extra["core-ktx.version"]}")
+                api(libs.androidx.activity.compose)
+                api(libs.androidx.appcompat)
+                api(libs.androidx.core.ktx)
             }
         }
         val desktopMain by getting {
@@ -64,21 +64,20 @@ kotlin {
 }
 
 android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
     namespace = "showcase"
-
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        minSdk = (findProperty("android.minSdk") as String).toInt()
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(libs.versions.java.get().toInt())
     }
 }

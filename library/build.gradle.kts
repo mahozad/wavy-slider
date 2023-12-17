@@ -4,17 +4,17 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import java.util.*
 
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.dokka)
     id("maven-publish")
     id("signing")
 }
 
 buildscript {
     dependencies {
-        val dokkaVersion = properties["dokka.version"]
+        val dokkaVersion = libs.versions.dokka.get()
         classpath("org.jetbrains.dokka:dokka-base:$dokkaVersion")
     }
 }
@@ -65,7 +65,7 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                implementation(libs.kotlin.test)
             }
         }
         val androidMain by getting {}
@@ -94,9 +94,10 @@ kotlin {
 
 android {
     namespace = "ir.mahozad.multiplatform"
-    compileSdk = 34
+
     defaultConfig {
-        minSdk = 21
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     buildFeatures {
@@ -104,8 +105,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
 }
 
