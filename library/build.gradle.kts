@@ -29,9 +29,11 @@ kotlin {
     androidTarget { publishLibraryVariants("release") }
     // Windows, Linux, macOS (with Java runtime)
     jvm(name = "desktop" /* Renames jvm to desktop */)
+    // Kotlin/JS drawing to a canvas
     js(compiler = IR) {
         nodejs()
         browser()
+        binaries.executable()
     }
     // Building and publishing for IOS target requires a machine running macOS;
     // otherwise, the .klib will not be produced and the compiler warns about that.
@@ -47,7 +49,7 @@ kotlin {
         }
     }
 
-    // wasm { browser() }
+    // wasmJs { browser() }
     // Native targets:
     // macosX64()
     // macosArm64()
