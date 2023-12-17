@@ -147,15 +147,19 @@ tasks.dokkaHtml {
     }
 }
 
-fun error(propertyName: String): Nothing = error("Property $propertyName not found")
-val properties = Properties().apply { load(rootProject.file("local.properties").reader()) }
-extra["ossrhUsername"] = properties["ossrhUsername"] as? String ?: error("ossrhUsername")
-extra["ossrhPassword"] = properties["ossrhPassword"] as? String ?: error("ossrhPassword")
-extra["githubUsername"] = properties["github.username"] as? String ?: error("githubUsername")
-extra["githubPassword"] = properties["github.token"] as? String ?: error("githubPassword")
-extra["signingKeyId"] = properties["signing.keyId"] as? String ?: error("signingKeyId")
-extra["signingPassword"] = properties["signing.password"] as? String ?: error("signingPassword")
-extra["signingSecretKeyRingFile"] = properties["signing.secretKeyRingFile"] as? String ?: error("signingSecretKeyRingFile")
+val properties = Properties().apply {
+    runCatching { rootProject.file("local.properties") }
+        .getOrNull()
+        .takeIf { it?.exists() ?: false }
+        ?.reader()
+        ?.use(::load)
+}
+// For information about signing.* properties,
+// see comments on signing { ... } block below
+extra["ossrhUsername"] = properties["ossrh.username"] as? String ?: error("ossrh.username")
+extra["ossrhPassword"] = properties["ossrh.password"] as? String ?: error("ossrh.password")
+extra["githubUsername"] = properties["github.username"] as? String ?: error("github.username")
+extra["githubToken"] = properties["github.token"] as? String ?: error("github.token")
 
 publishing {
     repositories {
@@ -176,7 +180,7 @@ publishing {
             url = uri("https://maven.pkg.github.com/mahozad/${project.name}")
             credentials {
                 username = extra["githubUsername"]?.toString()
-                password = extra["githubPassword"]?.toString()
+                password = extra["githubToken"]?.toString()
             }
         }
     }
@@ -234,8 +238,13 @@ tasks.withType(AbstractPublishToMaven::class).configureEach {
     dependsOn(tasks.withType(Sign::class))
 }
 
-// Uses signing.* properties defined in gradle.properties in home/.gradle/
-// See https://stackoverflow.com/a/67115705
+/*
+ * Uses signing.* properties defined in gradle.properties in ~/.gradle/ or project root
+ * Can also pass from command line like below
+ * ./gradlew task -Psigning.secretKeyRingFile=... -Psigning.password=... -Psigning.keyId=...
+ * See https://docs.gradle.org/current/userguide/signing_plugin.html
+ * and https://stackoverflow.com/a/67115705
+ */
 signing {
     sign(publishing.publications)
 }
