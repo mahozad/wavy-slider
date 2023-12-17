@@ -156,10 +156,12 @@ val properties = Properties().apply {
 // For information about signing.* properties,
 // see comments on signing { ... } block below
 val environment: Map<String, String?> = System.getenv()
-extra["ossrhUsername"] = properties["ossrh.username"] as? String ?: environment["OSSRH_USERNAME"]
-extra["ossrhPassword"] = properties["ossrh.password"] as? String ?: environment["OSSRH_PASSWORD"]
-extra["githubUsername"] = properties["github.username"] as? String ?: environment["GITHUB_USERNAME"]
-extra["githubToken"] = properties["github.token"] as? String ?: environment["GITHUB_TOKEN"]
+extra["ossrhUsername"] = properties["ossrh.username"] as? String
+    ?: environment["OSSRH_USERNAME"] ?: ""
+extra["ossrhPassword"] = properties["ossrh.password"] as? String
+    ?: environment["OSSRH_PASSWORD"] ?: ""
+extra["githubToken"] = properties["github.token"] as? String
+    ?: environment["GITHUB_TOKEN"] ?: ""
 
 publishing {
     repositories {
@@ -179,7 +181,7 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/mahozad/${project.name}")
             credentials {
-                username = extra["githubUsername"]?.toString()
+                username = "mahozad"
                 password = extra["githubToken"]?.toString()
             }
         }

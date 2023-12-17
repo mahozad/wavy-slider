@@ -1,13 +1,13 @@
-name: Generate publication
+name: Release a new version in maven repositories
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v[0-9]+.[0-9]+.*"
 
 jobs:
-  generate-publication:
-    name: Generate library publication
+  release-version:
+    name: Release library version
     # Should be macOS to be able to create IOS variants as well
     runs-on: macos-latest
     env:
@@ -16,6 +16,12 @@ jobs:
       SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       SIGNING_KEY_CONTENT_BASE64: ${{ secrets.SIGNING_KEY_CONTENT_BASE64 }}
+      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -26,9 +32,26 @@ jobs:
           java-version: "17"
       - name: Decode the private GPG key file stored in GitHub secrets
         run: echo $SIGNING_KEY_CONTENT_BASE64 | base64 -d > private-key.gpg
-      - name: Generate publication
+      - name: Release to local repository
+        id: release-local
         run: >
           ./gradlew publishAllPublicationsToCustomLocalRepository
+          -Psigning.secretKeyRingFile="../private-key.gpg"
+          -Psigning.password="$SIGNING_PASSWORD"
+          -Psigning.keyId="$SIGNING_KEY_ID"
+          --stacktrace
+      - name: Release to GitHub Packages
+        if: steps.release-local.outcome == 'success'
+        run: >
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository
+          -Psigning.secretKeyRingFile="../private-key.gpg"
+          -Psigning.password="$SIGNING_PASSWORD"
+          -Psigning.keyId="$SIGNING_KEY_ID"
+          --stacktrace
+      - name: Release to Maven Central
+        if: steps.release-local.outcome == 'success'
+        run: >
+          ./gradlew publishAllPublicationsToMavenCentralRepository
           -Psigning.secretKeyRingFile="../private-key.gpg"
           -Psigning.password="$SIGNING_PASSWORD"
           -Psigning.keyId="$SIGNING_KEY_ID"
