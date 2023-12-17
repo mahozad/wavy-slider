@@ -55,18 +55,14 @@ kotlin {
     // }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(compose.foundation)
-                api(compose.material3)
-                api(compose.material)
-                api(compose.runtime)
-            }
+        commonMain.dependencies {
+            api(compose.foundation)
+            api(compose.material3)
+            api(compose.material)
+            api(compose.runtime)
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test)
-            }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
         val androidMain by getting {}
         val androidUnitTest by getting {}

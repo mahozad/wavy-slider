@@ -7,10 +7,8 @@ plugins {
 kotlin {
     androidTarget()
     sourceSets {
-        val androidMain by getting {
-            dependencies {
-                implementation(project(":showcase:shared"))
-            }
+        androidMain.dependencies {
+            implementation(project(":showcase:shared"))
         }
     }
 }

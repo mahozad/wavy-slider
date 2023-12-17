@@ -27,30 +27,26 @@ kotlin {
     // }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
-                // api("ir.mahozad.multiplatform:wavy-slider:x.y.z")
-                api(project(":wavy-slider"))
-            }
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.components.resources)
+            // api("ir.mahozad.multiplatform:wavy-slider:x.y.z")
+            api(project(":wavy-slider"))
         }
-        val androidMain by getting {
-            dependencies {
-                api(libs.androidx.activity.compose)
-                api(libs.androidx.appcompat)
-                api(libs.androidx.core.ktx)
-            }
+        androidMain.dependencies {
+            api(libs.androidx.activity.compose)
+            api(libs.androidx.appcompat)
+            api(libs.androidx.core.ktx)
         }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
             }
         }
-        val jsMain by getting {}
+        val jsMain by getting
         // val iosX64Main by getting
         // val iosArm64Main by getting
         // val iosSimulatorArm64Main by getting

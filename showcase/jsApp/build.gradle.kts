@@ -10,12 +10,10 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
-        val jsMain by getting {
-            dependencies {
-                implementation(compose.html.core)
-                implementation(compose.runtime)
-                implementation(project(":showcase:shared"))
-            }
+        jsMain.dependencies {
+            implementation(compose.html.core)
+            implementation(compose.runtime)
+            implementation(project(":showcase:shared"))
         }
     }
 }

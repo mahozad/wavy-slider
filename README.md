@@ -39,10 +39,8 @@ For a multiplatform project (if you target a subset of the library supported pla
 ```kotlin
 kotlin {
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
-            }
+        commonMain.dependencies {
+            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
         }
 // ...
 ```
@@ -52,15 +50,13 @@ add the library separately to each supported target:
 
 ```kotlin
 kotlin {
-    val desktopMain by getting {
+    val desktopMain /* OR jvmMain */ by getting {
         dependencies {
             implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
         }
     }
-    val androidMain by getting {
-        dependencies {
-            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
-        }
+    androidMain.dependencies {
+        implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:0.3.0")
     }
     // etc.
 ```
