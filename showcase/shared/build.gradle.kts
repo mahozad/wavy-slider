@@ -6,8 +6,12 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop")
-    js(compiler = IR) { browser() }
+    jvm(name = "desktop")
+    js(compiler = IR) {
+        browser()
+        nodejs()
+        binaries.executable()
+    }
     androidTarget()
     // Remember to uncomment kotlin("native.cocoapods") above as well
     // iosX64()
@@ -47,15 +51,10 @@ kotlin {
             }
         }
         val jsMain by getting
+        // See above
         // val iosX64Main by getting
         // val iosArm64Main by getting
         // val iosSimulatorArm64Main by getting
-        // val iosMain by creating {
-        //     dependsOn(commonMain)
-        //     iosX64Main.dependsOn(this)
-        //     iosArm64Main.dependsOn(this)
-        //     iosSimulatorArm64Main.dependsOn(this)
-        // }
     }
 }
 

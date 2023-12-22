@@ -39,6 +39,7 @@ kotlin {
     // otherwise, the .klib will not be produced and the compiler warns about that.
     // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
     listOf(
+        // By declaring these targets, the iosMain source set will be created automatically
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
@@ -100,11 +101,14 @@ android {
 tasks.withType<PublishToMavenRepository> {
     val isMac = getCurrentOperatingSystem().isMacOsX
     onlyIf {
-        if (!isMac) logger.error("""
-            Publishing the library requires macOS to be able to generate IOS artifacts.
-            Run the task in a mac or in a GitHub Actions mac environment instead.
-        """)
-        isMac
+        isMac.also {
+            if (!isMac) logger.error(
+                """
+                    Publishing the library requires macOS to be able to generate IOS artifacts.
+                    Run the task on a mac or use the project GitHub workflows for publication and release.
+                """
+            )
+        }
     }
 }
 
