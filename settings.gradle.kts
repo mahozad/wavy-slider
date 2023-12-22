@@ -2,10 +2,7 @@ rootProject.name = "wavy-slider"
 
 include(":library")
 project(":library").name = "wavy-slider"
-include(":showcase:shared")
-include(":showcase:androidApp")
-include(":showcase:desktopApp")
-include(":showcase:jsApp")
+include(":showcase")
 // :showcase:iosApp is managed by Xcode and its build system
 // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#root-project
 
