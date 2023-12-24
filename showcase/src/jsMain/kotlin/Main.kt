@@ -1,13 +1,20 @@
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.skiko.wasm.onWasmReady
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
@@ -45,19 +52,22 @@ fun App() {
 @Composable
 fun Content() {
     var value by remember { mutableFloatStateOf(0.5f) }
-    var waveLength by remember { mutableStateOf(20.dp) }
-    var waveHeight by remember { mutableStateOf(20.dp) }
+    var isEnabled by remember { mutableStateOf(true) }
+    var waveLength by remember { mutableStateOf(24.dp) }
+    var waveHeight by remember { mutableStateOf(24.dp) }
     var waveThickness by remember { mutableStateOf(4.dp) }
     var trackThickness by remember { mutableStateOf(4.dp) }
     var isRTL by remember { mutableStateOf(true) }
     var isFlattened by remember { mutableStateOf(false) }
-    var variant by remember { mutableStateOf("Material 3") }
+    var isMaterial3 by remember { mutableStateOf(true) }
     Column(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 100.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 90.dp),
+        verticalArrangement = Arrangement.spacedBy(60.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (variant == "Material 2") {
-            WavySlider2(
+        if (isMaterial3) {
+            WavySlider3(
+                enabled = isEnabled,
                 value = value,
                 onValueChange = { value = it },
                 waveLength = waveLength,
@@ -68,7 +78,8 @@ fun Content() {
                 animationDirection = if (isRTL) WaveAnimationDirection.RTL else WaveAnimationDirection.LTR
             )
         } else {
-            WavySlider3(
+            WavySlider2(
+                enabled = isEnabled,
                 value = value,
                 onValueChange = { value = it },
                 waveLength = waveLength,
@@ -79,84 +90,116 @@ fun Content() {
                 animationDirection = if (isRTL) WaveAnimationDirection.RTL else WaveAnimationDirection.LTR
             )
         }
-        Spacer(Modifier.height(60.dp))
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.width(280.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                .padding(16.dp)
+                .width(300.dp)
         ) {
-            Dropdown(
-                label = "Variant: $variant",
-                options = listOf("Material 3", "Material 2"),
-                onChange = { variant = if (it == 0) "Material 3" else "Material 2" }
-            )
-            Dropdown(
-                label = "Head to tail: ${if (isFlattened) "Flatten" else "Regular"}",
-                options = listOf("Regular", "Flatten"),
-                onChange = { isFlattened = it == 1 }
-            )
-            Dropdown(
-                label = "Move direction: ${if (isRTL) "RTL" else "LTR"}",
-                options = listOf("RTL", "LTR"),
-                onChange = { isRTL = it == 0 }
-            )
-            Spacer(Modifier.height(1.dp))
-            Slider(
+            MaterialDesignVersion(isMaterial3) { isMaterial3 = it }
+            Spacer(Modifier.height(0.dp))
+            Toggle(isEnabled, "Enabled:") { isEnabled = it }
+            Toggle(isFlattened, "Flatten:") { isFlattened = it }
+            Toggle(!isRTL, "Reverse:") { isRTL = !it }
+            LabeledSlider(
+                label = "Wave length:",
                 value = waveLength.value,
-                onValueChange = { waveLength = it.dp },
-                valueRange = 6f..200f
+                valueRange = 6f..200f,
+                onValueChange = { waveLength = it.dp }
             )
-            Slider(
+            LabeledSlider(
+                label = "Wave height:",
                 value = waveHeight.value,
-                onValueChange = { waveHeight = it.dp },
-                valueRange = 0f..48f
+                valueRange = 0f..48f,
+                onValueChange = { waveHeight = it.dp }
             )
-            Slider(
+            LabeledSlider(
+                label = "Wave thickness:",
                 value = waveThickness.value,
-                onValueChange = { waveThickness = it.dp },
-                valueRange = 1f..20f
+                valueRange = 1f..20f,
+                onValueChange = { waveThickness = it.dp }
             )
-            Slider(
+            LabeledSlider(
+                label = "Track thickness:",
                 value = trackThickness.value,
-                onValueChange = { trackThickness = it.dp },
-                valueRange = 0f..20f
+                valueRange = 0f..20f,
+                onValueChange = { trackThickness = it.dp }
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Dropdown(
-    label: String,
-    options: List<String>,
-    onChange: (Int) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-    ) {
-        OutlinedTextField(
-            modifier = Modifier.menuAnchor(),
-            readOnly = true,
-            value = label,
-            onValueChange = {},
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
+fun MaterialDesignVersion(isMaterial3: Boolean, onChange: (Boolean) -> Unit) {
+    @Composable
+    fun Version(n: Int) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = { onChange(n == 3) }
+            )
         ) {
-            options.mapIndexed { i, option ->
-                DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = {
-                        onChange(i)
-                        expanded = false
-                    },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                )
-            }
+            Icon(
+                painterResource("m$n-logo.png"),
+                contentDescription = "Material $n",
+                modifier = Modifier.size(34.dp),
+                tint = if (n == 3 && isMaterial3) {
+                    MaterialTheme.colorScheme.primary
+                } else if (n == 3 && !isMaterial3) {
+                    LocalContentColor.current
+                } else if (n == 2 && isMaterial3) {
+                    LocalContentColor.current
+                } else {
+                    Color(0xff6200ee)
+                }
+            )
+            Spacer(Modifier.width(6.dp))
+            Text("Material $n")
         }
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Version(3)
+        Version(2)
+    }
+}
+
+@Composable
+fun Toggle(
+    isOn: Boolean,
+    label: String,
+    onToggle: (Boolean) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(label)
+        Switch(isOn, onCheckedChange = onToggle)
+    }
+}
+
+@Composable
+fun LabeledSlider(
+    label: String,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    onValueChange: (Float) -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(label, modifier = Modifier.width(136.dp))
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange
+        )
     }
 }
