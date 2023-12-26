@@ -1,0 +1,120 @@
+body {
+    position: relative;
+    margin: 0;
+}
+
+#github {
+    position: absolute;
+    inset-inline-start: 16px;
+    inset-block-start: 16px;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    gap: 8px;
+
+    #repo-link {
+        display: flex;
+        flex-flow: column;
+        align-items: start;
+        font-size: 3vh;
+    }
+
+    svg {
+        width: 5vh;
+    }
+}
+
+main {
+    display: grid;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background-color: #FCFAEDCC;
+
+    & > * {
+        grid-column: 1;
+        grid-row: 1;
+    }
+}
+
+@media (width >= 1300px) {
+    #content {
+        width: 900px;
+        height: 720px;
+        margin-block-start: 0;
+    }
+}
+
+@media (width < 1300px) {
+    #content {
+        width: 500px;
+        height: 1265px;
+        margin-block-start: 64px;
+    }
+}
+
+@media (width < 600px) {
+    #content {
+        width: 324px;
+        height: 1265px;
+        margin-block-start: 64px;
+    }
+}
+
+#loading {
+    display: flex;
+    justify-content: center;
+    font-size: 2vw;
+    /* For mobile/small screens: */
+    position: fixed;
+    gap: 0.6vw;
+    right: 50%;
+    top: 45%;
+    transform: translate(50%, 0%);
+
+    @media (width < 800px) {
+        font-size: 4vw;
+    }
+
+    img {
+        height: 2vw;
+        animation: spin 2s ease infinite;
+        @media (width < 800px) {
+            height: 4vw;
+        }
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
+canvas {
+    /*
+     * TODO: Make all sides of the canvas wavy;
+     *  see https://stackoverflow.com/questions/42441472/draw-a-squiggly-line-in-svg
+     *  and https://stackoverflow.com/questions/63128291/konva-js-waved-stroke-around-rect-element
+     *  and https://stackoverflow.com/questions/33907082/draw-squiggly-line-along-a-curve-in-javascript?noredirect=1&lq=1
+     */
+    /* See https://css-tricks.com/how-to-create-wavy-shapes-patterns-in-css
+       and https://css-tricks.com/css-borders-using-masks
+       and https://css-generators.com/custom-borders */
+    --s: 20px; /* Size of the wave */
+    --_s: calc(var(--s)*4) 51% repeat-x;
+    --_r: calc(1.345*var(--s)) at left 50%;
+    --_g1: #000 99%,#0000 101%;
+    --_g2: #0000 99%,#000 101%;
+    --mask:
+      radial-gradient(var(--_r) top    calc(var(--s)* 1.9),var(--_g1))
+       calc(50% - 2*var(--s) - var(--_i,0px)) 0/var(--_s),
+      radial-gradient(var(--_r) top    calc(var(--s)*-0.9),var(--_g2))
+       calc(50% - var(--_i,0px)) var(--s)/var(--_s),
+      radial-gradient(var(--_r) bottom calc(var(--s)* 1.9),var(--_g1))
+       calc(50% - 2*var(--s) + var(--_i,0px)) 100%/var(--_s),
+      radial-gradient(var(--_r) bottom calc(var(--s)*-0.9),var(--_g2))
+       calc(50% + var(--_i,0px)) calc(100% - var(--s))/var(--_s);
+    -webkit-mask: var(--mask);
+            mask: var(--mask);
+}
