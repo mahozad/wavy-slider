@@ -1,0 +1,164 @@
+* {
+    box-sizing: border-box;
+    white-space: nowrap;
+    margin: 0;
+    transition: color, background-color 350ms ease;
+}
+
+html {
+    --background-color: #f3faef;
+    --primary-color: #5B631E;
+    --text-color: #000;
+}
+
+html[data-theme="dark"] {
+    --background-color: #050a03;
+    --primary-color: #C3CD7B;
+    --text-color: #fff;
+}
+
+main {
+    display: grid;
+    justify-content: center;
+    height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+theme-switch {
+    --theme-switch-icon-color: var(--primary-color);
+    position: absolute;
+    inset-inline-end: 16px;
+    inset-block-start: 16px;
+    width: 32px;
+}
+
+#flip-button {
+    fill: var(--primary-color);
+    position: absolute;
+    inset-inline-end: 72px;
+    inset-block-start: 16px;
+    width: 32px;
+    cursor: pointer;
+    transition: transform 300ms ease;
+
+    /* This is needed because sometimes the inner paths receive click events and do not bubble up the event to the svg */
+    * {
+        pointer-events: none;
+    }
+
+    &.flipped {
+        transform: scaleX(-1);
+    }
+
+    @media (width < 1300px) {
+        inset-inline-end: auto;
+        inset-inline-start: 16px;
+    }
+}
+
+#github {
+    position: absolute;
+    inset-inline-start: 16px;
+    inset-block-start: 16px;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    gap: 8px;
+
+    @media (width < 1300px) {
+        width: 100%;
+        justify-content: center;
+        inset-inline-start: 0;
+        inset-block-start: 0;
+        margin-block-start: 16px;
+    }
+
+    svg {
+        width: 36px;
+        fill: var(--text-color);
+    }
+
+    a {
+        color: var(--primary-color);
+        font-size: 20px;
+    }
+}
+
+#app {
+    width: 900px;
+    height: 100vh;
+    /* because of the bottom exceeding just a little bit */
+    overflow-y: hidden;
+
+    @media (width < 1300px) {
+        width: 500px;
+        height: calc(98vh - 54px);
+        margin-block-start: 54px;
+    }
+
+    @media (width < 600px) {
+        width: 94vw;
+    }
+}
+
+#loading {
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 30px;
+    gap: 8px;
+    inset-block-start: 45%;
+
+    @media (width < 400px) {
+        font-size: 20px;
+    }
+
+    @media (height < 400px) {
+        inset-block-start: 50%;
+    }
+
+    img {
+        height: 30px;
+        animation: spin 2s ease infinite;
+        @media (width < 400px) {
+            height: 24px;
+        }
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
+#app {
+    /*
+     * TODO: Make all sides of the element wavy;
+     *  see https://stackoverflow.com/questions/42441472/draw-a-squiggly-line-in-svg
+     *  and https://stackoverflow.com/questions/63128291/konva-js-waved-stroke-around-rect-element
+     *  and https://stackoverflow.com/questions/33907082/draw-squiggly-line-along-a-curve-in-javascript?noredirect=1&lq=1
+     */
+    /* See https://css-tricks.com/how-to-create-wavy-shapes-patterns-in-css
+       and https://css-tricks.com/css-borders-using-masks
+       and https://css-generators.com/custom-borders */
+    --s: 20px; /* Size of the wave */
+    --_s: calc(var(--s)*4) 51% repeat-x;
+    --_r: calc(1.345*var(--s)) at left 50%;
+    --_g1: #000 99%,#0000 101%;
+    --_g2: #0000 99%,#000 101%;
+    --mask:
+      radial-gradient(var(--_r) top    calc(var(--s)* 1.9),var(--_g1))
+       calc(50% - 2*var(--s) - var(--_i,0px)) 0/var(--_s),
+      radial-gradient(var(--_r) top    calc(var(--s)*-0.9),var(--_g2))
+       calc(50% - var(--_i,0px)) var(--s)/var(--_s),
+      radial-gradient(var(--_r) bottom calc(var(--s)* 1.9),var(--_g1))
+       calc(50% - 2*var(--s) + var(--_i,0px)) 100%/var(--_s),
+      radial-gradient(var(--_r) bottom calc(var(--s)*-0.9),var(--_g2))
+       calc(50% + var(--_i,0px)) calc(100% - var(--s))/var(--_s);
+    -webkit-mask: var(--mask);
+            mask: var(--mask);
+}
