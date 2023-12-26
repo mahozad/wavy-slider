@@ -1,17 +1,5 @@
-*.iml
-.gradle
-/local.properties
-/.idea
-# https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
-/.kotlin
-.DS_Store
+local.properties
+.gradle/
+.kotlin/
+.idea/
 build/
-/captures
-.externalNativeBuild
-.cxx
-showcase/iosApp/Podfile.lock
-showcase/iosApp/Pods/*
-showcase/iosApp/iosApp.xcworkspace/*
-showcase/iosApp/iosApp.xcodeproj/*
-!showcase/iosApp/iosApp.xcodeproj/project.pbxproj
-showcase/shared/shared.podspec
