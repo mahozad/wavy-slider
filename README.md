@@ -24,6 +24,10 @@ Supported target platforms are Android, IOS, Desktop, and JavaScript (Kotlin/JS)
 
 It can also be used in a regular single-platform Android project using Jetpack Compose or (possibly) XML views.
 
+## Demo
+For a live, interactive demo go to https://mahozad.ir/wavy-slider.  
+For real-world apps in various platforms using the library, see the [showcase](showcase) directory.
+
 ## Getting started
 
 For a single-platform project (Android or IOS or Desktop or JS):
@@ -82,9 +86,6 @@ fun MyComposable() {
     )
 }
 ```
-
-## Demo in real world applications
-See the [showcase](showcase) directory for example apps in various platforms using the library.
 
 ## Similar alternative library
 https://github.com/galaxygoldfish/waveslider  
