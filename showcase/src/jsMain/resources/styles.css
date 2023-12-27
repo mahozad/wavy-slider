@@ -43,7 +43,9 @@ main > * {
 }
 
 canvas {
-    /* See https://css-tricks.com/how-to-create-wavy-shapes-patterns-in-css */
+    /* See https://css-tricks.com/how-to-create-wavy-shapes-patterns-in-css
+       and https://css-tricks.com/css-borders-using-masks
+       and https://css-generators.com/custom-borders */
     --s: 20px; /* Size of the wave */
     --_s: calc(var(--s)*4) 51% repeat-x;
     --_r: calc(1.345*var(--s)) at left 50%;
