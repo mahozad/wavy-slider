@@ -1,13 +1,37 @@
 body {
-    display: grid;
+    position: relative;
     margin: 0;
+}
+
+#github {
+    position: absolute;
+    inset-inline-start: 16px;
+    inset-block-start: 16px;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    gap: 8px;
+
+    #repo-link {
+        display: flex;
+        flex-flow: column;
+        align-items: start;
+    }
+
+    img {
+        width: 32px;
+    }
+}
+
+main {
+    display: grid;
     height: 100vh;
     align-items: center;
     justify-content: center;
     background-color: #fcfaed;
 }
 
-body > * {
+main > * {
     grid-column: 1;
     grid-row: 1;
 }
