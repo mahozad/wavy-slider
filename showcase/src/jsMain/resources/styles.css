@@ -18,7 +18,7 @@ body {
         align-items: start;
     }
 
-    img {
+    svg {
         width: 32px;
     }
 }
