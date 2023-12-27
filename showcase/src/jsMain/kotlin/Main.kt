@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,6 +19,7 @@ import androidx.compose.ui.window.Window
 import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.resource
 import org.jetbrains.skiko.wasm.onWasmReady
 import kotlin.math.roundToInt
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
@@ -66,6 +68,15 @@ fun Content() {
     var isRTL by remember { mutableStateOf(true) }
     var isFlattened by remember { mutableStateOf(false) }
     var isMaterial3 by remember { mutableStateOf(true) }
+    var fontRobotoSlab by remember { mutableStateOf<FontFamily?>(null) }
+
+    LaunchedEffect(Unit) {
+        val fontData = loadResource("RobotoSlab-Regular.ttf")
+        fontRobotoSlab = FontFamily(
+            Font(identity = "RobotoSlab", data = fontData)
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(vertical = 90.dp),
         verticalArrangement = Arrangement.spacedBy(60.dp),
@@ -109,7 +120,12 @@ fun Content() {
                     .padding(16.dp)
                     .width(360.dp)
             ) {
-                CompositionLocalProvider(LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 14.sp)) {
+                CompositionLocalProvider(
+                    LocalTextStyle provides LocalTextStyle.current.copy(
+                        fontFamily = fontRobotoSlab,
+                        fontSize = 16.sp
+                    )
+                ) {
                     MaterialDesignVersion(isMaterial3) { isMaterial3 = it }
                     Spacer(Modifier.height(0.dp))
                     Toggle(isEnabled, "Enabled:") { isEnabled = it }
@@ -188,7 +204,7 @@ fun MaterialDesignVersion(isMaterial3: Boolean, onChange: (Boolean) -> Unit) {
                     material2ColorPrimary
                 }
             )
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(8.dp))
             Text("Material $n")
         }
     }
@@ -252,6 +268,7 @@ fun Code(
     val valueRounded = remember(value) { value.asDynamic().toFixed(2) }
 
     val fontSize = remember { 14.sp }
+    val lineHeight = remember { 25.sp }
     val colorKeyword = remember { Color(0xff0033B3) }
     val colorNumber = remember { Color(0xff1750EB) }
     val colorMember = remember { Color(0xff871094) }
@@ -283,7 +300,7 @@ fun Code(
         )
     """
     val code = buildAnnotatedString {
-        pushStyle(ParagraphStyle(lineHeight = 25.sp))
+        pushStyle(ParagraphStyle(lineHeight = lineHeight))
         withStyle(SpanStyle(colorKeyword, fontSize = 12.sp)) { append("import ") }
         withStyle(SpanStyle(colorIdentifier, fontSize = 12.sp)) {
             append("...wavyslider.WaveAnimationDirection.*")
@@ -369,4 +386,9 @@ fun Code(
         fontFamily = FontFamily.Monospace,
         modifier = modifier
     )
+}
+
+@OptIn(ExperimentalResourceApi::class)
+suspend fun loadResource(path: String): ByteArray {
+    return resource(path).readBytes()
 }
