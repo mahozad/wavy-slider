@@ -5,7 +5,12 @@ plugins {
 
 kotlin {
     js(compiler = IR) {
-        browser()
+        moduleName = "app"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "app.js"
+            }
+        }
         nodejs()
         binaries.executable()
     }
