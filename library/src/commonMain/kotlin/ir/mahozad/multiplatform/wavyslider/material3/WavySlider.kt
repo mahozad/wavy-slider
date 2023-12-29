@@ -104,7 +104,7 @@ fun WavySlider(
 }
 
 /**
- * A wavy slider much like the <a href="https://material.io/components/sliders" class="external" target="_blank">Material Design slider</a>.
+ * A wavy slider much like the [Material Design 3 slider](https://m3.material.io/components/sliders).
  *
  * By setting [waveHeight] to `0.dp` it becomes just a regular Material [Slider].
  *
