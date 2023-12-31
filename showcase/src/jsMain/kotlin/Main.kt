@@ -251,6 +251,47 @@ fun LabeledSlider(
     }
 }
 
+/**
+ * Could also use implementation("dev.snipme:highlights:0.7.1"):
+ *
+ * ```kotlin
+ * val h = Highlights
+ *     .Builder()
+ *     .code(c)
+ *     .theme(SyntaxThemes.notepad(true))
+ *     .language(SyntaxLanguage.KOTLIN)
+ *     .emphasis(PhraseLocation(13, 25)) // ExampleClass
+ *     .build()
+ * Text(
+ *     modifier = modifier,
+ *     text = buildAnnotatedString {
+ *         withStyle(SpanStyle(fontSize = 13.sp)) {
+ *             append(h.getCode())
+ *         }
+ *         h
+ *             .getHighlights()
+ *             .filterIsInstance<ColorHighlight>()
+ *             .forEach {
+ *                 addStyle(
+ *                     SpanStyle(fontSize = 13.sp, color = Color(it.rgb).copy(alpha = 1f)),
+ *                     start = it.location.start,
+ *                     end = it.location.end,
+ *                 )
+ *             }
+ *         h
+ *             .getHighlights()
+ *             .filterIsInstance<BoldHighlight>()
+ *             .forEach {
+ *                 addStyle(
+ *                     SpanStyle(fontWeight = FontWeight.Bold),
+ *                     start = it.location.start,
+ *                     end = it.location.end,
+ *                 )
+ *             }
+ *     }
+ * )
+ * ```
+ */
 @Composable
 fun Code(
     isMaterial3: Boolean,
@@ -280,8 +321,8 @@ fun Code(
 
     // Equivalent to the following
     """             
-        import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.*
-        import ir.mahozad.multiplatform.wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
+        import ...wavyslider.WaveAnimationDirection.*
+        import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
 
         var value by remember {
             mutableFloatStateOf(${valueRounded}f)
@@ -298,7 +339,8 @@ fun Code(
             shouldFlatten = ${if (isFlattened) "true" else "false"},
             animationDirection = ${if (isRTL) "RTL" else "LTR"}
         )
-    """
+    """.trimIndent()
+
     val code = buildAnnotatedString {
         pushStyle(ParagraphStyle(lineHeight = lineHeight))
         withStyle(SpanStyle(colorKeyword, fontSize = 12.sp)) { append("import ") }
@@ -329,11 +371,13 @@ fun Code(
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    value ") }
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("value,") }
+        withStyle(SpanStyle(colorSemantic1, fontSize)) { append("value,") }
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    onValueChange ") }
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("{ value = ") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("{") }
+        withStyle(SpanStyle(colorSemantic1, fontSize)) { append(" value ") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("= ") }
         withStyle(SpanStyle(colorSemantic2, fontSize)) { append("it ") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("},") }
         appendLine()
