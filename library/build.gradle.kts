@@ -68,7 +68,13 @@ kotlin {
         val androidMain by getting {}
         val androidUnitTest by getting {}
         val desktopMain by getting {}
-        val desktopTest by getting {}
+        val desktopTest by getting {
+            dependencies {
+                implementation(compose.desktop.uiTestJUnit4)
+                // Needed because of build errors; remove if tests run
+                implementation(compose.desktop.windows_x64)
+            }
+        }
         val jsMain by getting {}
         val jsTest by getting {}
         val iosX64Main by getting {}
