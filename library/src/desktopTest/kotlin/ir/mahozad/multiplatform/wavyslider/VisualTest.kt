@@ -1,11 +1,9 @@
 package ir.mahozad.multiplatform.wavyslider
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -448,6 +446,26 @@ class VisualTest {
             wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = 0.dp, animationDirection = LTR) },
             wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = 0.dp, animationDirection = LTR) }
         )
+        assert(isPassed)
+    }
+
+    @Test
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun `Test 24`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "A custom thumb",
+            expected = "The custom thumb should be displayed and its height be taken into account in overall component height"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            val thumb: @Composable (SliderPositions) -> Unit = @Composable {
+                Box(Modifier.width(10.dp).height(128.dp).background(Color.Red))
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value = value, onValueChange = { value = it }, thumb = thumb, modifier = Modifier.border(1.dp, Color.Gray))
+            }
+        }
         assert(isPassed)
     }
 }
