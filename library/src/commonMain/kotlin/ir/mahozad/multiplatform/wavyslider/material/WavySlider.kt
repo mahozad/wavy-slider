@@ -24,11 +24,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
@@ -42,11 +37,12 @@ import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 // TODO: Add wave velocity property (speed + direction)
 // TODO: Add ability to stop the wave animation manually with a boolean property
@@ -302,7 +298,7 @@ private fun SliderImpl(
     /////////////////
     trackThickness: Dp?,
     shouldFlatten: Boolean,
-    waveWidth: Dp,
+    waveLength: Dp,
     waveHeight: Dp,
     waveThickness: Dp,
     animationDirection: WaveAnimationDirection
@@ -329,7 +325,7 @@ private fun SliderImpl(
             /////////////////
             trackThickness,
             shouldFlatten,
-            waveWidth,
+            waveLength,
             waveHeight,
             waveThickness,
             animationDirection
@@ -350,19 +346,19 @@ private fun Track(
     /////////////////
     trackThickness: Dp?,
     shouldFlatten: Boolean,
-    waveWidth: Dp,
+    waveLength: Dp,
     waveHeight: Dp,
     waveThickness: Dp,
     animationDirection: WaveAnimationDirection
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
     val activeTrackColor = colors.trackColor(enabled, active = true)
-    val waveWidthPx: Float
+    val waveLengthPx: Float
     val waveHeightPx: Float
     val waveThicknessPx: Float
     val trackThicknessPx: Float
     with(LocalDensity.current) {
-        waveWidthPx = waveWidth.toPx()
+        waveLengthPx = waveLength.toPx()
         waveHeightPx = waveHeight.toPx()
         waveThicknessPx = waveThickness.toPx()
         trackThicknessPx = trackThickness?.toPx() ?: 0f
@@ -375,13 +371,13 @@ private fun Track(
         .animateFloat(
             initialValue = 0f,
             targetValue = if (animationDirection == WaveAnimationDirection.LTR) {
-                waveWidthPx
+                waveLengthPx
             } else if (animationDirection == WaveAnimationDirection.RTL) {
-                -waveWidthPx
+                -waveLengthPx
             } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
-                waveWidthPx
+                waveLengthPx
             } else {
-                -waveWidthPx
+                -waveLengthPx
             },
             animationSpec = infiniteRepeatable(
                 animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
@@ -401,50 +397,22 @@ private fun Track(
         val sliderRight = Offset(size.width - thumbPx, center.y)
         val sliderStart = if (isRtl) sliderRight else sliderLeft
         val sliderEnd = if (isRtl) sliderLeft else sliderRight
-        val sliderValueOffset = Offset(
-            sliderStart.x + (sliderEnd.x - sliderStart.x) * positionFractionEnd,
-            center.y
+        val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * positionFractionEnd, center.y)
+        drawTrack(
+            waveLengthPx = waveLengthPx,
+            waveHeightAnimated = waveHeightAnimated,
+            wavePosition = wavePosition,
+            waveThicknessPx = waveThicknessPx,
+            trackThicknessPx = trackThicknessPx,
+            sliderValueOffset = sliderValueOffset,
+            sliderLeft = sliderLeft,
+            sliderRight = sliderRight,
+            sliderStart = sliderStart,
+            sliderEnd = sliderEnd,
+            shouldFlatten = shouldFlatten,
+            inactiveTrackColor = inactiveTrackColor.value,
+            activeTrackColor = activeTrackColor.value
         )
-        if (trackThickness != null && trackThickness > 0.dp) {
-            drawLine(
-                strokeWidth = trackThicknessPx,
-                color = inactiveTrackColor.value,
-                start = sliderValueOffset,
-                end = sliderEnd,
-                cap = StrokeCap.Round
-            )
-        }
-        val wave = Path().apply {
-            val startX = sliderStart.x + /* Two extra required padding waves at the start */ (2 * waveWidthPx) * if (isRtl) 1 else -1
-            val length = (sliderValueOffset.x - startX).absoluteValue + /* Two extra required padding waves at the end */ (2 * waveWidthPx)
-            val totalWaveCount = ceil(length / waveWidthPx).toInt()
-            val heightFactors = if (shouldFlatten) {
-                generateHeightFactors(totalWaveCount)
-            } else {
-                FloatArray(totalWaveCount)
-            }
-            moveTo(startX, center.y)
-            for (i in 0 until totalWaveCount) {
-                relativeCubicTo(
-                    /* Control 1: */ waveWidthPx / 2 * if (isRtl) -1 else 1, (waveHeightAnimated / 2) * if (shouldFlatten) heightFactors[i] else 1f,
-                    /* Control 2: */ waveWidthPx / 2 * if (isRtl) -1 else 1, (-waveHeightAnimated / 2) * if (shouldFlatten) heightFactors[i] else 1f,
-                    /* End point: */ waveWidthPx * if (isRtl) -1 else 1, 0f
-                )
-            }
-        }
-        // Could also have used .clipToBounds() on Canvas modifier
-        clipRect(
-            left = if (isRtl) sliderValueOffset.x else sliderLeft.x - (/* To match the size of material slider as it has round cap */ waveThicknessPx / 2),
-            right = if (isRtl) sliderRight.x + (/* To match the size of material slider as it has round cap */ waveThicknessPx / 2) else sliderValueOffset.x
-        ) {
-            translate(left = wavePosition) {
-                drawPath(
-                    path = wave,
-                    color = activeTrackColor.value,
-                    style = Stroke(waveThicknessPx)
-                )
-            }
-        }
     }
 }
 
