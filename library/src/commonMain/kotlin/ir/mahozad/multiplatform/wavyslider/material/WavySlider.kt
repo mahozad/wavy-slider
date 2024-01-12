@@ -357,18 +357,28 @@ private fun Track(
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
     val activeTrackColor = colors.trackColor(enabled, active = true)
-    val waveHeightAnimated by animateFloatAsState(waveHeight.value, tween(1000, easing = LinearEasing))
+    val waveWidthPx: Float
+    val waveHeightPx: Float
+    val waveThicknessPx: Float
+    val trackThicknessPx: Float
+    with(LocalDensity.current) {
+        waveWidthPx = waveWidth.toPx()
+        waveHeightPx = waveHeight.toPx()
+        waveThicknessPx = waveThickness.toPx()
+        trackThicknessPx = trackThickness?.toPx() ?: 0f
+    }
+    val waveHeightAnimated by animateFloatAsState(waveHeightPx, tween(1000, easing = LinearEasing))
     val wavePosition by rememberInfiniteTransition()
         .animateFloat(
             initialValue = 0f,
             targetValue = if (animationDirection == WaveAnimationDirection.LTR) {
-                waveWidth.value
+                waveWidthPx
             } else if (animationDirection == WaveAnimationDirection.RTL) {
-                -waveWidth.value
+                -waveWidthPx
             } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
-                waveWidth.value
+                waveWidthPx
             } else {
-                -waveWidth.value
+                -waveWidthPx
             },
             animationSpec = infiniteRepeatable(
                 animation = tween(durationMillis = 2000, easing = LinearEasing),
@@ -394,7 +404,7 @@ private fun Track(
         )
         if (trackThickness != null && trackThickness > 0.dp) {
             drawLine(
-                strokeWidth = trackThickness.value,
+                strokeWidth = trackThicknessPx,
                 color = inactiveTrackColor.value,
                 start = sliderValueOffset,
                 end = sliderEnd,
@@ -402,9 +412,9 @@ private fun Track(
             )
         }
         val wave = Path().apply {
-            val startX = sliderStart.x + /* One extra required wave at the start */ waveWidth.value * if (isRtl) 1 else -1
-            val length = (sliderValueOffset.x - startX).absoluteValue + /* One extra required wave at the end */ waveWidth.value
-            val totalWaveCount = ceil(length / waveWidth.value).toInt()
+            val startX = sliderStart.x + /* One extra required wave at the start */ waveWidthPx * if (isRtl) 1 else -1
+            val length = (sliderValueOffset.x - startX).absoluteValue + /* One extra required wave at the end */ waveWidthPx
+            val totalWaveCount = ceil(length / waveWidthPx).toInt()
             val heightFactors = if (shouldFlatten) {
                 generateHeightFactors(totalWaveCount)
             } else {
@@ -413,22 +423,22 @@ private fun Track(
             moveTo(startX, center.y)
             for (i in 0 until totalWaveCount) {
                 relativeCubicTo(
-                    /* Control 1: */ waveWidth.value / 2 * if (isRtl) -1 else 1, (waveHeightAnimated / 2) * if (shouldFlatten) heightFactors[i] else 1f,
-                    /* Control 2: */ waveWidth.value / 2 * if (isRtl) -1 else 1, (-waveHeightAnimated / 2) * if (shouldFlatten) heightFactors[i] else 1f,
-                    /* End point: */ waveWidth.value * if (isRtl) -1 else 1, 0f
+                    /* Control 1: */ waveWidthPx / 2 * if (isRtl) -1 else 1, (waveHeightAnimated / 2) * if (shouldFlatten) heightFactors[i] else 1f,
+                    /* Control 2: */ waveWidthPx / 2 * if (isRtl) -1 else 1, (-waveHeightAnimated / 2) * if (shouldFlatten) heightFactors[i] else 1f,
+                    /* End point: */ waveWidthPx * if (isRtl) -1 else 1, 0f
                 )
             }
         }
         // Could also have used .clipToBounds() on Canvas modifier
         clipRect(
-            left = if (isRtl) sliderValueOffset.x else sliderLeft.x - (/* To match the size of material slider as it has round cap */ waveThickness.value / 2),
-            right = if (isRtl) sliderRight.x + (/* To match the size of material slider as it has round cap */ waveThickness.value / 2) else sliderValueOffset.x
+            left = if (isRtl) sliderValueOffset.x else sliderLeft.x - (/* To match the size of material slider as it has round cap */ waveThicknessPx / 2),
+            right = if (isRtl) sliderRight.x + (/* To match the size of material slider as it has round cap */ waveThicknessPx / 2) else sliderValueOffset.x
         ) {
             translate(left = wavePosition) {
                 drawPath(
                     path = wave,
                     color = activeTrackColor.value,
-                    style = Stroke(waveThickness.value)
+                    style = Stroke(waveThicknessPx)
                 )
             }
         }

@@ -4,12 +4,6 @@ import android.view.KeyEvent.*
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.nativeKeyCode
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-
-internal actual val defaultTrackThickness: Dp = 8.dp
-
-internal actual val defaultWaveSize: Dp = 24.dp
 
 internal actual val KeyEvent.isDirectionUp: Boolean
     get() = key.nativeKeyCode == KEYCODE_DPAD_UP

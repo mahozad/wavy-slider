@@ -1,7 +1,7 @@
 package ir.mahozad.multiplatform.wavyslider
 
 import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 /**
  * The direction of wave movement.
@@ -24,9 +24,9 @@ enum class WaveAnimationDirection {
     UNSPECIFIED
 }
 
-internal expect val defaultTrackThickness: Dp
+internal val defaultTrackThickness = 4.dp
 
-internal expect val defaultWaveSize: Dp
+internal val defaultWaveSize = 16.dp
 
 internal expect val KeyEvent.isDirectionUp: Boolean
 
