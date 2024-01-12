@@ -2,6 +2,7 @@ package ir.mahozad.multiplatform.wavyslider
 
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.unit.dp
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * The direction of wave movement.
@@ -25,8 +26,9 @@ enum class WaveAnimationDirection {
 }
 
 internal val defaultTrackThickness = 4.dp
-
 internal val defaultWaveSize = 16.dp
+internal val defaultWavePeriod = 2.seconds
+internal val defaultWaveHeightChangeDuration = 1.seconds
 
 internal expect val KeyEvent.isDirectionUp: Boolean
 

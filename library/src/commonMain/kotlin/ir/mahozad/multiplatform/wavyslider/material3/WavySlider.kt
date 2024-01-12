@@ -486,7 +486,10 @@ object WavySliderDefaults {
             waveThicknessPx = waveThickness.toPx()
             trackThicknessPx = trackThickness?.toPx() ?: 0f
         }
-        val waveHeightAnimated by animateFloatAsState(waveHeightPx, tween(1000, easing = LinearEasing))
+        val waveHeightAnimated by animateFloatAsState(
+            waveHeightPx,
+            tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = LinearEasing)
+        )
         val wavePosition by rememberInfiniteTransition()
             .animateFloat(
                 initialValue = 0f,
@@ -500,7 +503,7 @@ object WavySliderDefaults {
                     -waveLengthPx
                 },
                 animationSpec = infiniteRepeatable(
-                    animation = tween(durationMillis = 2000, easing = LinearEasing),
+                    animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
                     repeatMode = RepeatMode.Restart
                 )
             )
