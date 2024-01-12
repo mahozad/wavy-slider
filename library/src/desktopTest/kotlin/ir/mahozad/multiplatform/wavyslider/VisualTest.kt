@@ -18,7 +18,9 @@ import androidx.compose.ui.window.application
 import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.LTR
 import org.junit.Ignore
 import org.junit.Test
+import androidx.compose.material.Slider as Slider2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
+import androidx.compose.material3.Slider as Slider3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
@@ -74,14 +76,22 @@ class VisualTest {
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(16.dp)
                     ) {
+                        var value by remember { mutableStateOf(0.5f) }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Slider 2:", modifier = Modifier.width(110.dp))
+                            Slider2(value, onValueChange = { value = it })
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Slider 3:", modifier = Modifier.width(110.dp))
+                            Slider3(value, onValueChange = { value = it })
+                        }
                         content?.invoke(this@Column) ?: run {
-                            var value by remember { mutableStateOf(0.5f) }
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Material 2:")
+                                Text(text = "Wavy slider 2:", modifier = Modifier.width(110.dp))
                                 wavySlider2?.invoke(this@Column, value) { value = it }
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Material 3:")
+                                Text(text = "Wavy slider 3:", modifier = Modifier.width(110.dp))
                                 wavySlider3?.invoke(this@Column, value) { value = it }
                             }
                         }
@@ -164,10 +174,10 @@ class VisualTest {
             given = "Wave height set to more than thumb height",
             expected = "Should take into account the height of wave in component overall height",
             wavySlider2 = { value, onChange ->
-                WavySlider2(value, onChange, waveHeight = 172.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider2(value, onChange, waveHeight = 120.dp, modifier = Modifier.border(1.dp, Color.Gray))
             },
             wavySlider3 = { value, onChange ->
-                WavySlider3(value, onChange, waveHeight = 172.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider3(value, onChange, waveHeight = 120.dp, modifier = Modifier.border(1.dp, Color.Gray))
             }
         )
         assert(isPassed)
