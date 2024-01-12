@@ -11,7 +11,7 @@ import kotlin.math.abs
  * [0f, 0f, 0.25f, 0.5f, 0.75f, 1f, 1f]
  * ```
  *
- * Note that the first wave and the last wave are extra but required
+ * Note that the first two waves and the last two waves are extra but required
  * which will be taken advantage of in edge slider values.
  */
 internal fun generateHeightFactors(count: Int) = FloatArray(count) {

@@ -534,8 +534,8 @@ object WavySliderDefaults {
                 )
             }
             val wave = Path().apply {
-                val startX = sliderStart.x + /* One extra required wave at the start */ waveLengthPx * if (isRtl) 1 else -1
-                val length = (sliderValueOffset.x - startX).absoluteValue + /* One extra required wave at the end */ waveLengthPx
+                val startX = sliderStart.x + /* Two extra required padding waves at the start */ (2 * waveLengthPx) * if (isRtl) 1 else -1
+                val length = (sliderValueOffset.x - startX).absoluteValue + /* Two extra required padding waves at the end */ (2 * waveLengthPx)
                 val totalWaveCount = ceil(length / waveLengthPx).toInt()
                 val heightFactors = if (shouldFlatten) {
                     generateHeightFactors(totalWaveCount)

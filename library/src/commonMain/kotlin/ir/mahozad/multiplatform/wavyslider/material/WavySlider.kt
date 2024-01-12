@@ -415,8 +415,8 @@ private fun Track(
             )
         }
         val wave = Path().apply {
-            val startX = sliderStart.x + /* One extra required wave at the start */ waveWidthPx * if (isRtl) 1 else -1
-            val length = (sliderValueOffset.x - startX).absoluteValue + /* One extra required wave at the end */ waveWidthPx
+            val startX = sliderStart.x + /* Two extra required padding waves at the start */ (2 * waveWidthPx) * if (isRtl) 1 else -1
+            val length = (sliderValueOffset.x - startX).absoluteValue + /* Two extra required padding waves at the end */ (2 * waveWidthPx)
             val totalWaveCount = ceil(length / waveWidthPx).toInt()
             val heightFactors = if (shouldFlatten) {
                 generateHeightFactors(totalWaveCount)

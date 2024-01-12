@@ -437,4 +437,17 @@ class VisualTest {
         }
         assert(isPassed)
     }
+
+    @Test
+    fun `Test 23`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "LTR animation",
+            expected = "The wave start (tail of the slider) should be long enough all the time\n" +
+                       "(keep looking at the slider start for a few seconds and ensure the tail does not shrink)",
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = 0.dp, animationDirection = LTR) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = 0.dp, animationDirection = LTR) }
+        )
+        assert(isPassed)
+    }
 }
