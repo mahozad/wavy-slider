@@ -478,4 +478,40 @@ class VisualTest {
         }
         assert(isPassed)
     }
+
+    @Test
+    fun `Test 25`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "A wave length larger than slider total length",
+            expected = "The wave should be displayed properly",
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, modifier = Modifier.width(400.dp), waveHeight = 24.dp, waveLength = 500.dp) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, modifier = Modifier.width(400.dp), waveHeight = 24.dp, waveLength = 500.dp) }
+        )
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 26`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When the width of the container of the component is changed",
+            expected = "Should not have its wave animation restart (should smoothly continue its animation)"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var containerWidth by remember { mutableStateOf(500.dp) }
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(containerWidth)) {
+                Text(text = "Material 2:")
+                WavySlider2(value = value, onValueChange = { value = it })
+            }
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(containerWidth)) {
+                Text(text = "Material 3:")
+                WavySlider3(value = value, onValueChange = { value = it })
+            }
+            Button(onClick = { containerWidth = if (containerWidth == 500.dp) 200.dp else 500.dp }) {
+                Text(text = "Toggle container width")
+            }
+        }
+        assert(isPassed)
+    }
 }
