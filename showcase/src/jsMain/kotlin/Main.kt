@@ -425,11 +425,16 @@ fun Code(
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(")") }
     }
-    Text(
-        text = code,
-        fontFamily = FontFamily.Monospace,
-        modifier = modifier
-    )
+
+    // FIXME: Does not work yet; see https://github.com/JetBrains/compose-multiplatform/issues/4103
+    // Makes it possible for user to select the code (for copy/paste)
+    // SelectionContainer {
+        Text(
+            text = code,
+            fontFamily = FontFamily.Monospace,
+            modifier = modifier
+        )
+    // }
 }
 
 @OptIn(ExperimentalResourceApi::class)
