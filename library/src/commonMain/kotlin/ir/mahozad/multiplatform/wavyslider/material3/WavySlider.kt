@@ -470,8 +470,6 @@ object WavySliderDefaults {
         animationDirection: WaveAnimationDirection,
         shouldFlatten: Boolean
     ) {
-        require(waveLength > 0.dp)
-
         val inactiveTrackColor = colors.trackColor(enabled, active = false)
         val activeTrackColor = colors.trackColor(enabled, active = true)
         val waveLengthPx: Float
@@ -479,7 +477,7 @@ object WavySliderDefaults {
         val waveThicknessPx: Float
         val trackThicknessPx: Float
         with(LocalDensity.current) {
-            waveLengthPx = waveLength.toPx()
+            waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
             waveHeightPx = waveHeight.toPx()
             waveThicknessPx = waveThickness.toPx()
             trackThicknessPx = trackThickness?.toPx() ?: 0f

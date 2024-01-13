@@ -219,7 +219,6 @@ class VisualTest {
         assert(isPassed)
     }
 
-    @Ignore("FIXME")
     @Test
     fun `Test 9`() {
         val isPassed = testApp(
@@ -232,13 +231,12 @@ class VisualTest {
         assert(isPassed)
     }
 
-    @Ignore("FIXME")
     @Test
     fun `Test 10`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Wave length set to a negative value",
-            expected = "Should have the same behaviour as if the size was positive",
+            expected = "Should have the same behaviour as if the size was 0",
             wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveLength = (-48).dp) },
             wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveLength = (-48).dp) }
         )

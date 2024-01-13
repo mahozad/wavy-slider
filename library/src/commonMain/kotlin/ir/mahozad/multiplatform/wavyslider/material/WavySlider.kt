@@ -34,15 +34,14 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.ranges.coerceAtLeast
 
 // TODO: Add wave velocity property (speed + direction)
 // TODO: Add ability to stop the wave animation manually with a boolean property
@@ -103,7 +102,6 @@ fun WavySlider(
     animationDirection: WaveAnimationDirection = WaveAnimationDirection.UNSPECIFIED,
     shouldFlatten: Boolean = false
 ) {
-    require(waveLength > 0.dp)
     // TODO: Add valueRange (and steps if it makes sense) to the parameters for feature-parity with Slider
 
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
@@ -358,7 +356,7 @@ private fun Track(
     val waveThicknessPx: Float
     val trackThicknessPx: Float
     with(LocalDensity.current) {
-        waveLengthPx = waveLength.toPx()
+        waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
         waveHeightPx = waveHeight.toPx()
         waveThicknessPx = waveThickness.toPx()
         trackThicknessPx = trackThickness?.toPx() ?: 0f
