@@ -83,10 +83,8 @@ internal fun DrawScope.drawTrack(
         )
     }
     val wave = Path().apply {
-        val startX =
-            sliderStart.x + /* Two extra required padding waves at the start */ (2 * waveLengthPx) * if (isRtl) 1 else -1
-        val length =
-            (sliderValueOffset.x - startX).absoluteValue + /* Two extra required padding waves at the end */ (2 * waveLengthPx)
+        val startX = sliderStart.x + /* Two extra required padding waves at the start */ (2 * waveLengthPx) * if (isRtl) 1 else -1
+        val length = (sliderValueOffset.x - startX).absoluteValue + /* Two extra required padding waves at the end */ (2 * waveLengthPx)
         val totalWaveCount = if (waveLengthPx == 0f) 0 else ceil(length / waveLengthPx).toInt()
         val heightFactors = if (shouldFlatten) {
             generateHeightFactors(totalWaveCount)
@@ -95,7 +93,7 @@ internal fun DrawScope.drawTrack(
         }
         moveTo(startX, center.y)
         if (totalWaveCount == 0) lineTo(sliderValueOffset.x, center.y)
-        for (i in 0 until totalWaveCount) {
+        for (i in 0 ..< totalWaveCount) {
             relativeCubicTo(
                 /* Control 1: */ waveLengthPx / 2 * if (isRtl) -1 else 1,
                 (waveHeightAnimated / 2) * if (shouldFlatten) heightFactors[i] else 1f,
