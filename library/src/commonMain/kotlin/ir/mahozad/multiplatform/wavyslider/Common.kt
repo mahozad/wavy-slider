@@ -82,6 +82,7 @@ internal fun DrawScope.drawTrack(
             cap = StrokeCap.Round
         )
     }
+    if (waveThicknessPx <= 0f) return
     val wave = Path().apply {
         val startX = sliderStart.x + /* Two extra required padding waves at the start */ (2 * waveLengthPx) * if (isRtl) 1 else -1
         val length = (sliderValueOffset.x - startX).absoluteValue + /* Two extra required padding waves at the end */ (2 * waveLengthPx)

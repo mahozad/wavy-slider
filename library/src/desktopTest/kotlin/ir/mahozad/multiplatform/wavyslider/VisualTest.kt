@@ -172,12 +172,13 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Wave height set to more than thumb height",
-            expected = "Should take into account the height of wave in component overall height",
+            expected = "Should take into account the height of wave in component overall height\n" +
+                       "Also, the component overall height should be exactly equal to the wave height",
             wavySlider2 = { value, onChange ->
-                WavySlider2(value, onChange, waveHeight = 120.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider2(value, onChange, waveHeight = 100.dp, modifier = Modifier.border(1.dp, Color.Gray))
             },
             wavySlider3 = { value, onChange ->
-                WavySlider3(value, onChange, waveHeight = 120.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider3(value, onChange, waveHeight = 100.dp, modifier = Modifier.border(1.dp, Color.Gray))
             }
         )
         assert(isPassed)
@@ -255,7 +256,6 @@ class VisualTest {
         assert(isPassed)
     }
 
-    @Ignore("FIXME")
     @Test
     fun `Test 12`() {
         val isPassed = testApp(
@@ -268,7 +268,6 @@ class VisualTest {
         assert(isPassed)
     }
 
-    @Ignore("FIXME")
     @Test
     fun `Test 13`() {
         val isPassed = testApp(
@@ -508,6 +507,30 @@ class VisualTest {
             }
             Button(onClick = { containerWidth = if (containerWidth == 500.dp) 200.dp else 500.dp }) {
                 Text(text = "Toggle container width")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 27`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "waveThickness" is toggled between 0 and a positive value""",
+            expected = "Should not have its wave animation restart (should smoothly continue its animation)"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var waveThickness by remember { mutableStateOf(4.dp) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(value = value, onValueChange = { value = it }, waveThickness = waveThickness)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value = value, onValueChange = { value = it }, waveThickness = waveThickness)
+            }
+            Button(onClick = { waveThickness = if (waveThickness == 4.dp) 0.dp else 4.dp }) {
+                Text(text = "Toggle waveThickness")
             }
         }
         assert(isPassed)
