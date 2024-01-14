@@ -166,7 +166,9 @@ class VisualTest {
         assert(isPassed)
     }
 
-    // FIXME
+    // FIXME: The rendered wave height does not correspond exactly to the specified wave height (it's a little bit smaller)
+    //  because it is a bezier curve and the curve height is not exactly equal to the y-coordinate of the control point
+    //  So, should place the control points a little bit farther than the specified wave height (maybe there is a formula for that?)
     @Test
     fun `Test 5`() {
         val isPassed = testApp(
@@ -175,10 +177,10 @@ class VisualTest {
             expected = "Should take into account the height of wave in component overall height\n" +
                        "Also, the component overall height should be exactly equal to the wave height",
             wavySlider2 = { value, onChange ->
-                WavySlider2(value, onChange, waveHeight = 100.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider2(value, onChange, waveHeight = 150.dp, modifier = Modifier.border(1.dp, Color.Gray))
             },
             wavySlider3 = { value, onChange ->
-                WavySlider3(value, onChange, waveHeight = 100.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider3(value, onChange, waveHeight = 150.dp, modifier = Modifier.border(1.dp, Color.Gray))
             }
         )
         assert(isPassed)

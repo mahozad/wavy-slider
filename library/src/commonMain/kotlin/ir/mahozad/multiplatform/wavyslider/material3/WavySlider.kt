@@ -506,10 +506,7 @@ object WavySliderDefaults {
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                // To take into account the wave height in component overall height,
-                // and to prevent the extremes of the wave from being partially clipped,
-                // and to make sure proper component layout when waveHeight is 0.dp
-                .height(waveHeight.coerceAtLeast(48.dp))
+                .height(max(waveHeight / 2, ThumbSize.height))
         ) {
             val isRtl = layoutDirection == LayoutDirection.Rtl
             val sliderLeft = Offset(0f, center.y)

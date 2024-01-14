@@ -34,14 +34,16 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.ranges.coerceAtLeast
 
 // TODO: Add wave velocity property (speed + direction)
 // TODO: Add ability to stop the wave animation manually with a boolean property
@@ -385,10 +387,7 @@ private fun Track(
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            // To take into account the wave height in component overall height,
-            // and to prevent the extremes of the wave from being partially clipped,
-            // and to make sure proper component layout when waveHeight is 0.dp
-            .height(waveHeight.coerceAtLeast(48.dp))
+            .height(max(waveHeight / 2, /*thumbSize*/ThumbRadius * 2))
     ) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)
