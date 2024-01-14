@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -39,7 +40,7 @@ enum class WaveAnimationDirection {
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveSize = 16.dp
 internal val defaultWavePeriod = 2.seconds
-internal val defaultWaveHeightChangeDuration = 1.seconds
+internal val defaultWaveHeightChangeDuration = 300.milliseconds
 
 internal expect val KeyEvent.isDirectionUp: Boolean
 
