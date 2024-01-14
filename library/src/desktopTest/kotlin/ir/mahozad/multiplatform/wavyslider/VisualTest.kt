@@ -203,7 +203,8 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Wave height set to negative value",
-            expected = "Should have the same behaviour as if the size was positive",
+            expected = "Should have the same behaviour as if the size was positive\n" +
+                       "Except that the phase is shifted",
             wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = (-48).dp) },
             wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = (-48).dp) }
         )
