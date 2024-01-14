@@ -16,7 +16,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.LTR
-import org.junit.Ignore
+import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.UNSPECIFIED
 import org.junit.Test
 import androidx.compose.material.Slider as Slider2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
@@ -533,6 +533,50 @@ class VisualTest {
             }
             Button(onClick = { waveThickness = if (waveThickness == 4.dp) 0.dp else 4.dp }) {
                 Text(text = "Toggle waveThickness")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 28`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When layout direction is LTR and the "animationDirection" is set to "unspecified"""",
+            expected = "Should animate from right to left"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 29`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When layout direction is RTL and the "animationDirection" is set to "unspecified"""",
+            expected = "Should animate from left to right"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                }
             }
         }
         assert(isPassed)
