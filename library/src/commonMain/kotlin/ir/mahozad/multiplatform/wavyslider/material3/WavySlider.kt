@@ -3,12 +3,12 @@ package ir.mahozad.multiplatform.wavyslider.material3
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
-import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.MutatorMutex
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.MutatorMutex
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -33,13 +33,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
-import ir.mahozad.multiplatform.wavyslider.lerp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 private val ThumbWidth = WavySliderTokens.HandleWidth
 private val ThumbHeight = WavySliderTokens.HandleHeight
@@ -126,7 +122,7 @@ fun WavySlider(
  * for this WavySlider. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the appearance / behavior of this WavySlider in different states.
  * @param waveLength the distance over which the wave's shape repeats (must be > 0.dp)
- * @param waveHeight the total height of the wave (from crest to trough) (in other words, amplitude * 2)
+ * @param waveHeight the total height of the wave (from crest to trough) (in other words, amplitude * 2) (ignoring the [waveThickness])
  * @param waveThickness the thickness of the active line (whether animated or not)
  * @param trackThickness the thickness of the inactive line
  * @param animationDirection the direction of wave movement which is, by default,
@@ -476,37 +472,40 @@ object WavySliderDefaults {
         val waveHeightPx: Float
         val waveThicknessPx: Float
         val trackThicknessPx: Float
-        with(LocalDensity.current) {
+        val density = LocalDensity.current
+        with(density) {
             waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
-            waveHeightPx = waveHeight.toPx()
+            waveHeightPx = waveHeight.toPx().absoluteValue
             waveThicknessPx = waveThickness.toPx()
             trackThicknessPx = trackThickness?.toPx() ?: 0f
         }
-        val waveHeightAnimated by animateFloatAsState(
+        val waveHeightPxAnimated by animateFloatAsState(
             waveHeightPx,
+            // TODO: Change easing to FastOutSlowInEasing or similar
             tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = LinearEasing)
         )
-        val wavePosition by rememberInfiniteTransition()
-            .animateFloat(
-                initialValue = 0f,
-                targetValue = if (animationDirection == WaveAnimationDirection.LTR) {
-                    waveLengthPx
-                } else if (animationDirection == WaveAnimationDirection.RTL) {
-                    -waveLengthPx
-                } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
-                    waveLengthPx
-                } else {
-                    -waveLengthPx
-                },
-                animationSpec = infiniteRepeatable(
-                    animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
-                    repeatMode = RepeatMode.Restart
-                )
-            )
+
+        val delta = if (animationDirection == WaveAnimationDirection.LTR) {
+            -waveLengthPx
+        } else if (animationDirection == WaveAnimationDirection.RTL) {
+            waveLengthPx
+        } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
+            -waveLengthPx
+        } else {
+            waveLengthPx
+        }
+        var phaseShiftPx by remember { mutableFloatStateOf(0f) }
+        val phaseShiftPxAnimated by animateFloatAsState(
+            targetValue = phaseShiftPx,
+            animationSpec = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
+            finishedListener = { phaseShiftPx += delta }
+        )
+        LaunchedEffect(Unit) { phaseShiftPx = delta }
+
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(max(waveHeight / 2, ThumbSize.height))
+                .height(max(with(density) { waveHeightPxAnimated.toDp() }, ThumbSize.height))
         ) {
             val isRtl = layoutDirection == LayoutDirection.Rtl
             val sliderLeft = Offset(0f, center.y)
@@ -516,16 +515,15 @@ object WavySliderDefaults {
             val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderPositions.activeRange.endInclusive, center.y)
             drawTrack(
                 waveLengthPx = waveLengthPx,
-                waveHeightAnimated = waveHeightAnimated,
-                wavePosition = wavePosition,
+                waveHeightPx = waveHeightPxAnimated,
+                phaseShiftPx = phaseShiftPxAnimated,
                 waveThicknessPx = waveThicknessPx,
                 trackThicknessPx = trackThicknessPx,
                 sliderValueOffset = sliderValueOffset,
-                sliderLeft = sliderLeft,
-                sliderRight = sliderRight,
                 sliderStart = sliderStart,
                 sliderEnd = sliderEnd,
                 shouldFlatten = shouldFlatten,
+                componentHeightPx = size.height,
                 inactiveTrackColor = inactiveTrackColor.value,
                 activeTrackColor = activeTrackColor.value
             )
