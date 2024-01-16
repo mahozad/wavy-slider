@@ -180,10 +180,10 @@ class VisualTest {
             expected = "Should take into account the height of wave in component overall height\n" +
                        "Also, the component overall height should be exactly equal to the wave height",
             wavySlider2 = { value, onChange ->
-                WavySlider2(value, onChange, waveHeight = 150.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider2(value, onChange, waveHeight = 57.dp, modifier = Modifier.border(1.dp, Color.Gray))
             },
             wavySlider3 = { value, onChange ->
-                WavySlider3(value, onChange, waveHeight = 150.dp, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider3(value, onChange, waveHeight = 57.dp, modifier = Modifier.border(1.dp, Color.Gray))
             }
         )
         assert(isPassed)
