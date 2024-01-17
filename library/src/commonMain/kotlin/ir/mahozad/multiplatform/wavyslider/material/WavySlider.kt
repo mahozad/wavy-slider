@@ -1,8 +1,6 @@
 package ir.mahozad.multiplatform.wavyslider.material
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.interaction.DragInteraction
@@ -377,13 +375,14 @@ private fun Track(
     } else {
         waveLengthPx
     }
-    var phaseShiftPx by remember { mutableFloatStateOf(0f) }
-    val phaseShiftPxAnimated by animateFloatAsState(
-        targetValue = phaseShiftPx,
-        animationSpec = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
-        finishedListener = { phaseShiftPx += delta }
+    val phaseShiftPxAnimated by rememberInfiniteTransition().animateFloat(
+        initialValue = 0f,
+        targetValue = delta,
+        animationSpec = infiniteRepeatable(
+            animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
     )
-    LaunchedEffect(Unit) { phaseShiftPx = delta }
 
     Canvas(
         modifier = Modifier

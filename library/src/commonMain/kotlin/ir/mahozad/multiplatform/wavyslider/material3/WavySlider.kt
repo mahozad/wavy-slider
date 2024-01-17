@@ -494,13 +494,14 @@ object WavySliderDefaults {
         } else {
             waveLengthPx
         }
-        var phaseShiftPx by remember { mutableFloatStateOf(0f) }
-        val phaseShiftPxAnimated by animateFloatAsState(
-            targetValue = phaseShiftPx,
-            animationSpec = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
-            finishedListener = { phaseShiftPx += delta }
+        val phaseShiftPxAnimated by rememberInfiniteTransition().animateFloat(
+            initialValue = 0f,
+            targetValue = delta,
+            animationSpec = infiniteRepeatable(
+                animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            )
         )
-        LaunchedEffect(Unit) { phaseShiftPx = delta }
 
         Canvas(
             modifier = Modifier
