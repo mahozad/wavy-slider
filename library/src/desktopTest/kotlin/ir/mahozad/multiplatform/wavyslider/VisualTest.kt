@@ -58,7 +58,8 @@ class VisualTest {
     private fun testApp(
         name: String,
         given: String,
-        expected: String,
+        expected: String? = null,
+        showRegularSliders: Boolean = true,
         wavySlider2: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
         wavySlider3: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
         content: (@Composable ColumnScope.() -> Unit)? = null
@@ -77,13 +78,15 @@ class VisualTest {
                         modifier = Modifier.padding(16.dp)
                     ) {
                         var value by remember { mutableStateOf(0.5f) }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "Slider 2:", modifier = Modifier.width(110.dp))
-                            Slider2(value, onValueChange = { value = it })
-                        }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "Slider 3:", modifier = Modifier.width(110.dp))
-                            Slider3(value, onValueChange = { value = it })
+                        if (showRegularSliders) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "Slider 2:", modifier = Modifier.width(110.dp))
+                                Slider2(value, onValueChange = { value = it })
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "Slider 3:", modifier = Modifier.width(110.dp))
+                                Slider3(value, onValueChange = { value = it })
+                            }
                         }
                         content?.invoke(this@Column) ?: run {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -96,7 +99,7 @@ class VisualTest {
                             }
                         }
                         Text(text = given)
-                        Text(text = expected)
+                        expected?.let { Text(text = it) }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedButton(
                                 onClick = { passed = false; exitApplication() },
@@ -323,7 +326,7 @@ class VisualTest {
     fun `Test 17`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "Track thickness set to a null",
+            given = "Track thickness set to null",
             expected = "Should have the same behaviour as if the thickness was 0",
             wavySlider2 = { value, onChange -> WavySlider2(value, onChange, trackThickness = null) },
             wavySlider3 = { value, onChange -> WavySlider3(value, onChange, trackThickness = null) }
@@ -469,7 +472,7 @@ class VisualTest {
         ) {
             var value by remember { mutableStateOf(0.5f) }
             val thumb: @Composable (SliderPositions) -> Unit = @Composable {
-                Box(Modifier.width(10.dp).height(128.dp).background(Color.Red))
+                Box(Modifier.width(6.dp).height(128.dp).background(Color.Red))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
@@ -543,7 +546,7 @@ class VisualTest {
     fun `Test 28`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When layout direction is LTR and the "animationDirection" is set to "unspecified"""",
+            given = """When container layout direction is LTR and the "animationDirection" is set to "unspecified"""",
             expected = "Should animate from right to left"
         ) {
             var value by remember { mutableStateOf(0.5f) }
@@ -565,7 +568,7 @@ class VisualTest {
     fun `Test 29`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When layout direction is RTL and the "animationDirection" is set to "unspecified"""",
+            given = """When container layout direction is RTL and the "animationDirection" is set to "unspecified"""",
             expected = "Should animate from left to right"
         ) {
             var value by remember { mutableStateOf(0.5f) }
@@ -577,6 +580,60 @@ class VisualTest {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
                     WavySlider3(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 30`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "Many wavy sliders",
+            showRegularSliders = false
+        ) {
+            var value by remember { mutableStateOf(1f) }
+            repeat(10) { row ->
+                Row {
+                    repeat(3) { column ->
+                        WavySlider2(
+                            value = value,
+                            onValueChange = { value = it },
+                            waveLength = 10.dp + (row + column).dp,
+                            shouldFlatten = (row + column) % 2 == 0,
+                            modifier = Modifier.width(125.dp).height(28.dp)
+                        )
+                        WavySlider3(
+                            value = value,
+                            onValueChange = { value = it },
+                            waveLength = 10.dp + (row + column).dp,
+                            shouldFlatten = (row + column) % 2 == 0,
+                            modifier = Modifier.width(125.dp).height(28.dp)
+                        )
+                    }
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 31`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When container layout direction set to RTL and the "shouldFlatten" is set to "true"""",
+            expected = "Should be flattened properly (from the thumb with most height to the tail with least height"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value = value, onValueChange = { value = it }, shouldFlatten = true)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value = value, onValueChange = { value = it }, shouldFlatten = true)
                 }
             }
         }
