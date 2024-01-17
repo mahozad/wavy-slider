@@ -481,8 +481,7 @@ object WavySliderDefaults {
         }
         val waveHeightPxAnimated by animateFloatAsState(
             waveHeightPx,
-            // TODO: Change easing to FastOutSlowInEasing or similar
-            tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = LinearEasing)
+            tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
         )
 
         val delta = if (animationDirection == WaveAnimationDirection.LTR) {
