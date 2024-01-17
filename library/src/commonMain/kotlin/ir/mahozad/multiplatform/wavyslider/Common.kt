@@ -43,19 +43,12 @@ internal val defaultWavePeriod = 2.seconds
 internal val defaultWaveHeightChangeDuration = 300.milliseconds
 
 internal expect val KeyEvent.isDirectionUp: Boolean
-
 internal expect val KeyEvent.isDirectionDown: Boolean
-
 internal expect val KeyEvent.isDirectionRight: Boolean
-
 internal expect val KeyEvent.isDirectionLeft: Boolean
-
 internal expect val KeyEvent.isHome: Boolean
-
 internal expect val KeyEvent.isMoveEnd: Boolean
-
 internal expect val KeyEvent.isPgUp: Boolean
-
 internal expect val KeyEvent.isPgDn: Boolean
 
 internal fun DrawScope.drawTrack(
