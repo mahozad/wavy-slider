@@ -404,7 +404,6 @@ private fun Track(
             sliderStart = sliderStart,
             sliderEnd = sliderEnd,
             shouldFlatten = shouldFlatten,
-            componentHeightPx = size.height,
             inactiveTrackColor = inactiveTrackColor.value,
             activeTrackColor = activeTrackColor.value
         )

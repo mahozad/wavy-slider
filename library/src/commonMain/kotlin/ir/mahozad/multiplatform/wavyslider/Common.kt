@@ -59,7 +59,6 @@ internal fun DrawScope.drawTrack(
     waveHeightPx: Float,
     waveThicknessPx: Float,
     trackThicknessPx: Float,
-    componentHeightPx: Float,
     phaseShiftPx: Float,
     shouldFlatten: Boolean,
     inactiveTrackColor: Color,
@@ -71,7 +70,6 @@ internal fun DrawScope.drawTrack(
         waveLengthPx = waveLengthPx,
         waveHeightPx = waveHeightPx,
         waveThicknessPx = waveThicknessPx,
-        componentHeightPx = componentHeightPx,
         phaseShiftPx = phaseShiftPx,
         shouldFlatten = shouldFlatten,
         color = activeTrackColor
@@ -106,7 +104,6 @@ private inline fun DrawScope.drawTrackActivePart(
     waveLengthPx: Float,
     waveHeightPx: Float,
     waveThicknessPx: Float,
-    componentHeightPx: Float,
     phaseShiftPx: Float,
     shouldFlatten: Boolean,
     color: Color
@@ -118,14 +115,10 @@ private inline fun DrawScope.drawTrackActivePart(
             lineTo(valueOffset.x, center.y)
             return@apply
         }
-        val heightFactor = if (shouldFlatten) 0f else 1f
-        val rad = (startOffset.x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
-        val y = if (waveHeightPx == 0f) {
-            center.y
-        } else {
-            (sin(rad) * heightFactor * (waveHeightPx / 2)) + (componentHeightPx / 2)
-        }
-        moveTo(startOffset.x, y.toFloat())
+        val startHeightFactor = if (shouldFlatten) 0f else 1f
+        val startRadians = (startOffset.x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
+        val startY = (sin(startRadians) * startHeightFactor * (waveHeightPx / 2)) + (size.height / 2)
+        moveTo(startOffset.x, startY.toFloat())
         val range = if (layoutDirection == LayoutDirection.Rtl) {
             startOffset.x.toInt() downTo valueOffset.x.toInt()
         } else {
@@ -133,12 +126,8 @@ private inline fun DrawScope.drawTrackActivePart(
         }
         for (x in range) {
             val heightFactor = if (shouldFlatten) (x - range.first).toFloat() / (range.last - range.first) else 1f
-            val rad = (x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
-            val y = if (waveHeightPx == 0f) {
-                center.y
-            } else {
-                (sin(rad) * heightFactor * (waveHeightPx / 2)) + (componentHeightPx / 2)
-            }
+            val radians = (x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
+            val y = (sin(radians) * heightFactor * (waveHeightPx / 2)) + (size.height / 2)
             lineTo(x.toFloat(), y.toFloat())
         }
     }
