@@ -37,7 +37,8 @@ enum class WaveAnimationDirection {
 }
 
 internal val defaultTrackThickness = 4.dp
-internal val defaultWaveSize = 16.dp
+internal val defaultWaveLength = 20.dp
+internal val defaultWaveHeight = 6.dp
 internal val defaultWavePeriod = 2.seconds
 internal val defaultWaveHeightChangeDuration = 300.milliseconds
 

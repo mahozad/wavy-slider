@@ -58,8 +58,8 @@ fun WavySlider(
     /////////////////
     /////////////////
     /////////////////
-    waveLength: Dp = defaultWaveSize,
-    waveHeight: Dp = defaultWaveSize,
+    waveLength: Dp = defaultWaveLength,
+    waveHeight: Dp = defaultWaveHeight,
     waveThickness: Dp = defaultTrackThickness,
     trackThickness: Dp? = defaultTrackThickness,
     animationDirection: WaveAnimationDirection = WaveAnimationDirection.UNSPECIFIED,
@@ -147,8 +147,8 @@ fun WavySlider(
     /////////////////
     /////////////////
     /////////////////
-    waveLength: Dp = defaultWaveSize,
-    waveHeight: Dp = defaultWaveSize,
+    waveLength: Dp = defaultWaveLength,
+    waveHeight: Dp = defaultWaveHeight,
     waveThickness: Dp = defaultTrackThickness,
     trackThickness: Dp? = defaultTrackThickness,
     animationDirection: WaveAnimationDirection = WaveAnimationDirection.UNSPECIFIED,

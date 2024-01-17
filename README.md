@@ -74,7 +74,7 @@ fun MyComposable() {
     var fraction by remember { mutableStateOf(0.5f) }
     WavySlider(
         value = fraction,
-        waveLength = 16.dp,    // Defaults to 16.dp
+        waveLength = 16.dp,    // Defaults to 20.dp
         waveHeight = 16.dp,    // Set this to 0.dp to get a regular Slider
         shouldFlatten = false, // Defaults to false
         waveThickness = 4.dp,  // Defaults to the track thickness
