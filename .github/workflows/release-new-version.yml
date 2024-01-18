@@ -41,7 +41,7 @@ jobs:
           -Psigning.keyId="$SIGNING_KEY_ID"
           --stacktrace
       - name: Release to GitHub Packages
-        if: steps.release-local.outcome == 'success'
+        if: always() && steps.release-local.outcome == 'success'
         run: >
           ./gradlew publishAllPublicationsToGitHubPackagesRepository
           -Psigning.secretKeyRingFile="../private-key.gpg"
@@ -49,7 +49,7 @@ jobs:
           -Psigning.keyId="$SIGNING_KEY_ID"
           --stacktrace
       - name: Release to Maven Central
-        if: steps.release-local.outcome == 'success'
+        if: always() && steps.release-local.outcome == 'success'
         run: >
           ./gradlew publishAllPublicationsToMavenCentralRepository
           -Psigning.secretKeyRingFile="../private-key.gpg"
