@@ -442,7 +442,7 @@ class VisualTest {
                 Text(text = "Material 3:")
                 WavySlider3(value = value, onValueChange = { value = it }, waveHeight = waveHeight)
             }
-            Button(onClick = { waveHeight = if (waveHeight == 16.dp) 48.dp else 16.dp }) {
+            Button(onClick = { waveHeight = if (waveHeight == 16.dp) 44.dp else 16.dp }) {
                 Text(text = "Toggle waveHeight")
             }
         }

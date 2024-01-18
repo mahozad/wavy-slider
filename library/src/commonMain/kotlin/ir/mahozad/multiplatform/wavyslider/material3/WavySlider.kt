@@ -505,7 +505,7 @@ object WavySliderDefaults {
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(max(with(density) { waveHeightPxAnimated.toDp() }, ThumbSize.height))
+                .height(max(with(density) { waveHeightPxAnimated.toDp() + waveThickness }, ThumbSize.height))
         ) {
             val isRtl = layoutDirection == LayoutDirection.Rtl
             val sliderLeft = Offset(0f, center.y)

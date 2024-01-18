@@ -386,7 +386,7 @@ private fun Track(
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(max(with(density) { waveHeightPxAnimated.toDp() }, /*thumbSize*/ThumbRadius * 2))
+            .height(max(with(density) { waveHeightPxAnimated.toDp() + waveThickness }, /*thumbSize*/ThumbRadius * 2))
     ) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)
