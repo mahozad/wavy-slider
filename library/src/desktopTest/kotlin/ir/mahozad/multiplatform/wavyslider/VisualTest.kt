@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -60,6 +61,7 @@ class VisualTest {
         given: String,
         expected: String? = null,
         showRegularSliders: Boolean = true,
+        windowSize: DpSize = DpSize(800.dp, 600.dp),
         wavySlider2: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
         wavySlider3: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
         content: (@Composable ColumnScope.() -> Unit)? = null
@@ -68,7 +70,7 @@ class VisualTest {
         application(exitProcessOnExit = false) {
             Window(
                 title = name,
-                state = WindowState(position = WindowPosition(Alignment.Center)),
+                state = WindowState(size = windowSize, position = WindowPosition(Alignment.Center)),
                 resizable = false,
                 onCloseRequest = ::exitApplication
             ) {
@@ -591,10 +593,12 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Many wavy sliders",
-            showRegularSliders = false
+            showRegularSliders = false,
+            windowSize = DpSize(800.dp, 800.dp)
         ) {
             var value by remember { mutableStateOf(1f) }
-            repeat(10) { row ->
+            val size = DpSize(125.dp, 13.dp)
+            repeat(22) { row ->
                 Row {
                     repeat(3) { column ->
                         WavySlider2(
@@ -602,14 +606,14 @@ class VisualTest {
                             onValueChange = { value = it },
                             waveLength = 10.dp + (row + column).dp,
                             shouldFlatten = (row + column) % 2 == 0,
-                            modifier = Modifier.width(125.dp).height(28.dp)
+                            modifier = Modifier.size(size)
                         )
                         WavySlider3(
                             value = value,
                             onValueChange = { value = it },
                             waveLength = 10.dp + (row + column).dp,
                             shouldFlatten = (row + column) % 2 == 0,
-                            modifier = Modifier.width(125.dp).height(28.dp)
+                            modifier = Modifier.size(size)
                         )
                     }
                 }
