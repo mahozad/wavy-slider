@@ -62,7 +62,7 @@ fun Content() {
     var value by remember { mutableFloatStateOf(0.5f) }
     var isEnabled by remember { mutableStateOf(true) }
     var waveLength by remember { mutableStateOf(20.dp) }
-    var waveHeight by remember { mutableStateOf(24.dp) }
+    var waveHeight by remember { mutableStateOf(6.dp) }
     var waveThickness by remember { mutableStateOf(4.dp) }
     var trackThickness by remember { mutableStateOf(4.dp) }
     var isRTL by remember { mutableStateOf(true) }
@@ -134,19 +134,19 @@ fun Content() {
                     LabeledSlider(
                         label = "Wave length:",
                         value = waveLength.value,
-                        valueRange = 6f..200f,
+                        valueRange = 0f..200f,
                         onValueChange = { waveLength = it.dp }
                     )
                     LabeledSlider(
                         label = "Wave height:",
                         value = waveHeight.value,
-                        valueRange = 0f..48f,
+                        valueRange = 0f..44f,
                         onValueChange = { waveHeight = it.dp }
                     )
                     LabeledSlider(
                         label = "Wave thickness:",
                         value = waveThickness.value,
-                        valueRange = 1f..20f,
+                        valueRange = 0f..20f,
                         onValueChange = { waveThickness = it.dp }
                     )
                     LabeledSlider(
