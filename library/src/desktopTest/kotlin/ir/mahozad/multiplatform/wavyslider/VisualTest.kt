@@ -639,4 +639,29 @@ class VisualTest {
         }
         assert(isPassed)
     }
+
+    @Test
+    fun `Test 32`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "waveHeight" is toggled between 0 and a positive value""",
+            expected = "Should not have its wave animation restart (should smoothly continue its animation)\n" +
+                       "Also, the waveHeight should be animated smoothly"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var waveHeight by remember { mutableStateOf(16.dp) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(value = value, onValueChange = { value = it }, waveHeight = waveHeight)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value = value, onValueChange = { value = it }, waveHeight = waveHeight)
+            }
+            Button(onClick = { waveHeight = if (waveHeight == 16.dp) 0.dp else 16.dp }) {
+                Text(text = "Toggle waveHeight")
+            }
+        }
+        assert(isPassed)
+    }
 }
