@@ -55,7 +55,7 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 /**
  * A wavy slider much like the [Material Design 2 slider](https://m2.material.io/components/sliders).
  *
- * By setting [waveHeight] to `0.dp` it becomes just a regular Material [Slider].
+ * By setting [waveHeight] or [waveLength] to `0.dp` it becomes just a regular Material [Slider].
  *
  * This component can also be used as a progress bar.
  *
@@ -75,11 +75,12 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
  * appearance / behavior of this WavySlider in different [Interaction]s.
  * @param colors [SliderColors] that will be used to determine the color of the WavySlider parts in
  * different state. See [SliderDefaults.colors] to customize.
- * @param waveLength the distance over which the wave's shape repeats (must be > 0.dp)
- * @param waveHeight the total height of the wave (from crest to trough) (in other words, amplitude * 2) (ignoring the [waveThickness])
+ * @param waveLength the distance over which the wave's shape repeats
+ * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
+ * The final rendered height of the wave will be [waveHeight] + [waveThickness]
  * @param waveThickness the thickness of the active line (whether animated or not)
  * @param trackThickness the thickness of the inactive line
- * @param animationDirection the direction of wave movement which is, by default,
+ * @param animationDirection the direction of wave horizontal movement which is, by default,
  * from right to left for LTR layouts and from left to right for RTL layouts.
  * Setting to [WaveAnimationDirection.UNSPECIFIED] also does the same thing
  * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
