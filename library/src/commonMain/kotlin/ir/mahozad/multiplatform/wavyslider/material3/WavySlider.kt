@@ -66,12 +66,12 @@ fun SliderDefaults.Track(
     /////////////////
     /////////////////
     /////////////////
-    waveLength: Dp,
-    waveHeight: Dp,
-    waveMovement: WaveMovement,
-    waveThickness: Dp,
-    trackThickness: Dp?,
-    shouldFlatten: Boolean
+    waveLength: Dp = SliderDefaults.WaveLength,
+    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveMovement: WaveMovement = SliderDefaults.WaveMovement,
+    waveThickness: Dp = SliderDefaults.WaveThickness,
+    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
 ) {
     // Because trackColor() function is an internal member in Material library
     // See https://stackoverflow.com/q/62500464/8583692
