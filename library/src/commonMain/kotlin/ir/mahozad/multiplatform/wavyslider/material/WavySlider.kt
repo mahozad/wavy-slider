@@ -113,7 +113,7 @@ fun WavySlider(
     waveHeight: Dp = SliderDefaults.WaveHeight,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
-    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    trackThickness: Dp = SliderDefaults.TrackThickness,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
 ) {
     // TODO: Add valueRange (and steps if it makes sense) to the parameters for feature-parity with Slider
@@ -312,7 +312,7 @@ private fun SliderImpl(
     waveHeight: Dp,
     waveMovement: WaveMovement,
     waveThickness: Dp,
-    trackThickness: Dp?,
+    trackThickness: Dp,
     shouldFlatten: Boolean
 ) {
     Box(modifier.then(DefaultSliderConstraints)) {
@@ -360,7 +360,7 @@ private fun Track(
     waveHeight: Dp,
     waveMovement: WaveMovement,
     waveThickness: Dp,
-    trackThickness: Dp?,
+    trackThickness: Dp,
     shouldFlatten: Boolean
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
@@ -374,7 +374,7 @@ private fun Track(
         waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
         waveHeightPx = waveHeight.toPx().absoluteValue
         waveThicknessPx = waveThickness.toPx()
-        trackThicknessPx = trackThickness?.toPx() ?: 0f
+        trackThicknessPx = trackThickness.toPx()
     }
     val waveHeightPxAnimated by animateFloatAsState(
         waveHeightPx,

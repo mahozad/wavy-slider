@@ -70,7 +70,7 @@ fun SliderDefaults.Track(
     waveHeight: Dp = SliderDefaults.WaveHeight,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
-    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    trackThickness: Dp = SliderDefaults.TrackThickness,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
 ) {
     // Because trackColor() function is an internal member in Material library
@@ -86,7 +86,7 @@ fun SliderDefaults.Track(
         waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
         waveHeightPx = waveHeight.toPx().absoluteValue
         waveThicknessPx = waveThickness.toPx()
-        trackThicknessPx = trackThickness?.toPx() ?: 0f
+        trackThicknessPx = trackThickness.toPx()
     }
     val waveHeightPxAnimated by animateFloatAsState(
         waveHeightPx,
@@ -158,7 +158,7 @@ fun WavySlider(
     waveHeight: Dp = SliderDefaults.WaveHeight,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
-    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    trackThickness: Dp = SliderDefaults.TrackThickness,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
 ) {
     WavySliderImpl(
@@ -248,7 +248,7 @@ fun WavySlider(
     waveHeight: Dp = SliderDefaults.WaveHeight,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
-    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    trackThickness: Dp = SliderDefaults.TrackThickness,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
     /////////////////
     /////////////////

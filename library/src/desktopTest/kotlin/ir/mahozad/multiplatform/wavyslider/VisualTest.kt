@@ -325,18 +325,6 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 17`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "Track thickness set to null",
-            expected = "Should have the same behaviour as if the thickness was 0",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, trackThickness = null) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, trackThickness = null) }
-        )
-        assert(isPassed)
-    }
-
-    @Test
     fun `Test 18`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
