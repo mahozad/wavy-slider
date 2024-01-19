@@ -1,27 +1,20 @@
+@file:Suppress("UnusedReceiverParameter")
+
 package ir.mahozad.multiplatform.wavyslider.material3
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
-import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.MutatorMutex
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
@@ -37,11 +30,114 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
 
-private val ThumbWidth = WavySliderTokens.HandleWidth
-private val ThumbHeight = WavySliderTokens.HandleHeight
+// Instead of directly exposing the following defaults as public properties,
+// we want to provide them in the SliderDefaults object so the user can access all the defaults
+// using that namespace. But SliderDefaults object is in Material library, and we cannot modify it.
+// So, we provide the defaults as extension properties of SliderDefaults object.
+
+val SliderDefaults.AnimationDirection: WaveAnimationDirection get() = defaultAnimationDirection
+val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
+val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
+val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
+val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
+
+private val ThumbWidth = SliderTokens.HandleWidth
+private val ThumbHeight = SliderTokens.HandleHeight
 private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
-private val ThumbDefaultElevation = 1.dp
-private val ThumbPressedElevation = 6.dp
+
+/**
+ * The Default track for [WavySlider]
+ *
+ * @param sliderPositions [SliderPositions] which is used to obtain the current active track.
+ * @param modifier the [Modifier] to be applied to the track.
+ * @param colors [SliderColors] that will be used to resolve the colors used for this track in
+ * different states. See [SliderDefaults.colors].
+ * @param enabled controls the enabled state of this WavySlider. When `false`, this component will
+ * not respond to user input, and it will appear visually disabled and disabled to
+ * accessibility services.
+ */
+@Composable
+fun SliderDefaults.Track(
+    sliderPositions: SliderPositions,
+    modifier: Modifier = Modifier,
+    colors: SliderColors = colors(),
+    enabled: Boolean = true,
+    /////////////////
+    /////////////////
+    /////////////////
+    waveLength: Dp,
+    waveHeight: Dp,
+    waveThickness: Dp,
+    trackThickness: Dp?,
+    animationDirection: WaveAnimationDirection,
+    shouldFlatten: Boolean
+) {
+    // Because trackColor() function is an internal member in Material library
+    // See https://stackoverflow.com/q/62500464/8583692
+    val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
+    val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
+    val waveLengthPx: Float
+    val waveHeightPx: Float
+    val waveThicknessPx: Float
+    val trackThicknessPx: Float
+    val density = LocalDensity.current
+    with(density) {
+        waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
+        waveHeightPx = waveHeight.toPx().absoluteValue
+        waveThicknessPx = waveThickness.toPx()
+        trackThicknessPx = trackThickness?.toPx() ?: 0f
+    }
+    val waveHeightPxAnimated by animateFloatAsState(
+        waveHeightPx,
+        tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
+    )
+
+    val delta = if (animationDirection == WaveAnimationDirection.LTR) {
+        -waveLengthPx
+    } else if (animationDirection == WaveAnimationDirection.RTL) {
+        waveLengthPx
+    } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
+        -waveLengthPx
+    } else {
+        waveLengthPx
+    }
+    val phaseShiftPxAnimated by rememberInfiniteTransition().animateFloat(
+        initialValue = 0f,
+        targetValue = delta,
+        animationSpec = infiniteRepeatable(
+            animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(max(with(density) { waveHeightPxAnimated.toDp() + waveThickness }, ThumbSize.height))
+    ) {
+        val isRtl = layoutDirection == LayoutDirection.Rtl
+        val sliderLeft = Offset(0f, center.y)
+        val sliderRight = Offset(size.width, center.y)
+        val sliderStart = if (isRtl) sliderRight else sliderLeft
+        val sliderEnd = if (isRtl) sliderLeft else sliderRight
+        val sliderValueOffset =
+            Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderPositions.activeRange.endInclusive, center.y)
+        drawTrack(
+            waveLengthPx = waveLengthPx,
+            waveHeightPx = waveHeightPxAnimated,
+            phaseShiftPx = phaseShiftPxAnimated,
+            waveThicknessPx = waveThicknessPx,
+            trackThicknessPx = trackThicknessPx,
+            sliderValueOffset = sliderValueOffset,
+            sliderStart = sliderStart,
+            sliderEnd = sliderEnd,
+            shouldFlatten = shouldFlatten,
+            inactiveTrackColor = inactiveTrackColor.value,
+            activeTrackColor = activeTrackColor.value
+        )
+    }
+}
 
 /**
  * See the other overloaded Composable for documentations.
@@ -53,17 +149,17 @@ fun WavySlider(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onValueChangeFinished: (() -> Unit)? = null,
-    colors: WavySliderColors = WavySliderDefaults.colors(),
+    colors: SliderColors = SliderDefaults.colors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     /////////////////
     /////////////////
     /////////////////
-    waveLength: Dp = WavySliderDefaults.WaveLength,
-    waveHeight: Dp = WavySliderDefaults.WaveHeight,
-    waveThickness: Dp = WavySliderDefaults.WaveThickness,
-    trackThickness: Dp? = WavySliderDefaults.TrackThickness,
-    animationDirection: WaveAnimationDirection = WavySliderDefaults.AnimationDirection,
-    shouldFlatten: Boolean = WavySliderDefaults.ShouldFlatten,
+    waveLength: Dp = SliderDefaults.WaveLength,
+    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveThickness: Dp = SliderDefaults.WaveThickness,
+    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    animationDirection: WaveAnimationDirection = SliderDefaults.AnimationDirection,
+    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
 ) {
     WavySliderImpl(
         modifier = modifier,
@@ -73,14 +169,14 @@ fun WavySlider(
         onValueChangeFinished = onValueChangeFinished,
         value = value,
         thumb = {
-            WavySliderDefaults.Thumb(
+            SliderDefaults.Thumb(
                 interactionSource = interactionSource,
                 colors = colors,
                 enabled = enabled
             )
         },
         track = { sliderPositions ->
-            WavySliderDefaults.Track(
+            SliderDefaults.Track(
                 colors = colors,
                 enabled = enabled,
                 sliderPositions = sliderPositions,
@@ -116,8 +212,8 @@ fun WavySlider(
  * @param onValueChangeFinished called when value change has ended. This should not be used to
  * update the slider value (use [onValueChange] instead), but rather to know when the user has
  * completed selecting a new value by ending a drag or a click.
- * @param colors [WavySliderColors] that will be used to resolve the colors used for this WavySlider in
- * different states. See [WavySliderDefaults.colors].
+ * @param colors [SliderColors] that will be used to resolve the colors used for this WavySlider in
+ * different states. See [SliderDefaults.colors].
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
  * for this WavySlider. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the appearance / behavior of this WavySlider in different states.
@@ -143,29 +239,29 @@ fun WavySlider(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onValueChangeFinished: (() -> Unit)? = null,
-    colors: WavySliderColors = WavySliderDefaults.colors(),
+    colors: SliderColors = SliderDefaults.colors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     /////////////////
     /////////////////
     /////////////////
-    waveLength: Dp = WavySliderDefaults.WaveLength,
-    waveHeight: Dp = WavySliderDefaults.WaveHeight,
-    waveThickness: Dp = WavySliderDefaults.WaveThickness,
-    trackThickness: Dp? = WavySliderDefaults.TrackThickness,
-    animationDirection: WaveAnimationDirection = WavySliderDefaults.AnimationDirection,
-    shouldFlatten: Boolean = WavySliderDefaults.ShouldFlatten,
+    waveLength: Dp = SliderDefaults.WaveLength,
+    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveThickness: Dp = SliderDefaults.WaveThickness,
+    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    animationDirection: WaveAnimationDirection = SliderDefaults.AnimationDirection,
+    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
     /////////////////
     /////////////////
     /////////////////
     thumb: @Composable (SliderPositions) -> Unit = {
-        WavySliderDefaults.Thumb(
+        SliderDefaults.Thumb(
             interactionSource = interactionSource,
             colors = colors,
             enabled = enabled
         )
     },
     track: @Composable (SliderPositions) -> Unit = { sliderPositions ->
-        WavySliderDefaults.Track(
+        SliderDefaults.Track(
             colors = colors,
             enabled = enabled,
             sliderPositions = sliderPositions,
@@ -232,7 +328,7 @@ private fun WavySliderImpl(
     }
 
     val draggableState = remember {
-        WavySliderDraggableState {
+        SliderDraggableState {
             val maxPx = max(totalWidth.value - thumbWidth.value / 2, 0f)
             val minPx = min(thumbWidth.value / 2, maxPx)
             rawOffset.value = (rawOffset.value + it + pressOffset.value)
@@ -249,7 +345,7 @@ private fun WavySliderImpl(
         }
     }
 
-    val press = Modifier.wavySliderTapModifier(
+    val press = Modifier.sliderTapModifier(
         draggableState,
         interactionSource,
         totalWidth.value,
@@ -272,16 +368,16 @@ private fun WavySliderImpl(
 
     Layout(
         {
-            Box(modifier = Modifier.layoutId(WavySliderComponents.THUMB)) { thumb(sliderPositions) }
-            Box(modifier = Modifier.layoutId(WavySliderComponents.TRACK)) { track(sliderPositions) }
+            Box(modifier = Modifier.layoutId(SliderComponents.THUMB)) { thumb(sliderPositions) }
+            Box(modifier = Modifier.layoutId(SliderComponents.TRACK)) { track(sliderPositions) }
         },
         modifier = modifier
             .minimumInteractiveComponentSize()
             .requiredSizeIn(
-                minWidth = WavySliderTokens.HandleWidth,
-                minHeight = WavySliderTokens.HandleHeight
+                minWidth = SliderTokens.HandleWidth,
+                minHeight = SliderTokens.HandleHeight
             )
-            .wavySliderSemantics(
+            .sliderSemantics(
                 value,
                 enabled,
                 onValueChange,
@@ -295,11 +391,11 @@ private fun WavySliderImpl(
     ) { measurables, constraints ->
 
         val thumbPlaceable = measurables.first {
-            it.layoutId == WavySliderComponents.THUMB
+            it.layoutId == SliderComponents.THUMB
         }.measure(constraints)
 
         val trackPlaceable = measurables.first {
-            it.layoutId == WavySliderComponents.TRACK
+            it.layoutId == SliderComponents.TRACK
         }.measure(
             constraints.offset(horizontal = - thumbPlaceable.width).copy(minHeight = 0)
         )
@@ -331,214 +427,8 @@ private fun WavySliderImpl(
     }
 }
 
-/**
- * Object to hold defaults used by [WavySlider]
- */
-@Stable
-object WavySliderDefaults {
-
-    val AnimationDirection = defaultAnimationDirection
-    val ShouldFlatten = defaultShouldFlatten
-    val WaveLength = defaultWaveLength
-    val WaveHeight = defaultWaveHeight
-    val TrackThickness = defaultTrackThickness
-    val WaveThickness = defaultTrackThickness
-
-    /**
-     * Creates a [WavySliderColors] that represents the different colors used in parts of the
-     * [WavySlider] in different states.
-     *
-     * For the name references below the words "active" and "inactive" are used. Active part of
-     * the WavySlider is filled with progress, so if slider's progress is 30% out of 100%, left (or
-     * right in RTL) 30% of the track will be active, while the rest is inactive.
-     *
-     * @param thumbColor thumb color when enabled
-     * @param activeTrackColor color of the track in the part that is "active", meaning that the
-     * thumb is ahead of it
-     * @param inactiveTrackColor color of the track in the part that is "inactive", meaning that the
-     * thumb is before it
-     * @param disabledThumbColor thumb colors when disabled
-     * @param disabledActiveTrackColor color of the track in the "active" part when the WavySlider is
-     * disabled
-     * @param disabledInactiveTrackColor color of the track in the "inactive" part when the
-     * Slider is disabled
-     */
-    @Composable
-    fun colors(
-        thumbColor: Color = WavySliderTokens.HandleColor.toColor(),
-        activeTrackColor: Color = WavySliderTokens.ActiveTrackColor.toColor(),
-        inactiveTrackColor: Color = WavySliderTokens.InactiveTrackColor.toColor(),
-        disabledThumbColor: Color = WavySliderTokens.DisabledHandleColor
-            .toColor()
-            .copy(alpha = WavySliderTokens.DisabledHandleOpacity)
-            .compositeOver(MaterialTheme.colorScheme.surface),
-        disabledActiveTrackColor: Color =
-            WavySliderTokens.DisabledActiveTrackColor
-                .toColor()
-                .copy(alpha = WavySliderTokens.DisabledActiveTrackOpacity),
-        disabledInactiveTrackColor: Color =
-            WavySliderTokens.DisabledInactiveTrackColor
-                .toColor()
-                .copy(alpha = WavySliderTokens.DisabledInactiveTrackOpacity)
-    ): WavySliderColors = WavySliderColors(
-        thumbColor = thumbColor,
-        activeTrackColor = activeTrackColor,
-        inactiveTrackColor = inactiveTrackColor,
-        disabledThumbColor = disabledThumbColor,
-        disabledActiveTrackColor = disabledActiveTrackColor,
-        disabledInactiveTrackColor = disabledInactiveTrackColor
-    )
-
-    /**
-     * The Default thumb for [WavySlider]
-     *
-     * @param interactionSource the [MutableInteractionSource] representing the stream of
-     * [Interaction]s for this thumb. You can create and pass in your own `remember`ed
-     * instance to observe.
-     * @param modifier the [Modifier] to be applied to the thumb.
-     * @param colors [WavySliderColors] that will be used to resolve the colors used for this thumb in
-     * different states. See [WavySliderDefaults.colors].
-     * @param enabled controls the enabled state of this WavySlider. When `false`, this component will
-     * not respond to user input, and it will appear visually disabled and disabled to
-     * accessibility services.
-     */
-    @Composable
-    fun Thumb(
-        interactionSource: MutableInteractionSource,
-        modifier: Modifier = Modifier,
-        colors: WavySliderColors = colors(),
-        enabled: Boolean = true,
-        thumbSize: DpSize = ThumbSize
-    ) {
-        val interactions = remember { mutableStateListOf<Interaction>() }
-        LaunchedEffect(interactionSource) {
-            interactionSource.interactions.collect { interaction ->
-                when (interaction) {
-                    is PressInteraction.Press -> interactions.add(interaction)
-                    is PressInteraction.Release -> interactions.remove(interaction.press)
-                    is PressInteraction.Cancel -> interactions.remove(interaction.press)
-                    is DragInteraction.Start -> interactions.add(interaction)
-                    is DragInteraction.Stop -> interactions.remove(interaction.start)
-                    is DragInteraction.Cancel -> interactions.remove(interaction.start)
-                }
-            }
-        }
-
-        val elevation = if (interactions.isNotEmpty()) {
-            ThumbPressedElevation
-        } else {
-            ThumbDefaultElevation
-        }
-        val shape = CircleShape
-
-        Spacer(
-            modifier
-                .size(thumbSize)
-                .indication(
-                    interactionSource = interactionSource,
-                    indication = rememberRipple(
-                        bounded = false,
-                        radius = WavySliderTokens.StateLayerSize / 2
-                    )
-                )
-                .hoverable(interactionSource = interactionSource)
-                .shadow(if (enabled) elevation else 0.dp, shape, clip = false)
-                .background(colors.thumbColor(enabled).value, shape)
-        )
-    }
-
-    /**
-     * The Default track for [WavySlider]
-     *
-     * @param sliderPositions [SliderPositions] which is used to obtain the current active track.
-     * @param modifier the [Modifier] to be applied to the track.
-     * @param colors [WavySliderColors] that will be used to resolve the colors used for this track in
-     * different states. See [WavySliderDefaults.colors].
-     * @param enabled controls the enabled state of this WavySlider. When `false`, this component will
-     * not respond to user input, and it will appear visually disabled and disabled to
-     * accessibility services.
-     */
-    @Composable
-    fun Track(
-        sliderPositions: SliderPositions,
-        modifier: Modifier = Modifier,
-        colors: WavySliderColors = colors(),
-        enabled: Boolean = true,
-        /////////////////
-        /////////////////
-        /////////////////
-        waveLength: Dp,
-        waveHeight: Dp,
-        waveThickness: Dp,
-        trackThickness: Dp?,
-        animationDirection: WaveAnimationDirection,
-        shouldFlatten: Boolean
-    ) {
-        val inactiveTrackColor = colors.trackColor(enabled, active = false)
-        val activeTrackColor = colors.trackColor(enabled, active = true)
-        val waveLengthPx: Float
-        val waveHeightPx: Float
-        val waveThicknessPx: Float
-        val trackThicknessPx: Float
-        val density = LocalDensity.current
-        with(density) {
-            waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
-            waveHeightPx = waveHeight.toPx().absoluteValue
-            waveThicknessPx = waveThickness.toPx()
-            trackThicknessPx = trackThickness?.toPx() ?: 0f
-        }
-        val waveHeightPxAnimated by animateFloatAsState(
-            waveHeightPx,
-            tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
-        )
-
-        val delta = if (animationDirection == WaveAnimationDirection.LTR) {
-            -waveLengthPx
-        } else if (animationDirection == WaveAnimationDirection.RTL) {
-            waveLengthPx
-        } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
-            -waveLengthPx
-        } else {
-            waveLengthPx
-        }
-        val phaseShiftPxAnimated by rememberInfiniteTransition().animateFloat(
-            initialValue = 0f,
-            targetValue = delta,
-            animationSpec = infiniteRepeatable(
-                animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            )
-        )
-
-        Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(max(with(density) { waveHeightPxAnimated.toDp() + waveThickness }, ThumbSize.height))
-        ) {
-            val isRtl = layoutDirection == LayoutDirection.Rtl
-            val sliderLeft = Offset(0f, center.y)
-            val sliderRight = Offset(size.width, center.y)
-            val sliderStart = if (isRtl) sliderRight else sliderLeft
-            val sliderEnd = if (isRtl) sliderLeft else sliderRight
-            val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderPositions.activeRange.endInclusive, center.y)
-            drawTrack(
-                waveLengthPx = waveLengthPx,
-                waveHeightPx = waveHeightPxAnimated,
-                phaseShiftPx = phaseShiftPxAnimated,
-                waveThicknessPx = waveThicknessPx,
-                trackThicknessPx = trackThicknessPx,
-                sliderValueOffset = sliderValueOffset,
-                sliderStart = sliderStart,
-                sliderEnd = sliderEnd,
-                shouldFlatten = shouldFlatten,
-                inactiveTrackColor = inactiveTrackColor.value,
-                activeTrackColor = activeTrackColor.value
-            )
-        }
-    }
-}
-
-private fun Modifier.wavySliderSemantics(
+// No need to name it wavySliderSemantics
+private fun Modifier.sliderSemantics(
     value: Float,
     enabled: Boolean,
     onValueChange: (Float) -> Unit,
@@ -585,7 +475,8 @@ private fun Modifier.wavySliderSemantics(
     }.progressSemantics(value, valueRange, steps)
 }
 
-private fun Modifier.wavySliderTapModifier(
+// No need to name it wavySliderTapModifier
+private fun Modifier.sliderTapModifier(
     draggableState: DraggableState,
     interactionSource: MutableInteractionSource,
     maxPx: Int,
@@ -636,58 +527,7 @@ private fun Modifier.wavySliderTapModifier(
         properties["enabled"] = enabled
     })
 
-@Immutable
-class WavySliderColors internal constructor(
-    private val thumbColor: Color,
-    private val activeTrackColor: Color,
-    private val inactiveTrackColor: Color,
-    private val disabledThumbColor: Color,
-    private val disabledActiveTrackColor: Color,
-    private val disabledInactiveTrackColor: Color
-) {
-
-    @Composable
-    internal fun thumbColor(enabled: Boolean): State<Color> {
-        return rememberUpdatedState(if (enabled) thumbColor else disabledThumbColor)
-    }
-
-    @Composable
-    internal fun trackColor(enabled: Boolean, active: Boolean): State<Color> {
-        return rememberUpdatedState(
-            if (enabled) {
-                if (active) activeTrackColor else inactiveTrackColor
-            } else {
-                if (active) disabledActiveTrackColor else disabledInactiveTrackColor
-            }
-        )
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || other !is WavySliderColors) return false
-
-        if (thumbColor != other.thumbColor) return false
-        if (activeTrackColor != other.activeTrackColor) return false
-        if (inactiveTrackColor != other.inactiveTrackColor) return false
-        if (disabledThumbColor != other.disabledThumbColor) return false
-        if (disabledActiveTrackColor != other.disabledActiveTrackColor) return false
-        if (disabledInactiveTrackColor != other.disabledInactiveTrackColor) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = thumbColor.hashCode()
-        result = 31 * result + activeTrackColor.hashCode()
-        result = 31 * result + inactiveTrackColor.hashCode()
-        result = 31 * result + disabledThumbColor.hashCode()
-        result = 31 * result + disabledActiveTrackColor.hashCode()
-        result = 31 * result + disabledInactiveTrackColor.hashCode()
-        return result
-    }
-}
-
-private class WavySliderDraggableState(
+private class SliderDraggableState(
     val onDelta: (Float) -> Unit
 ) : DraggableState {
 
@@ -714,100 +554,14 @@ private class WavySliderDraggableState(
     }
 }
 
-private enum class WavySliderComponents {
+// No need to name it WavySliderComponents
+private enum class SliderComponents {
     THUMB,
     TRACK
 }
 
-/** Converts a color token key to the local color scheme provided by the theme */
-@ReadOnlyComposable
-@Composable
-internal fun ColorSchemeKeyTokens.toColor(): Color {
-    return MaterialTheme.colorScheme.fromToken(this)
-}
-
-internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
-    return when (value) {
-        ColorSchemeKeyTokens.Background -> background
-        ColorSchemeKeyTokens.Error -> error
-        ColorSchemeKeyTokens.ErrorContainer -> errorContainer
-        ColorSchemeKeyTokens.InverseOnSurface -> inverseOnSurface
-        ColorSchemeKeyTokens.InversePrimary -> inversePrimary
-        ColorSchemeKeyTokens.InverseSurface -> inverseSurface
-        ColorSchemeKeyTokens.OnBackground -> onBackground
-        ColorSchemeKeyTokens.OnError -> onError
-        ColorSchemeKeyTokens.OnErrorContainer -> onErrorContainer
-        ColorSchemeKeyTokens.OnPrimary -> onPrimary
-        ColorSchemeKeyTokens.OnPrimaryContainer -> onPrimaryContainer
-        ColorSchemeKeyTokens.OnSecondary -> onSecondary
-        ColorSchemeKeyTokens.OnSecondaryContainer -> onSecondaryContainer
-        ColorSchemeKeyTokens.OnSurface -> onSurface
-        ColorSchemeKeyTokens.OnSurfaceVariant -> onSurfaceVariant
-        ColorSchemeKeyTokens.SurfaceTint -> surfaceTint
-        ColorSchemeKeyTokens.OnTertiary -> onTertiary
-        ColorSchemeKeyTokens.OnTertiaryContainer -> onTertiaryContainer
-        ColorSchemeKeyTokens.Outline -> outline
-        ColorSchemeKeyTokens.OutlineVariant -> outlineVariant
-        ColorSchemeKeyTokens.Primary -> primary
-        ColorSchemeKeyTokens.PrimaryContainer -> primaryContainer
-        ColorSchemeKeyTokens.Scrim -> scrim
-        ColorSchemeKeyTokens.Secondary -> secondary
-        ColorSchemeKeyTokens.SecondaryContainer -> secondaryContainer
-        ColorSchemeKeyTokens.Surface -> surface
-        ColorSchemeKeyTokens.SurfaceVariant -> surfaceVariant
-        ColorSchemeKeyTokens.Tertiary -> tertiary
-        ColorSchemeKeyTokens.TertiaryContainer -> tertiaryContainer
-    }
-}
-
-/** Helper function for component shape tokens. Used to grab the end values of a shape parameter. */
-internal fun CornerBasedShape.end(): CornerBasedShape {
-    return copy(topStart = CornerSize(0.0.dp), bottomStart = CornerSize(0.0.dp))
-}
-
-internal object WavySliderTokens {
-    const val DisabledActiveTrackOpacity = 0.38f
-    const val DisabledHandleOpacity = 0.38f
-    const val DisabledInactiveTrackOpacity = 0.12f
-    val ActiveTrackColor = ColorSchemeKeyTokens.Primary
-    val DisabledActiveTrackColor = ColorSchemeKeyTokens.OnSurface
-    val DisabledHandleColor = ColorSchemeKeyTokens.OnSurface
-    val DisabledInactiveTrackColor = ColorSchemeKeyTokens.OnSurface
-    val HandleColor = ColorSchemeKeyTokens.Primary
+// No need to name it WavySliderTokens
+internal object SliderTokens {
     val HandleHeight = 20.0.dp
     val HandleWidth = 20.0.dp
-    val InactiveTrackColor = ColorSchemeKeyTokens.SurfaceVariant
-    val StateLayerSize = 40.0.dp
-}
-
-internal enum class ColorSchemeKeyTokens {
-    Background,
-    Error,
-    ErrorContainer,
-    InverseOnSurface,
-    InversePrimary,
-    InverseSurface,
-    OnBackground,
-    OnError,
-    OnErrorContainer,
-    OnPrimary,
-    OnPrimaryContainer,
-    OnSecondary,
-    OnSecondaryContainer,
-    OnSurface,
-    OnSurfaceVariant,
-    OnTertiary,
-    OnTertiaryContainer,
-    Outline,
-    OutlineVariant,
-    Primary,
-    PrimaryContainer,
-    Scrim,
-    Secondary,
-    SecondaryContainer,
-    Surface,
-    SurfaceTint,
-    SurfaceVariant,
-    Tertiary,
-    TertiaryContainer
 }
