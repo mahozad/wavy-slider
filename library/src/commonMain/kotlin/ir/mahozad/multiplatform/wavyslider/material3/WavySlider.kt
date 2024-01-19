@@ -35,12 +35,12 @@ import kotlin.math.*
 // using that namespace. But SliderDefaults object is in Material library, and we cannot modify it.
 // So, we provide the defaults as extension properties of SliderDefaults object.
 
-val SliderDefaults.AnimationDirection: WaveAnimationDirection get() = defaultAnimationDirection
-val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
 val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
 val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
-val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
 
 private val ThumbWidth = SliderTokens.HandleWidth
 private val ThumbHeight = SliderTokens.HandleHeight
@@ -68,9 +68,9 @@ fun SliderDefaults.Track(
     /////////////////
     waveLength: Dp,
     waveHeight: Dp,
+    waveMovement: WaveMovement,
     waveThickness: Dp,
     trackThickness: Dp?,
-    animationDirection: WaveAnimationDirection,
     shouldFlatten: Boolean
 ) {
     // Because trackColor() function is an internal member in Material library
@@ -93,9 +93,9 @@ fun SliderDefaults.Track(
         tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
     )
 
-    val delta = if (animationDirection == WaveAnimationDirection.LTR) {
+    val delta = if (waveMovement == ir.mahozad.multiplatform.wavyslider.WaveMovement.LTR) {
         -waveLengthPx
-    } else if (animationDirection == WaveAnimationDirection.RTL) {
+    } else if (waveMovement == ir.mahozad.multiplatform.wavyslider.WaveMovement.RTL) {
         waveLengthPx
     } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
         -waveLengthPx
@@ -156,9 +156,9 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp? = SliderDefaults.TrackThickness,
-    animationDirection: WaveAnimationDirection = SliderDefaults.AnimationDirection,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
 ) {
     WavySliderImpl(
@@ -185,9 +185,9 @@ fun WavySlider(
                 /////////////////
                 waveLength = waveLength,
                 waveHeight = waveHeight,
+                waveMovement = waveMovement,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
-                animationDirection = animationDirection,
                 shouldFlatten = shouldFlatten
             )
         }
@@ -220,11 +220,11 @@ fun WavySlider(
  * @param waveLength the distance over which the wave's shape repeats
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness]
+ * @param waveMovement the horizontal movement of the wave which is, by default, automatic
+ * (from right to left for LTR layouts and from left to right for RTL layouts)
+ * Setting to [WaveMovement.AUTO] also does the same thing
  * @param waveThickness the thickness of the active line (whether animated or not)
  * @param trackThickness the thickness of the inactive line
- * @param animationDirection the direction of wave horizontal movement which is, by default,
- * from right to left for LTR layouts and from left to right for RTL layouts.
- * Setting to [WaveAnimationDirection.AUTO] also does the same thing
  * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
  * @param thumb the thumb to be displayed on the WavySlider, it is placed on top of the track. The lambda
  * receives a [SliderPositions] which is used to obtain the current active track.
@@ -246,9 +246,9 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp? = SliderDefaults.TrackThickness,
-    animationDirection: WaveAnimationDirection = SliderDefaults.AnimationDirection,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
     /////////////////
     /////////////////
@@ -270,9 +270,9 @@ fun WavySlider(
             /////////////////
             waveLength = waveLength,
             waveHeight = waveHeight,
+            waveMovement = waveMovement,
             waveThickness = waveThickness,
             trackThickness = trackThickness,
-            animationDirection = animationDirection,
             shouldFlatten = shouldFlatten
         )
     }

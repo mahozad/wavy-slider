@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection
+import ir.mahozad.multiplatform.wavyslider.WaveMovement
 import androidx.compose.material.SliderDefaults as SliderDefaults2
 import androidx.compose.material3.SliderDefaults as SliderDefaults3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
@@ -26,11 +26,11 @@ fun App() {
             onValueChange = { value = it },
             waveLength = 12.dp,
             waveHeight = 24.dp,
-            colors = SliderDefaults2.colors(activeTrackColor = Color.Red),
+            waveMovement = WaveMovement.LTR,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
-            animationDirection = WaveAnimationDirection.LTR,
-            shouldFlatten = true
+            shouldFlatten = true,
+            colors = SliderDefaults2.colors(activeTrackColor = Color.Red)
         )
         WavySlider2(
             value = value,
@@ -49,11 +49,11 @@ fun App() {
             onValueChange = { value = it },
             waveLength = 12.dp,
             waveHeight = 24.dp,
-            colors = SliderDefaults3.colors(activeTrackColor = Color.Red),
+            waveMovement = WaveMovement.LTR,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
-            animationDirection = WaveAnimationDirection.LTR,
-            shouldFlatten = true
+            shouldFlatten = true,
+            colors = SliderDefaults3.colors(activeTrackColor = Color.Red)
         )
         WavySlider3(
             value = value,

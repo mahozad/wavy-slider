@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * The horizontal movement of the whole wave.
  */
-enum class WaveAnimationDirection {
+enum class WaveMovement {
     /**
      * Always move from right to left regardless of the layout direction.
      */
@@ -33,7 +33,7 @@ enum class WaveAnimationDirection {
     AUTO
 }
 
-internal val defaultAnimationDirection = WaveAnimationDirection.AUTO
+internal val defaultWaveMovement = WaveMovement.AUTO
 internal val defaultShouldFlatten = false
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp

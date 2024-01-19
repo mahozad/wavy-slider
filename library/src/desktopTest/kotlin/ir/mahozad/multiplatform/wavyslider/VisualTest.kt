@@ -16,8 +16,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.LTR
-import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.AUTO
+import ir.mahozad.multiplatform.wavyslider.WaveMovement.LTR
+import ir.mahozad.multiplatform.wavyslider.WaveMovement.AUTO
 import org.junit.Test
 import androidx.compose.material.Slider as Slider2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
@@ -165,8 +165,8 @@ class VisualTest {
             name = object {}.javaClass.enclosingMethod.name,
             given = "LTR animation",
             expected = "Should move from left to right",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, animationDirection = LTR) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, animationDirection = LTR) }
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveMovement = LTR) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveMovement = LTR) }
         )
         assert(isPassed)
     }
@@ -458,8 +458,8 @@ class VisualTest {
             given = "LTR animation",
             expected = "The wave start (tail of the slider) should be long enough all the time\n" +
                        "(keep looking at the slider start for a few seconds and ensure the tail does not shrink)",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = 0.dp, animationDirection = LTR) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = 0.dp, animationDirection = LTR) }
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = 0.dp, waveMovement = LTR) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = 0.dp, waveMovement = LTR) }
         )
         assert(isPassed)
     }
@@ -548,18 +548,18 @@ class VisualTest {
     fun `Test 28`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When container layout direction is LTR and the "animationDirection" is set to "AUTO"""",
+            given = """When container layout direction is LTR and the "waveMovement" is set to "AUTO"""",
             expected = "Should animate from right to left"
         ) {
             var value by remember { mutableStateOf(0.5f) }
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = AUTO)
+                    WavySlider2(value = value, onValueChange = { value = it }, waveMovement = AUTO)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = AUTO)
+                    WavySlider3(value = value, onValueChange = { value = it }, waveMovement = AUTO)
                 }
             }
         }
@@ -570,18 +570,18 @@ class VisualTest {
     fun `Test 29`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When container layout direction is RTL and the "animationDirection" is set to "AUTO"""",
+            given = """When container layout direction is RTL and the "waveMovement" is set to "AUTO"""",
             expected = "Should animate from left to right"
         ) {
             var value by remember { mutableStateOf(0.5f) }
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = AUTO)
+                    WavySlider2(value = value, onValueChange = { value = it }, waveMovement = AUTO)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = AUTO)
+                    WavySlider3(value = value, onValueChange = { value = it }, waveMovement = AUTO)
                 }
             }
         }

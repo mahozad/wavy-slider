@@ -38,6 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
+import ir.mahozad.multiplatform.wavyslider.material3.WaveMovement
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
@@ -59,12 +60,12 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 // using that namespace. But SliderDefaults object is in Material library, and we cannot modify it.
 // So, we provide the defaults as extension properties of SliderDefaults object.
 
-val SliderDefaults.AnimationDirection: WaveAnimationDirection get() = defaultAnimationDirection
-val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
 val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
 val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
-val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
 
 /**
  * A wavy slider much like the [Material Design 2 slider](https://m2.material.io/components/sliders).
@@ -91,12 +92,12 @@ val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
  * different state. See [SliderDefaults.colors] to customize.
  * @param waveLength the distance over which the wave's shape repeats
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
+ * @param waveMovement the horizontal movement of the wave which is, by default, automatic
+ * (from right to left for LTR layouts and from left to right for RTL layouts)
+ * Setting to [WaveMovement.AUTO] also does the same thing
  * The final rendered height of the wave will be [waveHeight] + [waveThickness]
  * @param waveThickness the thickness of the active line (whether animated or not)
  * @param trackThickness the thickness of the inactive line
- * @param animationDirection the direction of wave horizontal movement which is, by default,
- * from right to left for LTR layouts and from left to right for RTL layouts.
- * Setting to [WaveAnimationDirection.AUTO] also does the same thing
  * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
  */
 @Composable
@@ -110,9 +111,9 @@ fun WavySlider(
     colors: SliderColors = SliderDefaults.colors(),
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp? = SliderDefaults.TrackThickness,
-    animationDirection: WaveAnimationDirection = SliderDefaults.AnimationDirection,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
 ) {
     // TODO: Add valueRange (and steps if it makes sense) to the parameters for feature-parity with Slider
@@ -204,12 +205,12 @@ fun WavySlider(
             /////////////////
             /////////////////
             /////////////////
-            trackThickness,
-            shouldFlatten,
             waveLength,
             waveHeight,
+            waveMovement,
             waveThickness,
-            animationDirection
+            trackThickness,
+            shouldFlatten
         )
     }
 }
@@ -307,12 +308,12 @@ private fun SliderImpl(
     /////////////////
     /////////////////
     /////////////////
-    trackThickness: Dp?,
-    shouldFlatten: Boolean,
     waveLength: Dp,
     waveHeight: Dp,
+    waveMovement: WaveMovement,
     waveThickness: Dp,
-    animationDirection: WaveAnimationDirection
+    trackThickness: Dp?,
+    shouldFlatten: Boolean
 ) {
     Box(modifier.then(DefaultSliderConstraints)) {
         val thumbPx: Float
@@ -334,12 +335,12 @@ private fun SliderImpl(
             /////////////////
             /////////////////
             /////////////////
-            trackThickness,
-            shouldFlatten,
             waveLength,
             waveHeight,
+            waveMovement,
             waveThickness,
-            animationDirection
+            trackThickness,
+            shouldFlatten
         )
         SliderThumb(Modifier, offset, interactionSource, colors, enabled, thumbSize)
     }
@@ -355,12 +356,12 @@ private fun Track(
     /////////////////
     /////////////////
     /////////////////
-    trackThickness: Dp?,
-    shouldFlatten: Boolean,
     waveLength: Dp,
     waveHeight: Dp,
+    waveMovement: WaveMovement,
     waveThickness: Dp,
-    animationDirection: WaveAnimationDirection
+    trackThickness: Dp?,
+    shouldFlatten: Boolean
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
     val activeTrackColor = colors.trackColor(enabled, active = true)
@@ -380,9 +381,9 @@ private fun Track(
         tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
     )
 
-    val delta = if (animationDirection == WaveAnimationDirection.LTR) {
+    val delta = if (waveMovement == WaveMovement.LTR) {
         -waveLengthPx
-    } else if (animationDirection == WaveAnimationDirection.RTL) {
+    } else if (waveMovement == WaveMovement.RTL) {
         waveLengthPx
     } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
         -waveLengthPx
