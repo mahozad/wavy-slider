@@ -16,10 +16,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * The direction of wave movement.
- *
- * By default, and also when set to [WaveAnimationDirection.UNSPECIFIED],
- * it moves from right to left on LTR layouts and from left to right on RTL layouts.
+ * The horizontal movement of the whole wave.
  */
 enum class WaveAnimationDirection {
     /**
@@ -33,10 +30,10 @@ enum class WaveAnimationDirection {
     /**
      * Based on layout direction; on LTR move from right to left and on RTL move from left to right.
      */
-    UNSPECIFIED
+    AUTO
 }
 
-internal val defaultAnimationDirection = WaveAnimationDirection.UNSPECIFIED
+internal val defaultAnimationDirection = WaveAnimationDirection.AUTO
 internal val defaultShouldFlatten = false
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp

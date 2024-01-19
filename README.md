@@ -79,7 +79,7 @@ fun MyComposable() {
         shouldFlatten = false, // Defaults to false
         waveThickness = 4.dp,  // Defaults to the track thickness
         trackThickness = 4.dp, // Defaults to 4.dp
-        animationDirection = UNSPECIFIED, // Defaults to UNSPECIFIED
+        animationDirection = AUTO, // Defaults to AUTO
         onValueChange = { fraction = it }
     )
 }

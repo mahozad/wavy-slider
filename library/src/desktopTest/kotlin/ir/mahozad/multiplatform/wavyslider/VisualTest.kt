@@ -17,7 +17,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.LTR
-import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.UNSPECIFIED
+import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection.AUTO
 import org.junit.Test
 import androidx.compose.material.Slider as Slider2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
@@ -548,18 +548,18 @@ class VisualTest {
     fun `Test 28`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When container layout direction is LTR and the "animationDirection" is set to "unspecified"""",
+            given = """When container layout direction is LTR and the "animationDirection" is set to "AUTO"""",
             expected = "Should animate from right to left"
         ) {
             var value by remember { mutableStateOf(0.5f) }
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = AUTO)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = AUTO)
                 }
             }
         }
@@ -570,18 +570,18 @@ class VisualTest {
     fun `Test 29`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When container layout direction is RTL and the "animationDirection" is set to "unspecified"""",
+            given = """When container layout direction is RTL and the "animationDirection" is set to "AUTO"""",
             expected = "Should animate from left to right"
         ) {
             var value by remember { mutableStateOf(0.5f) }
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                    WavySlider2(value = value, onValueChange = { value = it }, animationDirection = AUTO)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = UNSPECIFIED)
+                    WavySlider3(value = value, onValueChange = { value = it }, animationDirection = AUTO)
                 }
             }
         }

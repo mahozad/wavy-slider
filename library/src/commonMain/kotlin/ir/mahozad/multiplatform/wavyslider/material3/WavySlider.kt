@@ -224,7 +224,7 @@ fun WavySlider(
  * @param trackThickness the thickness of the inactive line
  * @param animationDirection the direction of wave horizontal movement which is, by default,
  * from right to left for LTR layouts and from left to right for RTL layouts.
- * Setting to [WaveAnimationDirection.UNSPECIFIED] also does the same thing
+ * Setting to [WaveAnimationDirection.AUTO] also does the same thing
  * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
  * @param thumb the thumb to be displayed on the WavySlider, it is placed on top of the track. The lambda
  * receives a [SliderPositions] which is used to obtain the current active track.
