@@ -1,3 +1,5 @@
+@file:Suppress("UnusedReceiverParameter")
+
 package ir.mahozad.multiplatform.wavyslider.material
 
 import androidx.compose.animation.core.*
@@ -52,6 +54,18 @@ private val ThumbPressedElevation = 6.dp
 private val SliderMinWidth = 144.dp // TODO: clarify min width
 private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 
+// Instead of directly exposing the following defaults as public properties,
+// we want to provide them in the SliderDefaults object so the user can access all the defaults
+// using that namespace. But SliderDefaults object is in Material library, and we cannot modify it.
+// So, we provide the defaults as extension properties of SliderDefaults object.
+
+val SliderDefaults.AnimationDirection: WaveAnimationDirection get() = defaultAnimationDirection
+val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
+val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
+val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
+val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
+
 /**
  * A wavy slider much like the [Material Design 2 slider](https://m2.material.io/components/sliders).
  *
@@ -94,12 +108,12 @@ fun WavySlider(
     onValueChangeFinished: (() -> Unit)? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: SliderColors = SliderDefaults.colors(),
-    waveLength: Dp = defaultWaveLength,
-    waveHeight: Dp = defaultWaveHeight,
-    waveThickness: Dp = defaultTrackThickness,
-    trackThickness: Dp? = defaultTrackThickness,
-    animationDirection: WaveAnimationDirection = WaveAnimationDirection.UNSPECIFIED,
-    shouldFlatten: Boolean = false
+    waveLength: Dp = SliderDefaults.WaveLength,
+    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveThickness: Dp = SliderDefaults.WaveThickness,
+    trackThickness: Dp? = SliderDefaults.TrackThickness,
+    animationDirection: WaveAnimationDirection = SliderDefaults.AnimationDirection,
+    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
 ) {
     // TODO: Add valueRange (and steps if it makes sense) to the parameters for feature-parity with Slider
 

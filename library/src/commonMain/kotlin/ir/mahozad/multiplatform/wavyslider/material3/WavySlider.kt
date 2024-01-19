@@ -58,12 +58,12 @@ fun WavySlider(
     /////////////////
     /////////////////
     /////////////////
-    waveLength: Dp = defaultWaveLength,
-    waveHeight: Dp = defaultWaveHeight,
-    waveThickness: Dp = defaultTrackThickness,
-    trackThickness: Dp? = defaultTrackThickness,
-    animationDirection: WaveAnimationDirection = WaveAnimationDirection.UNSPECIFIED,
-    shouldFlatten: Boolean = false
+    waveLength: Dp = WavySliderDefaults.WaveLength,
+    waveHeight: Dp = WavySliderDefaults.WaveHeight,
+    waveThickness: Dp = WavySliderDefaults.WaveThickness,
+    trackThickness: Dp? = WavySliderDefaults.TrackThickness,
+    animationDirection: WaveAnimationDirection = WavySliderDefaults.AnimationDirection,
+    shouldFlatten: Boolean = WavySliderDefaults.ShouldFlatten,
 ) {
     WavySliderImpl(
         modifier = modifier,
@@ -148,12 +148,12 @@ fun WavySlider(
     /////////////////
     /////////////////
     /////////////////
-    waveLength: Dp = defaultWaveLength,
-    waveHeight: Dp = defaultWaveHeight,
-    waveThickness: Dp = defaultTrackThickness,
-    trackThickness: Dp? = defaultTrackThickness,
-    animationDirection: WaveAnimationDirection = WaveAnimationDirection.UNSPECIFIED,
-    shouldFlatten: Boolean = false,
+    waveLength: Dp = WavySliderDefaults.WaveLength,
+    waveHeight: Dp = WavySliderDefaults.WaveHeight,
+    waveThickness: Dp = WavySliderDefaults.WaveThickness,
+    trackThickness: Dp? = WavySliderDefaults.TrackThickness,
+    animationDirection: WaveAnimationDirection = WavySliderDefaults.AnimationDirection,
+    shouldFlatten: Boolean = WavySliderDefaults.ShouldFlatten,
     /////////////////
     /////////////////
     /////////////////
@@ -336,6 +336,13 @@ private fun WavySliderImpl(
  */
 @Stable
 object WavySliderDefaults {
+
+    val AnimationDirection = defaultAnimationDirection
+    val ShouldFlatten = defaultShouldFlatten
+    val WaveLength = defaultWaveLength
+    val WaveHeight = defaultWaveHeight
+    val TrackThickness = defaultTrackThickness
+    val WaveThickness = defaultTrackThickness
 
     /**
      * Creates a [WavySliderColors] that represents the different colors used in parts of the

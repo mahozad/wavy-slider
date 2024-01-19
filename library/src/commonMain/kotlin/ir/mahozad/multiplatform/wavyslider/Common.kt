@@ -36,6 +36,8 @@ enum class WaveAnimationDirection {
     UNSPECIFIED
 }
 
+internal val defaultAnimationDirection = WaveAnimationDirection.UNSPECIFIED
+internal val defaultShouldFlatten = false
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
