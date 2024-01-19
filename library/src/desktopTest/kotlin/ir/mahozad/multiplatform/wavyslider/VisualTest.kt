@@ -27,6 +27,9 @@ import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
 class VisualTest {
 
+    // As stated in https://developer.android.com/jetpack/compose/animation/customize#:~:text=animations%20using%20infiniteRepeatable%20are%20not%20run
+    // the test rule does not run infiniteRepeatable animations
+
     // @get:Rule
     // val rule = createComposeRule()
 
