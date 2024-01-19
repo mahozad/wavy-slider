@@ -16,12 +16,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
-import ir.mahozad.multiplatform.wavyslider.WaveAnimationDirection
+import ir.mahozad.multiplatform.wavyslider.WaveMovement
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.resource
 import org.jetbrains.skiko.wasm.onWasmReady
 import kotlin.math.roundToInt
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
@@ -49,11 +51,7 @@ fun main() {
 @Composable
 fun App() {
     MaterialTheme(colorScheme = lightScheme) {
-        CompositionLocalProvider(
-            // LocalTextStyle provides TextStyle.Default.copy(fontFamily = FontFamily.SansSerif, fontSize = 15.sp)
-        ) {
-            Content()
-        }
+        Content()
     }
 }
 
@@ -63,6 +61,7 @@ fun Content() {
     var isEnabled by remember { mutableStateOf(true) }
     var waveLength by remember { mutableStateOf(20.dp) }
     var waveHeight by remember { mutableStateOf(6.dp) }
+    var wavePeriod by remember { mutableStateOf(2.seconds) }
     var waveThickness by remember { mutableStateOf(4.dp) }
     var trackThickness by remember { mutableStateOf(4.dp) }
     var isRTL by remember { mutableStateOf(true) }
@@ -89,10 +88,11 @@ fun Content() {
                 onValueChange = { value = it },
                 waveLength = waveLength,
                 waveHeight = waveHeight,
+                wavePeriod = wavePeriod,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
                 shouldFlatten = isFlattened,
-                animationDirection = if (isRTL) WaveAnimationDirection.RTL else WaveAnimationDirection.LTR
+                waveMovement = if (isRTL) WaveMovement.RTL else WaveMovement.LTR
             )
         } else {
             androidx.compose.material.MaterialTheme(lightColors(primary = material2ColorPrimary)) {
@@ -102,10 +102,11 @@ fun Content() {
                     onValueChange = { value = it },
                     waveLength = waveLength,
                     waveHeight = waveHeight,
+                    wavePeriod = wavePeriod,
                     waveThickness = waveThickness,
                     trackThickness = trackThickness,
                     shouldFlatten = isFlattened,
-                    animationDirection = if (isRTL) WaveAnimationDirection.RTL else WaveAnimationDirection.LTR
+                    waveMovement = if (isRTL) WaveMovement.RTL else WaveMovement.LTR
                 )
             }
         }
@@ -114,7 +115,7 @@ fun Content() {
             modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(11.dp),
+                verticalArrangement = Arrangement.spacedBy(7.dp),
                 modifier = Modifier
                     .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                     .padding(16.dp)
@@ -144,6 +145,12 @@ fun Content() {
                         onValueChange = { waveHeight = it.dp }
                     )
                     LabeledSlider(
+                        label = "Wave period:",
+                        value = wavePeriod.inWholeSeconds.toFloat(),
+                        valueRange = 0f..5f,
+                        onValueChange = { wavePeriod = it.toInt().seconds }
+                    )
+                    LabeledSlider(
                         label = "Wave thickness:",
                         value = waveThickness.value,
                         valueRange = 0f..20f,
@@ -163,6 +170,7 @@ fun Content() {
                 isEnabled = isEnabled,
                 waveLength = waveLength,
                 waveHeight = waveHeight,
+                wavePeriod = wavePeriod,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
                 isFlattened = isFlattened,
@@ -299,6 +307,7 @@ fun Code(
     isEnabled: Boolean,
     waveLength: Dp,
     waveHeight: Dp,
+    wavePeriod: Duration,
     waveThickness: Dp,
     trackThickness: Dp,
     isFlattened: Boolean,
@@ -320,8 +329,8 @@ fun Code(
     val colorSemantic2 = remember { Color(0xff005910) }
 
     // Equivalent to the following
-    """             
-        import ...wavyslider.WaveAnimationDirection.*
+    """
+        import ...wavyslider.WaveMovement
         import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
 
         var value by remember {
@@ -343,13 +352,13 @@ fun Code(
 
     val code = buildAnnotatedString {
         pushStyle(ParagraphStyle(lineHeight = lineHeight))
-        withStyle(SpanStyle(colorKeyword, fontSize = 12.sp)) { append("import ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize = 12.sp)) {
-            append("...wavyslider.WaveAnimationDirection.*")
+        withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) {
+            append("...wavyslider.WaveMovement")
         }
         appendLine()
-        withStyle(SpanStyle(colorKeyword, fontSize = 12.sp)) { append("import ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize = 12.sp)) {
+        withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) {
             append("...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider")
         }
         appendLine()
@@ -400,6 +409,17 @@ fun Code(
         withStyle(SpanStyle(colorMember, fontSize)) { append("dp") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
         appendLine()
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    wavePeriod ") }
+        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(colorNumber, fontSize)) { append("${wavePeriod.inWholeSeconds}") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(".") }
+        withStyle(SpanStyle(colorMember, fontSize)) { append("seconds") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        appendLine()
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveMovement ") }
+        withStyle(SpanStyle(colorArgument, fontSize)) { append("= WaveMovement.") }
+        withStyle(SpanStyle(colorMember, fontSize)) { append(if (isRTL) "RTL" else "LTR") }
+        appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveThickness ") }
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
         withStyle(SpanStyle(colorNumber, fontSize)) { append("${waveThickness.value.roundToInt()}") }
@@ -418,10 +438,6 @@ fun Code(
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
         withStyle(SpanStyle(colorKeyword, fontSize)) { append("$isFlattened") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
-        appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    animationDirection ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append(if (isRTL) "RTL" else "LTR") }
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(")") }
     }
