@@ -40,9 +40,11 @@ import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
 import ir.mahozad.multiplatform.wavyslider.material3.WaveMovement
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.*
 import kotlin.ranges.coerceAtLeast
+import kotlin.time.Duration
 
 // TODO: Add wave velocity property (speed + direction)
 // TODO: Add ability to stop the wave animation manually with a boolean property
@@ -62,6 +64,7 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 
 val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
 val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
+val SliderDefaults.WavePeriod: Duration get() = defaultWavePeriod
 val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
 val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
@@ -92,6 +95,7 @@ val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
  * different state. See [SliderDefaults.colors] to customize.
  * @param waveLength the distance over which the wave's shape repeats
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
+ * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally
  * @param waveMovement the horizontal movement of the wave which is, by default, automatic
  * (from right to left for LTR layouts and from left to right for RTL layouts)
  * Setting to [WaveMovement.AUTO] also does the same thing
@@ -111,6 +115,7 @@ fun WavySlider(
     colors: SliderColors = SliderDefaults.colors(),
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
+    wavePeriod: Duration = SliderDefaults.WavePeriod,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
@@ -207,6 +212,7 @@ fun WavySlider(
             /////////////////
             waveLength,
             waveHeight,
+            wavePeriod,
             waveMovement,
             waveThickness,
             trackThickness,
@@ -310,6 +316,7 @@ private fun SliderImpl(
     /////////////////
     waveLength: Dp,
     waveHeight: Dp,
+    wavePeriod: Duration,
     waveMovement: WaveMovement,
     waveThickness: Dp,
     trackThickness: Dp,
@@ -337,6 +344,7 @@ private fun SliderImpl(
             /////////////////
             waveLength,
             waveHeight,
+            wavePeriod,
             waveMovement,
             waveThickness,
             trackThickness,
@@ -358,6 +366,7 @@ private fun Track(
     /////////////////
     waveLength: Dp,
     waveHeight: Dp,
+    wavePeriod: Duration,
     waveMovement: WaveMovement,
     waveThickness: Dp,
     trackThickness: Dp,
@@ -390,14 +399,28 @@ private fun Track(
     } else {
         waveLengthPx
     }
-    val phaseShiftPxAnimated by rememberInfiniteTransition().animateFloat(
-        initialValue = 0f,
-        targetValue = delta,
-        animationSpec = infiniteRepeatable(
-            animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+    var phaseShiftPxAnimated by remember { mutableFloatStateOf(0f) }
+    val phaseShiftPxAnimation = remember(delta, wavePeriod) {
+        TargetBasedAnimation(
+            animationSpec = infiniteRepeatable(
+                animation = tween(wavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            typeConverter = Float.VectorConverter,
+            // Instead of 0 and delta, these values are used instead to smoothly
+            // continue the wave shift when wavePeriod or waveMovement is changed
+            initialValue = phaseShiftPxAnimated,
+            targetValue = delta + phaseShiftPxAnimated
         )
-    )
+    }
+    var playTime by remember { mutableStateOf(0L) }
+    LaunchedEffect(phaseShiftPxAnimation) {
+        val startTime = withFrameNanos { it }
+        while (isActive) {
+            playTime = withFrameNanos { it } - startTime
+            phaseShiftPxAnimated = phaseShiftPxAnimation.getValueFromNanos(playTime)
+        }
+    }
 
     Canvas(
         modifier = Modifier

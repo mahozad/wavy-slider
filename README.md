@@ -75,12 +75,13 @@ fun MyComposable() {
     WavySlider(
         value = fraction,
         onValueChange = { fraction = it },
-        waveLength = 16.dp,    // Defaults to 20.dp
-        waveHeight = 16.dp,    // Set this to 0.dp to get a regular Slider
-        waveMovement = AUTO,   // Based on layout direction
-        waveThickness = 4.dp,  // Defaults to the track thickness
-        trackThickness = 4.dp, // Defaults to 4.dp
-        shouldFlatten = false  // Defaults to false
+        waveLength = 16.dp,     // Defaults to 20.dp
+        waveHeight = 16.dp,     // Set this to 0.dp to get a regular Slider
+        wavePeriod = 3.seconds, // Defaults to 2.seconds
+        waveMovement = AUTO,    // Based on layout direction
+        waveThickness = 4.dp,   // Defaults to the track thickness
+        trackThickness = 4.dp,  // Defaults to 4.dp
+        shouldFlatten = false   // Defaults to false
     )
 }
 ```

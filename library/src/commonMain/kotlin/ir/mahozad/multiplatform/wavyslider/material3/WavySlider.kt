@@ -9,7 +9,10 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.MutatorMutex
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -27,8 +30,10 @@ import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.*
+import kotlin.time.Duration
 
 // Instead of directly exposing the following defaults as public properties,
 // we want to provide them in the SliderDefaults object so the user can access all the defaults
@@ -37,6 +42,7 @@ import kotlin.math.*
 
 val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
 val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
+val SliderDefaults.WavePeriod: Duration get() = defaultWavePeriod
 val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
 val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
@@ -56,6 +62,16 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * @param enabled controls the enabled state of this WavySlider. When `false`, this component will
  * not respond to user input, and it will appear visually disabled and disabled to
  * accessibility services.
+ * @param waveLength the distance over which the wave's shape repeats
+ * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
+ * The final rendered height of the wave will be [waveHeight] + [waveThickness]
+ * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally
+ * @param waveMovement the horizontal movement of the wave which is, by default, automatic
+ * (from right to left for LTR layouts and from left to right for RTL layouts)
+ * Setting to [WaveMovement.AUTO] also does the same thing
+ * @param waveThickness the thickness of the active line (whether animated or not)
+ * @param trackThickness the thickness of the inactive line
+ * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
  */
 @Composable
 fun SliderDefaults.Track(
@@ -68,6 +84,7 @@ fun SliderDefaults.Track(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
+    wavePeriod: Duration = SliderDefaults.WavePeriod,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
@@ -102,14 +119,28 @@ fun SliderDefaults.Track(
     } else {
         waveLengthPx
     }
-    val phaseShiftPxAnimated by rememberInfiniteTransition().animateFloat(
-        initialValue = 0f,
-        targetValue = delta,
-        animationSpec = infiniteRepeatable(
-            animation = tween(defaultWavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+    var phaseShiftPxAnimated by remember { mutableFloatStateOf(0f) }
+    val phaseShiftPxAnimation = remember(delta, wavePeriod) {
+        TargetBasedAnimation(
+            animationSpec = infiniteRepeatable(
+                animation = tween(wavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            typeConverter = Float.VectorConverter,
+            // Instead of 0 and delta, these values are used instead to smoothly
+            // continue the wave shift when wavePeriod or waveMovement is changed
+            initialValue = phaseShiftPxAnimated,
+            targetValue = delta + phaseShiftPxAnimated
         )
-    )
+    }
+    var playTime by remember { mutableStateOf(0L) }
+    LaunchedEffect(phaseShiftPxAnimation) {
+        val startTime = withFrameNanos { it }
+        while (isActive) {
+            playTime = withFrameNanos { it } - startTime
+            phaseShiftPxAnimated = phaseShiftPxAnimation.getValueFromNanos(playTime)
+        }
+    }
 
     Canvas(
         modifier = Modifier
@@ -156,6 +187,7 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
+    wavePeriod: Duration = SliderDefaults.WavePeriod,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
@@ -185,6 +217,7 @@ fun WavySlider(
                 /////////////////
                 waveLength = waveLength,
                 waveHeight = waveHeight,
+                wavePeriod = wavePeriod,
                 waveMovement = waveMovement,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
@@ -220,6 +253,7 @@ fun WavySlider(
  * @param waveLength the distance over which the wave's shape repeats
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness]
+ * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally
  * @param waveMovement the horizontal movement of the wave which is, by default, automatic
  * (from right to left for LTR layouts and from left to right for RTL layouts)
  * Setting to [WaveMovement.AUTO] also does the same thing
@@ -246,6 +280,7 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
+    wavePeriod: Duration = SliderDefaults.WavePeriod,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
@@ -270,6 +305,7 @@ fun WavySlider(
             /////////////////
             waveLength = waveLength,
             waveHeight = waveHeight,
+            wavePeriod = wavePeriod,
             waveMovement = waveMovement,
             waveThickness = waveThickness,
             trackThickness = trackThickness,

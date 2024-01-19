@@ -16,9 +16,9 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import ir.mahozad.multiplatform.wavyslider.WaveMovement.LTR
-import ir.mahozad.multiplatform.wavyslider.WaveMovement.AUTO
+import ir.mahozad.multiplatform.wavyslider.WaveMovement.*
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 import androidx.compose.material.Slider as Slider2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
 import androidx.compose.material3.Slider as Slider3
@@ -652,6 +652,54 @@ class VisualTest {
             }
             Button(onClick = { waveHeight = if (waveHeight == 16.dp) 0.dp else 16.dp }) {
                 Text(text = "Toggle waveHeight")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 33`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "wavePeriod" is toggled""",
+            expected = "Should change speed and smoothly continue its horizontal shift without any glitch"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var wavePeriod by remember { mutableStateOf(5.seconds) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+            }
+            Button(onClick = { wavePeriod = if (wavePeriod == 5.seconds) 1.seconds else 5.seconds }) {
+                Text(text = "Toggle wavePeriod")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 34`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "waveMovement" is toggled""",
+            expected = "Should smoothly change direction"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var waveMovement by remember { mutableStateOf(RTL) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+            }
+            Button(onClick = { waveMovement = if (waveMovement == RTL) LTR else RTL }) {
+                Text(text = "Toggle wavePeriod")
             }
         }
         assert(isPassed)
