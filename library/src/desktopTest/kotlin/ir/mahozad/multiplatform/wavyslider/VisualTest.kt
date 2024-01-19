@@ -702,7 +702,33 @@ class VisualTest {
                 WavySlider3(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
             }
             Button(onClick = { waveMovement = if (waveMovement == RTL) LTR else RTL }) {
-                Text(text = "Toggle wavePeriod")
+                Text(text = "Toggle waveMovement")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 35`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When container layout is RTL and "waveMovement" is toggled""",
+            expected = "Should smoothly change direction"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var waveMovement by remember { mutableStateOf(LTR) }
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+                }
+                Button(onClick = { waveMovement = if (waveMovement == RTL) LTR else RTL }) {
+                    Text(text = "Toggle waveMovement")
+                }
             }
         }
         assert(isPassed)
