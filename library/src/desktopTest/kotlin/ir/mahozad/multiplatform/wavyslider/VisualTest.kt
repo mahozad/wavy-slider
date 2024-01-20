@@ -18,6 +18,9 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import ir.mahozad.multiplatform.wavyslider.WaveMovement.*
 import org.junit.Test
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 import androidx.compose.material.Slider as Slider2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
@@ -729,6 +732,80 @@ class VisualTest {
                 Button(onClick = { waveMovement = if (waveMovement == RTL) LTR else RTL }) {
                     Text(text = "Toggle waveMovement")
                 }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 36`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "wavePeriod" is set to 0""",
+            expected = "Should stop the wave horizontal movement"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var wavePeriod by remember { mutableStateOf(1.seconds) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                }
+                Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) Duration.ZERO else 1.seconds }) {
+                    Text(text = "Toggle wavePeriod")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 37`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "wavePeriod" is set to >= Int.MAX_VALUE milliseconds""",
+            expected = "Should have the same behaviour as if the period was 0\n" +
+                       "This is because the animationSpec gets its duration argument as an integer"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var wavePeriod by remember { mutableStateOf(1.seconds) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                }
+                Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) 50.days else 1.seconds }) {
+                    Text(text = "Toggle wavePeriod")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 38`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "wavePeriod" is set to < Int.MIN_VALUE milliseconds""",
+            expected = "Should have the same behaviour as if the period was 0\n" +
+                       "This is because the animationSpec gets its duration argument as an integer"
+        ) {
+            var value by remember { mutableStateOf(0.5f) }
+            var wavePeriod by remember { mutableStateOf(1.seconds) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                }
+                Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) 5.nanoseconds else 1.seconds }) {
+                    Text(text = "Toggle wavePeriod")
             }
         }
         assert(isPassed)

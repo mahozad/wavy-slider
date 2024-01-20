@@ -401,16 +401,26 @@ private fun Track(
     }
     var phaseShiftPxAnimated by remember { mutableFloatStateOf(0f) }
     val phaseShiftPxAnimation = remember(delta, wavePeriod) {
+        val periodMilliseconds = wavePeriod.inWholeMilliseconds
+        val wavePeriodAdjusted = if (
+            periodMilliseconds == 0L || // Duration.Zero or duration less than 1 millisecond
+            periodMilliseconds >= Int.MAX_VALUE
+        ) {
+            Int.MAX_VALUE
+        } else {
+            periodMilliseconds.toInt()
+        }
+        val deltaAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0f else delta
         TargetBasedAnimation(
             animationSpec = infiniteRepeatable(
-                animation = tween(wavePeriod.inWholeMilliseconds.toInt(), easing = LinearEasing),
+                animation = tween(wavePeriodAdjusted, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
             ),
             typeConverter = Float.VectorConverter,
-            // Instead of 0 and delta, these values are used instead to smoothly
-            // continue the wave shift when wavePeriod or waveMovement is changed
-            initialValue = phaseShiftPxAnimated,
-            targetValue = delta + phaseShiftPxAnimated
+            // Instead of simply 0 and delta, they are added to current phaseShiftPxAnimated to
+            // smoothly continue the wave shift when wavePeriod or waveMovement is changed
+            initialValue =             0 + phaseShiftPxAnimated,
+            targetValue  = deltaAdjusted + phaseShiftPxAnimated
         )
     }
     var playTime by remember { mutableStateOf(0L) }
