@@ -45,10 +45,6 @@ import kotlin.math.*
 import kotlin.ranges.coerceAtLeast
 import kotlin.time.Duration
 
-// TODO: Add wave velocity property (speed + direction)
-// TODO: Add ability to stop the wave animation manually with a boolean property
-// TODO: Stop the wave animation when the wave height is zero
-
 private val ThumbRadius = 10.dp
 private val ThumbRippleRadius = 24.dp
 private val ThumbDefaultElevation = 1.dp
@@ -119,8 +115,6 @@ fun WavySlider(
     trackThickness: Dp = SliderDefaults.TrackThickness,
     shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
 ) {
-    // TODO: Add valueRange (and steps if it makes sense) to the parameters for feature-parity with Slider
-
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val onValueChangeState = rememberUpdatedState(onValueChange)
     val onValueChangeFinishedState = rememberUpdatedState(onValueChangeFinished)
