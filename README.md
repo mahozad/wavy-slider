@@ -23,7 +23,7 @@ a regular [Material Slider](https://developer.android.com/reference/kotlin/andro
 Supported target platforms are Android, IOS, Desktop, and JavaScript (Kotlin/JS).
 
 ## Demo
-For a live, interactive demo go to https://mahozad.ir/wavy-slider.  
+For a live, interactive Web demo go to https://mahozad.ir/wavy-slider.  
 For real-world apps in various platforms using the library, see the [showcase](showcase) directory.
 
 ## Getting started
@@ -64,7 +64,7 @@ kotlin {
 ```
 
 Using the WavySlider is much like using the Material Slider
-(set `waveHeight` to `0.dp` to turn it into a flat slider):
+(you can even make it a regular flat slider):
 
 ```kotlin
 import ir.mahozad.multiplatform.wavyslider.material/*OR material3*/.WavySlider
@@ -75,10 +75,10 @@ fun MyComposable() {
     WavySlider(
         value = fraction,
         onValueChange = { fraction = it },
-        waveLength = 16.dp,     // Defaults to 20.dp
+        waveLength = 16.dp,     // Set this to 0.dp to get a regular Slider
         waveHeight = 16.dp,     // Set this to 0.dp to get a regular Slider
-        wavePeriod = 3.seconds, // Defaults to 2.seconds
-        waveMovement = AUTO,    // Based on layout direction
+        wavePeriod = 3.seconds, // Set this to 0.seconds to stop the movement
+        waveMovement = AUTO,    // Moves based on layout direction
         waveThickness = 4.dp,   // Defaults to the track thickness
         trackThickness = 4.dp,  // Defaults to 4.dp
         shouldFlatten = false   // Defaults to false
@@ -86,16 +86,9 @@ fun MyComposable() {
 }
 ```
 
-## Similar alternative library
-https://github.com/galaxygoldfish/waveslider  
-It is not multiplatform and also occasionally glitches (the last time I checked).
-
 ## Misc
+Similar library (it even has a very similar name): https://github.com/galaxygoldfish/waveslider  
 Android 13 music player: https://android.googlesource.com/platform/packages/apps/Music/
-
-Multiplatform Compose library examples:
-  - https://github.com/mori-atsushi/insetsx
-  - https://github.com/jordond/drag-select-compose
 
 [Kotlin version]: https://img.shields.io/badge/Kotlin-1.9.21-303030.svg?labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOC45MyAxOC45MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyYWRpYWxHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHI9IjIxLjY3OSIgY3g9IjIyLjQzMiIgY3k9IjMuNDkzIiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIDEgLTQuMTMgLTIuNzE4KSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgPHN0b3Agc3RvcC1jb2xvcj0iI2U0NDg1NyIgb2Zmc2V0PSIuMDAzIi8+CiAgICA8c3RvcCBzdG9wLWNvbG9yPSIjYzcxMWUxIiBvZmZzZXQ9Ii40NjkiLz4KICAgIDxzdG9wIHN0b3AtY29sb3I9IiM3ZjUyZmYiIG9mZnNldD0iMSIvPgogIDwvcmFkaWFsR3JhZGllbnQ+CiAgPHBhdGggZmlsbD0idXJsKCNncmFkaWVudCkiIGQ9Ik0gMTguOTMsMTguOTIgSCAwIFYgMCBIIDE4LjkzIEwgOS4yNyw5LjMyIFoiLz4KPC9zdmc+Cg==
 [Compose Multiplatform version]: https://img.shields.io/badge/Compose_Multiplatform-1.5.11-303030.svg?labelColor=303030&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAj5JREFUOI2Vk0FIVFEUhv9znBllplBIF7loK1jtJKhFNG/EVtYicNkmKghCMpJGq0HoPcWQVi2KUMqdixaJi0KdXVBILQojs4wCaTGC4LyX+N47fwtFpnEKOnDh3p//fudeDr+QRK3KukGHCscAwCjXi4PphVo+qQZkhzaa61J6m8RhAfpisS01HQOwZin0F29kftYEdDxCsqnkX6HgIonR+YHM00pjzg26oXRBPrNw30ixgM1dgDMcnFFyyIAphpn7xQI2Tw6XW5LQO0L+isPQKxaa1rNDaJCkf02BHhMpzOfTzxUA1GyCxEcFxjcOIu50/b4kZQnkZQJ9mkwuOV5wqaUdYSIhTwBZFto4AOj2R+S7qEwZMNtU8lcoGAPximZHDegAsCjgw7XP/rJFnDHBhEB+AABIIueW35FEdsQ/67hl5jz/AklUrpxX7nfcMp27wYnKO/rHCAwhANDkffW4DPJhZxtV6lpt/N+qCRCND+3RDHs0AEhUHii6KIxXSZnq9PxJTUhetrQ+VrsH4TlAvlgUfd3zAgMau0aD1uLNhm8WBm0CjBDoiSN8ijReJHBaRAYtTB8pFvaXukaDVgMadwFC6bWIM47n54GWaHYgM5CwunaASwBe1yXQNptPewDgeH7eIs4IpXcXMDeYnl5vzhxTINCUv+B4/vkXtxpWQEwK8Phlf3o15wbdmvLfCFgfh5njc4Pp6e3mVWHqHN44AOidnTC9NVpJRE+BKP0zTNW1HWc8IMxIvfq3OP8GvjkzgYHHZZMAAAAASUVORK5CYII=
