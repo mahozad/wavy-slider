@@ -72,7 +72,7 @@ val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
 /**
  * A wavy slider much like the [Material Design 2 slider](https://m2.material.io/components/sliders).
  *
- * By setting [waveHeight] or [waveLength] to `0.dp` it becomes just a regular Material [Slider].
+ * Setting [waveHeight] or [waveLength] to `0.dp` results in a regular Material [Slider].
  *
  * This component can also be used as a progress bar.
  *
@@ -92,16 +92,15 @@ val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
  * appearance / behavior of this WavySlider in different [Interaction]s.
  * @param colors [SliderColors] that will be used to determine the color of the WavySlider parts in
  * different state. See [SliderDefaults.colors] to customize.
- * @param waveLength the distance over which the wave's shape repeats
+ * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
- * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally
- * @param waveMovement the horizontal movement of the wave which is, by default, automatic
- * (from right to left for LTR layouts and from left to right for RTL layouts)
- * Setting to [WaveMovement.AUTO] also does the same thing
- * The final rendered height of the wave will be [waveHeight] + [waveThickness]
- * @param waveThickness the thickness of the active line (whether animated or not)
- * @param trackThickness the thickness of the inactive line
- * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
+ * The final rendered height of the wave will be [waveHeight] + [waveThickness].
+ * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally.
+ * Setting to [Duration.ZERO] or outside `Int.MIN_VALUE..Int.MAX_VALUE` milliseconds stops the movement.
+ * @param waveMovement the horizontal movement of the whole wave. To stop the movement, see [wavePeriod].
+ * @param waveThickness the thickness of the active line (whether animated or not).
+ * @param trackThickness the thickness of the inactive line.
+ * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb.
  */
 @Composable
 fun WavySlider(

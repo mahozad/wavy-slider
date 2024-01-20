@@ -62,16 +62,15 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * @param enabled controls the enabled state of this WavySlider. When `false`, this component will
  * not respond to user input, and it will appear visually disabled and disabled to
  * accessibility services.
- * @param waveLength the distance over which the wave's shape repeats
+ * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
- * The final rendered height of the wave will be [waveHeight] + [waveThickness]
- * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally
- * @param waveMovement the horizontal movement of the wave which is, by default, automatic
- * (from right to left for LTR layouts and from left to right for RTL layouts)
- * Setting to [WaveMovement.AUTO] also does the same thing
- * @param waveThickness the thickness of the active line (whether animated or not)
- * @param trackThickness the thickness of the inactive line
- * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
+ * The final rendered height of the wave will be [waveHeight] + [waveThickness].
+ * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally.
+ * Setting to [Duration.ZERO] or outside `Int.MIN_VALUE..Int.MAX_VALUE` milliseconds stops the movement.
+ * @param waveMovement the horizontal movement of the whole wave. To stop the movement, see [wavePeriod].
+ * @param waveThickness the thickness of the active line (whether animated or not).
+ * @param trackThickness the thickness of the inactive line.
+ * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb.
  */
 @Composable
 fun SliderDefaults.Track(
@@ -240,7 +239,7 @@ fun WavySlider(
 /**
  * A wavy slider much like the [Material Design 3 slider](https://m3.material.io/components/sliders).
  *
- * By setting [waveHeight] or [waveLength] to `0.dp` it becomes just a regular Material [Slider].
+ * Setting [waveHeight] or [waveLength] to `0.dp` results in a regular Material [Slider].
  *
  * This component can also be used as a progress bar.
  *
@@ -260,16 +259,15 @@ fun WavySlider(
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
  * for this WavySlider. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the appearance / behavior of this WavySlider in different states.
- * @param waveLength the distance over which the wave's shape repeats
+ * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
- * The final rendered height of the wave will be [waveHeight] + [waveThickness]
- * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally
- * @param waveMovement the horizontal movement of the wave which is, by default, automatic
- * (from right to left for LTR layouts and from left to right for RTL layouts)
- * Setting to [WaveMovement.AUTO] also does the same thing
- * @param waveThickness the thickness of the active line (whether animated or not)
- * @param trackThickness the thickness of the inactive line
- * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb
+ * The final rendered height of the wave will be [waveHeight] + [waveThickness].
+ * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally.
+ * Setting to [Duration.ZERO] or outside `Int.MIN_VALUE..Int.MAX_VALUE` milliseconds stops the movement.
+ * @param waveMovement the horizontal movement of the whole wave. To stop the movement, see [wavePeriod].
+ * @param waveThickness the thickness of the active line (whether animated or not).
+ * @param trackThickness the thickness of the inactive line.
+ * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb.
  * @param thumb the thumb to be displayed on the WavySlider, it is placed on top of the track. The lambda
  * receives a [SliderPositions] which is used to obtain the current active track.
  * @param track the track to be displayed on the WavySlider, it is placed underneath the thumb. The lambda
