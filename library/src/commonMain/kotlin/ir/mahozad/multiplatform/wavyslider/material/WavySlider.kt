@@ -38,7 +38,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
-import ir.mahozad.multiplatform.wavyslider.material3.WaveMovement
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
