@@ -1,5 +1,7 @@
 package ir.mahozad.multiplatform.wavyslider
 
+import androidx.compose.animation.core.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -8,10 +10,13 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.isActive
 import kotlin.math.PI
 import kotlin.math.sin
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -49,6 +54,64 @@ internal expect val KeyEvent.isHome: Boolean
 internal expect val KeyEvent.isMoveEnd: Boolean
 internal expect val KeyEvent.isPgUp: Boolean
 internal expect val KeyEvent.isPgDn: Boolean
+
+@Composable
+internal inline fun animatePhaseShiftPx(
+    waveLengthPx: Float,
+    wavePeriod: Duration,
+    waveMovement: WaveMovement
+): State<Float> {
+    val delta = if (waveMovement == WaveMovement.LTR) {
+        -waveLengthPx
+    } else if (waveMovement == WaveMovement.RTL) {
+        waveLengthPx
+    } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
+        -waveLengthPx
+    } else {
+        waveLengthPx
+    }
+    val phaseShiftPxAnimated = remember { mutableFloatStateOf(0f) }
+    val phaseShiftPxAnimation = remember(delta, wavePeriod) {
+        val wavePeriodAdjusted = wavePeriod.toAdjustedMilliseconds()
+        val deltaAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0f else delta
+        TargetBasedAnimation(
+            animationSpec = infiniteRepeatable(
+                animation = tween(wavePeriodAdjusted, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            typeConverter = Float.VectorConverter,
+            // Instead of simply 0 and delta, they are added to current phaseShiftPxAnimated to
+            // smoothly continue the wave shift when wavePeriod or waveMovement is changed
+            initialValue =             0 + phaseShiftPxAnimated.value,
+            targetValue  = deltaAdjusted + phaseShiftPxAnimated.value
+        )
+    }
+    var playTime by remember { mutableStateOf(0L) }
+    LaunchedEffect(phaseShiftPxAnimation) {
+        val startTime = withFrameNanos { it }
+        while (isActive) {
+            playTime = withFrameNanos { it } - startTime
+            phaseShiftPxAnimated.value = phaseShiftPxAnimation.getValueFromNanos(playTime)
+        }
+    }
+    return phaseShiftPxAnimated
+}
+
+private inline fun Duration.toAdjustedMilliseconds() = this
+    .absoluteValue
+    .inWholeMilliseconds
+    .coerceAtMost(Int.MAX_VALUE.toLong())
+    .toInt() // Do not call before coercion
+    .takeIf { it != 0 }
+    ?: Int.MAX_VALUE
+
+@Composable
+internal inline fun animateWaveHeightPx(waveHeightPx: Float): State<Float> {
+    return animateFloatAsState(
+        waveHeightPx,
+        tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
+    )
+}
 
 internal fun DrawScope.drawTrack(
     sliderStart: Offset,

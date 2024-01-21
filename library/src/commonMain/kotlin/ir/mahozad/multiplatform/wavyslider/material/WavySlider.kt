@@ -2,7 +2,6 @@
 
 package ir.mahozad.multiplatform.wavyslider.material
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.interaction.DragInteraction
@@ -39,7 +38,6 @@ import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.*
 import kotlin.ranges.coerceAtLeast
@@ -377,51 +375,8 @@ private fun Track(
         waveThicknessPx = waveThickness.toPx()
         trackThicknessPx = trackThickness.toPx()
     }
-    val waveHeightPxAnimated by animateFloatAsState(
-        waveHeightPx,
-        tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
-    )
-
-    val delta = if (waveMovement == WaveMovement.LTR) {
-        -waveLengthPx
-    } else if (waveMovement == WaveMovement.RTL) {
-        waveLengthPx
-    } else if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
-        -waveLengthPx
-    } else {
-        waveLengthPx
-    }
-    var phaseShiftPxAnimated by remember { mutableFloatStateOf(0f) }
-    val phaseShiftPxAnimation = remember(delta, wavePeriod) {
-        val wavePeriodAdjusted = wavePeriod
-            .absoluteValue
-            .inWholeMilliseconds
-            .coerceAtMost(Int.MAX_VALUE.toLong())
-            .toInt() // Do not call before coercion
-            .takeIf { it != 0 }
-            ?: Int.MAX_VALUE
-        val deltaAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0f else delta
-        TargetBasedAnimation(
-            animationSpec = infiniteRepeatable(
-                animation = tween(wavePeriodAdjusted, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            ),
-            typeConverter = Float.VectorConverter,
-            // Instead of simply 0 and delta, they are added to current phaseShiftPxAnimated to
-            // smoothly continue the wave shift when wavePeriod or waveMovement is changed
-            initialValue =             0 + phaseShiftPxAnimated,
-            targetValue  = deltaAdjusted + phaseShiftPxAnimated
-        )
-    }
-    var playTime by remember { mutableStateOf(0L) }
-    LaunchedEffect(phaseShiftPxAnimation) {
-        val startTime = withFrameNanos { it }
-        while (isActive) {
-            playTime = withFrameNanos { it } - startTime
-            phaseShiftPxAnimated = phaseShiftPxAnimation.getValueFromNanos(playTime)
-        }
-    }
-
+    val phaseShiftPxAnimated by animatePhaseShiftPx(waveLengthPx, wavePeriod, waveMovement)
+    val waveHeightPxAnimated by animateWaveHeightPx(waveHeightPx)
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
