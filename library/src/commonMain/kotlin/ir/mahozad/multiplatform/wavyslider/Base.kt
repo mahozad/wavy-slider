@@ -62,7 +62,7 @@ internal inline fun animatePhaseShiftPx(
     wavePeriod: Duration,
     waveMovement: WaveMovement
 ): State<Float> {
-    val delta = if (waveMovement == WaveMovement.LTR) {
+    val shift = if (waveMovement == WaveMovement.LTR) {
         -waveLengthPx
     } else if (waveMovement == WaveMovement.RTL) {
         waveLengthPx
@@ -72,19 +72,19 @@ internal inline fun animatePhaseShiftPx(
         waveLengthPx
     }
     val phaseShiftPxAnimated = remember { mutableFloatStateOf(0f) }
-    val phaseShiftPxAnimation = remember(delta, wavePeriod) {
+    val phaseShiftPxAnimation = remember(shift, wavePeriod) {
         val wavePeriodAdjusted = wavePeriod.toAdjustedMilliseconds()
-        val deltaAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0f else delta
+        val shiftAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0f else shift
         TargetBasedAnimation(
             animationSpec = infiniteRepeatable(
                 animation = tween(wavePeriodAdjusted, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
             ),
             typeConverter = Float.VectorConverter,
-            // Instead of simply 0 and delta, they are added to current phaseShiftPxAnimated to
+            // Instead of simply 0 and shift, they are added to current phaseShiftPxAnimated to
             // smoothly continue the wave shift when wavePeriod or waveMovement is changed
             initialValue =             0 + phaseShiftPxAnimated.value,
-            targetValue  = deltaAdjusted + phaseShiftPxAnimated.value
+            targetValue  = shiftAdjusted + phaseShiftPxAnimated.value
         )
     }
     var playTime by remember { mutableStateOf(0L) }
@@ -114,7 +114,7 @@ internal inline fun animateWaveHeightPx(waveHeightPx: Float): State<Float> {
     )
 }
 
-internal fun DrawScope.drawTrack(
+internal inline fun DrawScope.drawTrack(
     sliderStart: Offset,
     sliderValueOffset: Offset,
     sliderEnd: Offset,
@@ -151,7 +151,7 @@ private inline fun DrawScope.drawTrackInactivePart(
     startOffset: Offset,
     endOffset: Offset
 ) {
-    if (thicknessPx.toInt() <= 0) return
+    if (thicknessPx <= 0f) return
     drawLine(
         strokeWidth = thicknessPx,
         color = color,
@@ -171,9 +171,9 @@ private inline fun DrawScope.drawTrackActivePart(
     shouldFlatten: Boolean,
     color: Color
 ) {
-    if (waveThicknessPx.toInt() <= 0) return
+    if (waveThicknessPx <= 0f) return
     val wave = Path().apply {
-        if (waveLengthPx.toInt() == 0) {
+        if (waveLengthPx == 0f) {
             moveTo(startOffset.x, center.y)
             lineTo(valueOffset.x, center.y)
             return@apply
@@ -205,7 +205,7 @@ private inline fun DrawScope.drawTrackActivePart(
     )
 }
 
-internal fun snapValueToTick(
+internal inline fun snapValueToTick(
     current: Float,
     tickFractions: FloatArray,
     minPx: Float,
@@ -219,12 +219,12 @@ internal fun snapValueToTick(
 }
 
 // Scale x1 from a1..b1 range to a2..b2 range
-internal fun scale(a1: Float, b1: Float, x1: Float, a2: Float, b2: Float) =
+internal inline fun scale(a1: Float, b1: Float, x1: Float, a2: Float, b2: Float) =
     lerp(a2, b2, calcFraction(a1, b1, x1))
 
-internal fun lerp(start: Float, stop: Float, fraction: Float) =
+internal inline fun lerp(start: Float, stop: Float, fraction: Float) =
     (start * (1 - fraction) + stop * fraction)
 
 // Calculate the 0..1 fraction that `pos` value represents between `a` and `b`
-internal fun calcFraction(a: Float, b: Float, pos: Float) =
+internal inline fun calcFraction(a: Float, b: Float, pos: Float) =
     (if (b - a == 0f) 0f else (pos - a) / (b - a)).coerceIn(0f, 1f)
