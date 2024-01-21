@@ -393,15 +393,13 @@ private fun Track(
     }
     var phaseShiftPxAnimated by remember { mutableFloatStateOf(0f) }
     val phaseShiftPxAnimation = remember(delta, wavePeriod) {
-        val periodMilliseconds = wavePeriod.inWholeMilliseconds
-        val wavePeriodAdjusted = if (
-            periodMilliseconds == 0L || // Duration.Zero or duration less than 1 millisecond
-            periodMilliseconds >= Int.MAX_VALUE
-        ) {
-            Int.MAX_VALUE
-        } else {
-            periodMilliseconds.toInt()
-        }
+        val wavePeriodAdjusted = wavePeriod
+            .absoluteValue
+            .inWholeMilliseconds
+            .coerceAtMost(Int.MAX_VALUE.toLong())
+            .toInt() // Do not call before coercion
+            .takeIf { it != 0 }
+            ?: Int.MAX_VALUE
         val deltaAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0f else delta
         TargetBasedAnimation(
             animationSpec = infiniteRepeatable(
