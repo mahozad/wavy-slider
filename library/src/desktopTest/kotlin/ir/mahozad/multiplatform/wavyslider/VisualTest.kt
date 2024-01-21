@@ -183,9 +183,6 @@ class VisualTest {
         assert(isPassed)
     }
 
-    // FIXME: The rendered wave height does not correspond exactly to the specified wave height (it's a little bit smaller)
-    //  because it is a bezier curve and the curve height is not exactly equal to the y-coordinate of the control point
-    //  So, should place the control points a little bit farther than the specified wave height (maybe there is a formula for that?)
     @Test
     fun `Test 5`() {
         val isPassed = testApp(
