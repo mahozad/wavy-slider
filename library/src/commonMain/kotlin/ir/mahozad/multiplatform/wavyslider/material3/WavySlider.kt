@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
+import ir.mahozad.multiplatform.wavyslider.WaveHeight.Gradual
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
@@ -39,12 +40,11 @@ import kotlin.time.Duration
 // So, we provide the defaults as extension properties of SliderDefaults object.
 
 val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
-val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
+val SliderDefaults.WaveHeight: WaveHeight get() = defaultWaveHeight
 val SliderDefaults.WavePeriod: Duration get() = defaultWavePeriod
 val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
 val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
-val SliderDefaults.Incremental: Boolean get() = defaultIncremental
 
 private val ThumbWidth = SliderTokens.HandleWidth
 private val ThumbHeight = SliderTokens.HandleHeight
@@ -68,7 +68,6 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * @param waveMovement the horizontal movement of the whole wave. To stop the movement, use [wavePeriod].
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
- * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
  */
 @Composable
 fun SliderDefaults.Track(
@@ -80,12 +79,11 @@ fun SliderDefaults.Track(
     /////////////////
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
-    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveHeight: WaveHeight = SliderDefaults.WaveHeight,
     wavePeriod: Duration = SliderDefaults.WavePeriod,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
-    trackThickness: Dp = SliderDefaults.TrackThickness,
-    incremental: Boolean = SliderDefaults.Incremental
+    trackThickness: Dp = SliderDefaults.TrackThickness
 ) {
     // Because trackColor() function is an internal member in Material library
     // See https://stackoverflow.com/q/62500464/8583692
@@ -98,7 +96,7 @@ fun SliderDefaults.Track(
     val density = LocalDensity.current
     with(density) {
         waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
-        waveHeightPx = waveHeight.toPx().absoluteValue
+        waveHeightPx = waveHeight.value.toPx().absoluteValue
         waveThicknessPx = waveThickness.toPx()
         trackThicknessPx = trackThickness.toPx()
     }
@@ -125,7 +123,7 @@ fun SliderDefaults.Track(
             sliderValueOffset = sliderValueOffset,
             sliderStart = sliderStart,
             sliderEnd = sliderEnd,
-            incremental = incremental,
+            isWaveHeightGradual = waveHeight is Gradual,
             inactiveTrackColor = inactiveTrackColor.value,
             activeTrackColor = activeTrackColor.value
         )
@@ -148,12 +146,11 @@ fun WavySlider(
     /////////////////
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
-    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveHeight: WaveHeight = SliderDefaults.WaveHeight,
     wavePeriod: Duration = SliderDefaults.WavePeriod,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
-    trackThickness: Dp = SliderDefaults.TrackThickness,
-    incremental: Boolean = SliderDefaults.Incremental,
+    trackThickness: Dp = SliderDefaults.TrackThickness
 ) {
     WavySliderImpl(
         modifier = modifier,
@@ -182,8 +179,7 @@ fun WavySlider(
                 wavePeriod = wavePeriod,
                 waveMovement = waveMovement,
                 waveThickness = waveThickness,
-                trackThickness = trackThickness,
-                incremental = incremental
+                trackThickness = trackThickness
             )
         }
     )
@@ -220,7 +216,6 @@ fun WavySlider(
  * @param waveMovement the horizontal movement of the whole wave. To stop the movement, use [wavePeriod].
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
- * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
  * @param thumb the thumb to be displayed on the WavySlider, it is placed on top of the track. The lambda
  * receives a [SliderPositions] which is used to obtain the current active track.
  * @param track the track to be displayed on the WavySlider, it is placed underneath the thumb. The lambda
@@ -240,12 +235,11 @@ fun WavySlider(
     /////////////////
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
-    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveHeight: WaveHeight = SliderDefaults.WaveHeight,
     wavePeriod: Duration = SliderDefaults.WavePeriod,
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
-    incremental: Boolean = SliderDefaults.Incremental,
     /////////////////
     /////////////////
     /////////////////
@@ -269,8 +263,7 @@ fun WavySlider(
             wavePeriod = wavePeriod,
             waveMovement = waveMovement,
             waveThickness = waveThickness,
-            trackThickness = trackThickness,
-            incremental = incremental
+            trackThickness = trackThickness
         )
     }
 ) {

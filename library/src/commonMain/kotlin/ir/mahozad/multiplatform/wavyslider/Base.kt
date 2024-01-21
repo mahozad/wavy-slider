@@ -11,9 +11,12 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import ir.mahozad.multiplatform.wavyslider.WaveHeight.Uniform
 import kotlinx.coroutines.isActive
+import kotlin.jvm.JvmInline
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
@@ -39,11 +42,32 @@ enum class WaveMovement {
     AUTO
 }
 
-internal val defaultIncremental = false
+/**
+ * The vertical size of the wave (from crest to trough i.e. amplitude * 2).
+ */
+sealed interface WaveHeight {
+    val value: Dp get() = when (this) {
+        is Uniform -> all
+        is Gradual -> max
+    }
+
+    /**
+     * Constant height for the whole wave.
+     */
+    @JvmInline
+    value class Uniform(val all: Dp) : WaveHeight
+
+    /**
+     * Incremental height from zero at start to [max] at the thumb.
+     */
+    @JvmInline
+    value class Gradual(val max: Dp) : WaveHeight
+}
+
 internal val defaultWaveMovement = WaveMovement.AUTO
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
-internal val defaultWaveHeight = 6.dp
+internal val defaultWaveHeight = Uniform(all = 6.dp)
 internal val defaultWavePeriod = 2.seconds
 internal val defaultWaveHeightChangeDuration = 300.milliseconds
 
@@ -123,7 +147,7 @@ internal inline fun DrawScope.drawTrack(
     waveThicknessPx: Float,
     trackThicknessPx: Float,
     phaseShiftPx: Float,
-    incremental: Boolean,
+    isWaveHeightGradual: Boolean,
     inactiveTrackColor: Color,
     activeTrackColor: Color
 ) {
@@ -134,7 +158,7 @@ internal inline fun DrawScope.drawTrack(
         waveHeightPx = waveHeightPx,
         waveThicknessPx = waveThicknessPx,
         phaseShiftPx = phaseShiftPx,
-        incremental = incremental,
+        isWaveHeightGradual = isWaveHeightGradual,
         color = activeTrackColor
     )
     drawTrackInactivePart(
@@ -168,7 +192,7 @@ private inline fun DrawScope.drawTrackActivePart(
     waveHeightPx: Float,
     waveThicknessPx: Float,
     phaseShiftPx: Float,
-    incremental: Boolean,
+    isWaveHeightGradual: Boolean,
     color: Color
 ) {
     if (waveThicknessPx <= 0f) return
@@ -178,7 +202,7 @@ private inline fun DrawScope.drawTrackActivePart(
             lineTo(valueOffset.x, center.y)
             return@apply
         }
-        val startHeightFactor = if (incremental) 0f else 1f
+        val startHeightFactor = if (isWaveHeightGradual) 0f else 1f
         val startRadians = (startOffset.x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
         val startY = (sin(startRadians) * startHeightFactor * (waveHeightPx / 2)) + (size.height / 2)
         moveTo(startOffset.x, startY.toFloat())
@@ -188,7 +212,7 @@ private inline fun DrawScope.drawTrackActivePart(
             startOffset.x.toInt()..valueOffset.x.toInt()
         }
         for (x in range) {
-            val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
+            val heightFactor = if (isWaveHeightGradual) (x - range.first).toFloat() / (range.last - range.first) else 1f
             val radians = (x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
             val y = (sin(radians) * heightFactor * (waveHeightPx / 2)) + (size.height / 2)
             lineTo(x.toFloat(), y.toFloat())

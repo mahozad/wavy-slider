@@ -7,6 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import ir.mahozad.multiplatform.wavyslider.WaveHeight.Gradual
+import ir.mahozad.multiplatform.wavyslider.WaveHeight.Uniform
 import ir.mahozad.multiplatform.wavyslider.WaveMovement
 import androidx.compose.material.SliderDefaults as SliderDefaults2
 import androidx.compose.material3.SliderDefaults as SliderDefaults3
@@ -25,17 +27,16 @@ fun App() {
             value = value,
             onValueChange = { value = it },
             waveLength = 12.dp,
-            waveHeight = 24.dp,
+            waveHeight = Gradual(max = 24.dp),
             waveMovement = WaveMovement.LTR,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
-            incremental = true,
             colors = SliderDefaults2.colors(activeTrackColor = Color.Red)
         )
         WavySlider2(
             value = value,
             onValueChange = { value = it },
-            waveHeight = 0.dp
+            waveHeight = Uniform(all = 0.dp)
         )
 
         Divider(Modifier.padding(vertical = 32.dp))
@@ -48,17 +49,16 @@ fun App() {
             value = value,
             onValueChange = { value = it },
             waveLength = 12.dp,
-            waveHeight = 24.dp,
+            waveHeight = Gradual(max = 24.dp),
             waveMovement = WaveMovement.LTR,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
-            incremental = true,
             colors = SliderDefaults3.colors(activeTrackColor = Color.Red)
         )
         WavySlider3(
             value = value,
             onValueChange = { value = it },
-            waveHeight = 0.dp
+            waveHeight = Uniform(all = 0.dp)
         )
     }
 }
