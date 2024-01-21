@@ -34,7 +34,7 @@ enum class WaveMovement {
      */
     LTR,
     /**
-     * Based on layout direction; on LTR move from right to left and on RTL move from left to right.
+     * Based on layout direction; on LTR move from right to left, on RTL move from left to right.
      */
     AUTO
 }
