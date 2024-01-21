@@ -20,6 +20,7 @@ import ir.mahozad.multiplatform.wavyslider.WaveMovement.*
 import org.junit.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 import androidx.compose.material.Slider as Slider2
@@ -70,13 +71,16 @@ class VisualTest {
         windowSize: DpSize = DpSize(800.dp, 600.dp),
         wavySlider2: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
         wavySlider3: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
-        content: (@Composable ColumnScope.() -> Unit)? = null
+        content: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null
     ): Boolean {
         var passed = false
         application(exitProcessOnExit = false) {
             Window(
                 title = name,
-                state = WindowState(size = windowSize, position = WindowPosition(Alignment.Center)),
+                state = WindowState(
+                    size = windowSize,
+                    position = WindowPosition(Alignment.Center)
+                ),
                 resizable = false,
                 onCloseRequest = ::exitApplication
             ) {
@@ -89,14 +93,14 @@ class VisualTest {
                         if (showRegularSliders) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = "Slider 2:", modifier = Modifier.width(110.dp))
-                                Slider2(value, onValueChange = { value = it })
+                                Slider2(value, { value = it })
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = "Slider 3:", modifier = Modifier.width(110.dp))
-                                Slider3(value, onValueChange = { value = it })
+                                Slider3(value, { value = it })
                             }
                         }
-                        content?.invoke(this@Column) ?: run {
+                        if (content == null) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = "Wavy slider 2:", modifier = Modifier.width(110.dp))
                                 wavySlider2?.invoke(this@Column, value) { value = it }
@@ -105,6 +109,8 @@ class VisualTest {
                                 Text(text = "Wavy slider 3:", modifier = Modifier.width(110.dp))
                                 wavySlider3?.invoke(this@Column, value) { value = it }
                             }
+                        } else {
+                            content(value) { value = it }
                         }
                         Text(text = given)
                         expected?.let { Text(text = it) }
@@ -331,23 +337,43 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 18`() {
+    fun `Test 17`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Container layout direction set to RTL",
             expected = "Should be reversed"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it })
+                    WavySlider2(value, onChange)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it })
+                    WavySlider3(value, onChange)
                 }
             }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 18`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "enabled" is toggled""",
+            expected = "Should not have its wave animation restart (should smoothly continue its animation)"
+        ) { value, onChange ->
+            var isEnabled by remember { mutableStateOf(true) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(value, onChange, enabled = isEnabled)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value, onChange, enabled = isEnabled)
+            }
+            Button(onClick = { isEnabled = !isEnabled }) { Text(text = "Toggle isEnabled") }
         }
         assert(isPassed)
     }
@@ -356,20 +382,19 @@ class VisualTest {
     fun `Test 19`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When "enabled" is toggled""",
+            given = """When "shouldFlatten" is toggled""",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
-            var isEnabled by remember { mutableStateOf(true) }
+        ) { value, onChange ->
+            var isFlattened by remember { mutableStateOf(false) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, enabled = isEnabled)
+                WavySlider2(value, onChange, shouldFlatten = isFlattened)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, enabled = isEnabled)
+                WavySlider3(value, onChange, shouldFlatten = isFlattened)
             }
-            Button(onClick = { isEnabled = !isEnabled }) { Text(text = "Toggle isEnabled") }
+            Button(onClick = { isFlattened = !isFlattened }) { Text(text = "Toggle shouldFlatten") }
         }
         assert(isPassed)
     }
@@ -378,40 +403,17 @@ class VisualTest {
     fun `Test 20`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When "shouldFlatten" is toggled""",
-            expected = "Should not have its wave animation restart (should smoothly continue its animation)"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
-            var isFlattened by remember { mutableStateOf(false) }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, shouldFlatten = isFlattened)
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, shouldFlatten = isFlattened)
-            }
-            Button(onClick = { isFlattened = !isFlattened }) { Text(text = "Toggle shouldFlatten") }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 21`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
             given = """When "waveThickness" is changed""",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var waveThickness by remember { mutableStateOf(4.dp) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, waveThickness = waveThickness)
+                WavySlider2(value, onChange, waveThickness = waveThickness)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, waveThickness = waveThickness)
+                WavySlider3(value, onChange, waveThickness = waveThickness)
             }
             Button(onClick = { waveThickness = if (waveThickness == 4.dp) 10.dp else 4.dp }) {
                 Text(text = "Toggle waveThickness")
@@ -421,22 +423,21 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 22`() {
+    fun `Test 21`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When "waveHeight" is changed""",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)\n" +
                        "Also, should have its wave height change with a smooth animation"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var waveHeight by remember { mutableStateOf(16.dp) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, waveHeight = waveHeight)
+                WavySlider2(value, onChange, waveHeight = waveHeight)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, waveHeight = waveHeight)
+                WavySlider3(value, onChange, waveHeight = waveHeight)
             }
             Button(onClick = { waveHeight = if (waveHeight == 16.dp) 44.dp else 16.dp }) {
                 Text(text = "Toggle waveHeight")
@@ -446,7 +447,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 23`() {
+    fun `Test 22`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "LTR animation",
@@ -460,26 +461,25 @@ class VisualTest {
 
     @Test
     @OptIn(ExperimentalMaterial3Api::class)
-    fun `Test 24`() {
+    fun `Test 23`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "A custom thumb",
             expected = "The custom thumb should be displayed and its height be taken into account in overall component height"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             val thumb: @Composable (SliderPositions) -> Unit = @Composable {
                 Box(Modifier.width(6.dp).height(128.dp).background(Color.Red))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, thumb = thumb, modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider3(value, onChange, thumb = thumb, modifier = Modifier.border(1.dp, Color.Gray))
             }
         }
         assert(isPassed)
     }
 
     @Test
-    fun `Test 25`() {
+    fun `Test 24`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "A wave length larger than slider total length",
@@ -491,21 +491,20 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 26`() {
+    fun `Test 25`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the width of the container of the component is changed",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var containerWidth by remember { mutableStateOf(500.dp) }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(containerWidth)) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it })
+                WavySlider2(value, onChange)
             }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(containerWidth)) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it })
+                WavySlider3(value, onChange)
             }
             Button(onClick = { containerWidth = if (containerWidth == 500.dp) 200.dp else 500.dp }) {
                 Text(text = "Toggle container width")
@@ -515,21 +514,20 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 27`() {
+    fun `Test 26`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When "waveThickness" is toggled between 0 and a positive value""",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var waveThickness by remember { mutableStateOf(4.dp) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, waveThickness = waveThickness)
+                WavySlider2(value, onChange, waveThickness = waveThickness)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, waveThickness = waveThickness)
+                WavySlider3(value, onChange, waveThickness = waveThickness)
             }
             Button(onClick = { waveThickness = if (waveThickness == 4.dp) 0.dp else 4.dp }) {
                 Text(text = "Toggle waveThickness")
@@ -539,21 +537,41 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 28`() {
+    fun `Test 27`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When container layout direction is LTR and the "waveMovement" is set to "AUTO"""",
             expected = "Should animate from right to left"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, waveMovement = AUTO)
+                    WavySlider2(value, onChange, waveMovement = AUTO)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, waveMovement = AUTO)
+                    WavySlider3(value, onChange, waveMovement = AUTO)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 28`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When container layout direction is RTL and the "waveMovement" is set to "AUTO"""",
+            expected = "Should animate from left to right"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveMovement = AUTO)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange, waveMovement = AUTO)
                 }
             }
         }
@@ -564,47 +582,24 @@ class VisualTest {
     fun `Test 29`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When container layout direction is RTL and the "waveMovement" is set to "AUTO"""",
-            expected = "Should animate from left to right"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, waveMovement = AUTO)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, waveMovement = AUTO)
-                }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 30`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
             given = "Many wavy sliders",
             showRegularSliders = false,
             windowSize = DpSize(800.dp, 800.dp)
-        ) {
-            var value by remember { mutableStateOf(1f) }
+        ) { value, onChange ->
             val size = DpSize(125.dp, 13.dp)
             repeat(22) { row ->
                 Row {
                     repeat(3) { column ->
                         WavySlider2(
                             value = value,
-                            onValueChange = { value = it },
+                            onValueChange = onChange,
                             waveLength = 10.dp + (row + column).dp,
                             shouldFlatten = (row + column) % 2 == 0,
                             modifier = Modifier.size(size)
                         )
                         WavySlider3(
                             value = value,
-                            onValueChange = { value = it },
+                            onValueChange = onChange,
                             waveLength = 10.dp + (row + column).dp,
                             shouldFlatten = (row + column) % 2 == 0,
                             modifier = Modifier.size(size)
@@ -617,21 +612,20 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 31`() {
+    fun `Test 30`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When container layout direction set to RTL and the "shouldFlatten" is set to "true"""",
             expected = "Should be flattened properly (from the thumb with most height to the tail with least height"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, shouldFlatten = true)
+                    WavySlider2(value, onChange, shouldFlatten = true)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, shouldFlatten = true)
+                    WavySlider3(value, onChange, shouldFlatten = true)
                 }
             }
         }
@@ -639,22 +633,21 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 32`() {
+    fun `Test 31`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When "waveHeight" is toggled between 0 and a positive value""",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)\n" +
                        "Also, the waveHeight should be animated smoothly"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var waveHeight by remember { mutableStateOf(16.dp) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, waveHeight = waveHeight)
+                WavySlider2(value, onChange, waveHeight = waveHeight)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, waveHeight = waveHeight)
+                WavySlider3(value, onChange, waveHeight = waveHeight)
             }
             Button(onClick = { waveHeight = if (waveHeight == 16.dp) 0.dp else 16.dp }) {
                 Text(text = "Toggle waveHeight")
@@ -664,23 +657,22 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 33`() {
+    fun `Test 32`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When "wavePeriod" is toggled""",
             expected = "Should change speed and smoothly continue its horizontal shift without any glitch"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
-            var wavePeriod by remember { mutableStateOf(5.seconds) }
+        ) { value, onChange ->
+            var wavePeriod by remember { mutableStateOf(1.seconds) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                WavySlider2(value, onChange, wavePeriod = wavePeriod)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                WavySlider3(value, onChange, wavePeriod = wavePeriod)
             }
-            Button(onClick = { wavePeriod = if (wavePeriod == 5.seconds) 1.seconds else 5.seconds }) {
+            Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) 3079.milliseconds else 1.seconds }) {
                 Text(text = "Toggle wavePeriod")
             }
         }
@@ -688,21 +680,20 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 34`() {
+    fun `Test 33`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When "waveMovement" is toggled""",
-            expected = "Should smoothly change direction"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+            expected = "Should smoothly change movement direction"
+        ) { value, onChange ->
             var waveMovement by remember { mutableStateOf(RTL) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+                WavySlider2(value, onChange, waveMovement = waveMovement)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+                WavySlider3(value, onChange, waveMovement = waveMovement)
             }
             Button(onClick = { waveMovement = if (waveMovement == RTL) LTR else RTL }) {
                 Text(text = "Toggle waveMovement")
@@ -712,22 +703,21 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 35`() {
+    fun `Test 34`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When container layout is RTL and "waveMovement" is toggled""",
-            expected = "Should smoothly change direction"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+            expected = "Should smoothly change movement direction"
+        ) { value, onChange ->
             var waveMovement by remember { mutableStateOf(LTR) }
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+                    WavySlider2(value, onChange, waveMovement = waveMovement)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, waveMovement = waveMovement)
+                    WavySlider3(value, onChange, waveMovement = waveMovement)
                 }
                 Button(onClick = { waveMovement = if (waveMovement == RTL) LTR else RTL }) {
                     Text(text = "Toggle waveMovement")
@@ -738,23 +728,46 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 36`() {
+    fun `Test 35`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = """When "wavePeriod" is set to 0""",
             expected = "Should stop the wave horizontal movement"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var wavePeriod by remember { mutableStateOf(1.seconds) }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                    WavySlider2(value, onChange, wavePeriod = wavePeriod)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                    WavySlider3(value, onChange, wavePeriod = wavePeriod)
                 }
                 Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) Duration.ZERO else 1.seconds }) {
+                    Text(text = "Toggle wavePeriod")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 36`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When "wavePeriod" is set to >= Int.MAX_VALUE milliseconds""",
+            expected = "Should have the same behaviour as if the period was 0\n" +
+                       "This is because the animationSpec gets its duration argument as an integer"
+        ) { value, onChange ->
+            var wavePeriod by remember { mutableStateOf(1.seconds) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, wavePeriod = wavePeriod)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange, wavePeriod = wavePeriod)
+                }
+                Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) 50.days else 1.seconds }) {
                     Text(text = "Toggle wavePeriod")
             }
         }
@@ -765,21 +778,20 @@ class VisualTest {
     fun `Test 37`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When "wavePeriod" is set to >= Int.MAX_VALUE milliseconds""",
+            given = """When "wavePeriod" is set to <= Int.MIN_VALUE milliseconds""",
             expected = "Should have the same behaviour as if the period was 0\n" +
                        "This is because the animationSpec gets its duration argument as an integer"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var wavePeriod by remember { mutableStateOf(1.seconds) }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                    WavySlider2(value, onChange, wavePeriod = wavePeriod)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                    WavySlider3(value, onChange, wavePeriod = wavePeriod)
                 }
-                Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) 50.days else 1.seconds }) {
+                Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) (-50).days else 1.seconds }) {
                     Text(text = "Toggle wavePeriod")
             }
         }
@@ -790,44 +802,18 @@ class VisualTest {
     fun `Test 38`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When "wavePeriod" is set to <= Int.MIN_VALUE milliseconds""",
-            expected = "Should have the same behaviour as if the period was 0\n" +
-                       "This is because the animationSpec gets its duration argument as an integer"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
-            var wavePeriod by remember { mutableStateOf(1.seconds) }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
-                }
-                Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) (-50).days else 1.seconds }) {
-                    Text(text = "Toggle wavePeriod")
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 39`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
             given = """When "wavePeriod" is set to fraction of a millisecond""",
             expected = "Should have the same behaviour as if the period was 0\n" +
                        "This is because the animationSpec gets its duration argument as an integer milliseconds"
-        ) {
-            var value by remember { mutableStateOf(0.5f) }
+        ) { value, onChange ->
             var wavePeriod by remember { mutableStateOf(1.seconds) }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                    WavySlider2(value, onChange, wavePeriod = wavePeriod)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value = value, onValueChange = { value = it }, wavePeriod = wavePeriod)
+                    WavySlider3(value, onChange, wavePeriod = wavePeriod)
                 }
                 Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) 5.nanoseconds else 1.seconds }) {
                     Text(text = "Toggle wavePeriod")
