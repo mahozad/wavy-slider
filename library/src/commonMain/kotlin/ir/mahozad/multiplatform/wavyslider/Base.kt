@@ -23,23 +23,23 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * The horizontal movement of the whole wave.
  */
-enum class WaveMovement {
+enum class WaveMovement(internal inline val factor: (LayoutDirection) -> Int) {
     /**
      * Always move from right to left (regardless of layout direction).
      */
-    RTL,
+    RTL({ 1 }),
     /**
      * Always move from left to right (regardless of layout direction).
      */
-    LTR,
+    LTR({ -1 }),
     /**
      * Move away from the thumb (depends on layout direction).
      */
-    BACKWARD,
+    BACKWARD({ if (it == LayoutDirection.Ltr) 1 else -1 }),
     /**
      * Move toward the thumb (depends on layout direction).
      */
-    FORWARD
+    FORWARD({ if (it == LayoutDirection.Ltr) -1 else 1 })
 }
 
 /**
@@ -76,20 +76,7 @@ internal inline fun animatePhaseShiftPx(
     wavePeriod: Duration,
     waveMovement: WaveMovement
 ): State<Float> {
-    val layoutDirection = LocalLayoutDirection.current
-    val shift = if (waveMovement == WaveMovement.LTR) {
-        -waveLengthPx
-    } else if (waveMovement == WaveMovement.RTL) {
-        waveLengthPx
-    } else if (waveMovement == WaveMovement.BACKWARD && layoutDirection == LayoutDirection.Rtl) {
-        -waveLengthPx
-    } else if (waveMovement == WaveMovement.BACKWARD && layoutDirection == LayoutDirection.Ltr){
-        waveLengthPx
-    } else if (layoutDirection == LayoutDirection.Rtl) {
-        waveLengthPx
-    } else {
-        -waveLengthPx
-    }
+    val shift = waveLengthPx * waveMovement.factor(LocalLayoutDirection.current)
     val phaseShiftPxAnimated = remember { mutableFloatStateOf(0f) }
     val phaseShiftPxAnimation = remember(shift, wavePeriod) {
         val wavePeriodAdjusted = wavePeriod.toAdjustedMilliseconds()
