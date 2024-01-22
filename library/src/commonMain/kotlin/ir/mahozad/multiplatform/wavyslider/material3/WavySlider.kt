@@ -66,7 +66,7 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
  * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally.
  * Setting to [Duration.ZERO] or outside `Int.MIN_VALUE..Int.MAX_VALUE` milliseconds stops the movement.
- * @param waveMovement the horizontal movement of the whole wave. To stop the movement, use [wavePeriod].
+ * @param waveMovement the horizontal movement of the whole wave.
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
  * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
@@ -222,7 +222,7 @@ fun WavySlider(
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
  * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally.
  * Setting to [Duration.ZERO] or outside `Int.MIN_VALUE..Int.MAX_VALUE` milliseconds stops the movement.
- * @param waveMovement the horizontal movement of the whole wave. To stop the movement, use [wavePeriod].
+ * @param waveMovement the horizontal movement of the whole wave.
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
  * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.

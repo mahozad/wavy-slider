@@ -927,4 +927,27 @@ class VisualTest {
         }
         assert(isPassed)
     }
+
+    @Test
+    fun `Test 42`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """When the "waveMovement" is set to "STOPPED"""",
+            expected = "Should stop the wave horizontal movement"
+        ) { value, onChange ->
+            var waveMovement by remember { mutableStateOf(BACKWARD) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(value, onChange, waveMovement = waveMovement)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value, onChange, waveMovement = waveMovement)
+            }
+            Button(onClick = { waveMovement = if (waveMovement == BACKWARD) STOPPED else BACKWARD }) {
+                Text(text = "Toggle waveMovement")
+            }
+        }
+        assert(isPassed)
+    }
 }

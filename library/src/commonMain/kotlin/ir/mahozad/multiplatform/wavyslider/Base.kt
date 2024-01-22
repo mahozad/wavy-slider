@@ -39,7 +39,11 @@ enum class WaveMovement(internal inline val factor: (LayoutDirection) -> Int) {
     /**
      * Move toward the thumb (depends on layout direction).
      */
-    FORWARD({ if (it == LayoutDirection.Ltr) -1 else 1 })
+    FORWARD({ if (it == LayoutDirection.Ltr) -1 else 1 }),
+    /**
+     * Do not move.
+     */
+    STOPPED({ 0 })
 }
 
 /**
