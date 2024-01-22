@@ -78,7 +78,7 @@ fun MyComposable() {
         waveLength = 16.dp,     // Set this to 0.dp to get a regular Slider
         waveHeight = 16.dp,     // Set this to 0.dp to get a regular Slider
         wavePeriod = 3.seconds, // Set this to 0.seconds to stop the movement
-        waveMovement = AUTO,    // Moves based on layout direction
+        waveMovement = FORWARD, // Defaults to BACKWARD
         waveThickness = 4.dp,   // Defaults to the track thickness
         trackThickness = 4.dp,  // Defaults to 4.dp
         incremental = false     // Whether to make waveHeight gradual
