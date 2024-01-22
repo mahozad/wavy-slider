@@ -18,7 +18,6 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -39,13 +38,24 @@ enum class WaveMovement {
     AUTO
 }
 
+/**
+ * Custom animation configurations for various properties of the wave.
+ *
+ * @param waveHeightAnimationSpec used for changes in wave height.
+ */
+data class WaveAnimationSpecs(
+    val waveHeightAnimationSpec: AnimationSpec<Float>
+)
+
 internal val defaultIncremental = false
 internal val defaultWaveMovement = WaveMovement.AUTO
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
 internal val defaultWavePeriod = 2.seconds
-internal val defaultWaveHeightChangeDuration = 300.milliseconds
+internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
+    waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+)
 
 internal expect val KeyEvent.isDirectionUp: Boolean
 internal expect val KeyEvent.isDirectionDown: Boolean
@@ -107,12 +117,13 @@ private inline fun Duration.toAdjustedMilliseconds() = this
     ?: Int.MAX_VALUE
 
 @Composable
-internal inline fun animateWaveHeightPx(waveHeightPx: Float): State<Float> {
-    return animateFloatAsState(
-        waveHeightPx,
-        tween(defaultWaveHeightChangeDuration.inWholeMilliseconds.toInt(), easing = FastOutSlowInEasing)
-    )
-}
+internal inline fun animateWaveHeightPx(
+    waveHeightPx: Float,
+    animationSpec: AnimationSpec<Float>
+): State<Float> = animateFloatAsState(
+    targetValue = waveHeightPx,
+    animationSpec = animationSpec
+)
 
 internal inline fun DrawScope.drawTrack(
     sliderStart: Offset,

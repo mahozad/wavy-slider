@@ -1,13 +1,22 @@
 package ir.mahozad.multiplatform.wavyslider
 
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.EaseOutBounce
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -17,6 +26,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import ir.mahozad.multiplatform.wavyslider.WaveMovement.*
+import kotlinx.coroutines.delay
 import org.junit.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -814,6 +824,63 @@ class VisualTest {
                 }
                 Button(onClick = { wavePeriod = if (wavePeriod == 1.seconds) 5.nanoseconds else 1.seconds }) {
                     Text(text = "Toggle wavePeriod")
+            }
+        }
+        assert(isPassed)
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    @Test
+    fun `Test 39`() {
+        val spec1 = tween<Float>(durationMillis = 1300, easing = EaseOutBounce)
+        val spec2 = tween<Float>(durationMillis = 150, easing = LinearEasing)
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "Different animationSpecs for wave height when dragging vs when toggling wave height",
+            expected = "Should stop the wave horizontal movement"
+        ) { value, onChange ->
+            var spec: AnimationSpec<Float> by remember { mutableStateOf(spec1) }
+            var waveHeight by remember { mutableStateOf(16.dp) }
+            val interactionSource = remember { MutableInteractionSource() }
+            var isPressed by remember { mutableStateOf(false) }
+            val isDragged by interactionSource.collectIsDraggedAsState()
+            LaunchedEffect(isPressed, isDragged) {
+                waveHeight = if (isPressed || isDragged) 0.dp else 16.dp
+                spec = if (isPressed || isDragged) {
+                    spec2
+                } else {
+                    delay(spec2.durationMillis.milliseconds)
+                    spec1
+                }
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(
+                    value,
+                    onChange,
+                    waveHeight = waveHeight,
+                    interactionSource = interactionSource,
+                    animationSpecs = WaveAnimationSpecs(spec),
+                    modifier = Modifier
+                        .onPointerEvent(PointerEventType.Press) { isPressed = true }
+                        .onPointerEvent(PointerEventType.Release) { isPressed = false }
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(
+                    value,
+                    onChange,
+                    waveHeight = waveHeight,
+                    interactionSource = interactionSource,
+                    animationSpecs = WaveAnimationSpecs(spec),
+                    modifier = Modifier
+                        .onPointerEvent(PointerEventType.Press) { isPressed = true }
+                        .onPointerEvent(PointerEventType.Release) { isPressed = false }
+                )
+            }
+            Button(onClick = { waveHeight = if (waveHeight == 0.dp) 16.dp else 0.dp }) {
+                Text(text = "Toggle waveHeight")
             }
         }
         assert(isPassed)
