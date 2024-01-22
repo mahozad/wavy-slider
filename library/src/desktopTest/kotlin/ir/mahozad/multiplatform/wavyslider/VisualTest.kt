@@ -3,7 +3,6 @@ package ir.mahozad.multiplatform.wavyslider
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,10 +16,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import ir.mahozad.multiplatform.wavyslider.WaveHeight.Gradual
-import ir.mahozad.multiplatform.wavyslider.WaveHeight.Uniform
 import ir.mahozad.multiplatform.wavyslider.WaveMovement.*
-import ir.mahozad.multiplatform.wavyslider.material.WaveHeight
+import ir.mahozad.multiplatform.wavyslider.material3.WaveHeight
 import org.junit.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -157,8 +154,8 @@ class VisualTest {
             name = object {}.javaClass.enclosingMethod.name,
             given = "Wave height set to 0",
             expected = "Should be exactly like a regular Slider",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = Uniform(0.dp)) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = Uniform(0.dp)) }
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = WaveHeight(0.dp)) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = WaveHeight(0.dp)) }
         )
         assert(isPassed)
     }
@@ -195,10 +192,10 @@ class VisualTest {
             expected = "Should take into account the height of wave in component overall height\n" +
                        "Also, the component overall height should be exactly equal to the wave height",
             wavySlider2 = { value, onChange ->
-                WavySlider2(value, onChange, waveHeight = Uniform(57.dp), modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider2(value, onChange, waveHeight = WaveHeight(57.dp), modifier = Modifier.border(1.dp, Color.Gray))
             },
             wavySlider3 = { value, onChange ->
-                WavySlider3(value, onChange, waveHeight = Uniform(57.dp), modifier = Modifier.border(1.dp, Color.Gray))
+                WavySlider3(value, onChange, waveHeight = WaveHeight(57.dp), modifier = Modifier.border(1.dp, Color.Gray))
             }
         )
         assert(isPassed)
@@ -208,10 +205,10 @@ class VisualTest {
     fun `Test 6`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "Gradual height",
-            expected = "Should have incremental height",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = Gradual(SliderDefaults.WaveHeight.value)) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = Gradual(SliderDefaults.WaveHeight.value)) }
+            given = "Incremental wave height",
+            expected = "Should have its height increase gradually",
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = SliderDefaults.WaveHeight.copy(incremental = true)) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = SliderDefaults.WaveHeight.copy(incremental = true)) }
         )
         assert(isPassed)
     }
@@ -223,8 +220,8 @@ class VisualTest {
             given = "Wave height set to negative value",
             expected = "Should have the same behaviour as if the size was positive\n" +
                        "Except that the phase is shifted",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = Uniform((-48).dp)) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = Uniform((-48).dp)) }
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = WaveHeight((-48).dp)) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = WaveHeight((-48).dp)) }
         )
         assert(isPassed)
     }
@@ -383,27 +380,19 @@ class VisualTest {
     fun `Test 19`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When "waveHeight" is toggled between "Uniform" and "Gradual"""",
+            given = """When wave height "incremental" is toggled""",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)"
         ) { value, onChange ->
-            var waveHeight by remember { mutableStateOf<WaveHeight>(Uniform(SliderDefaults.WaveHeight.value)) }
+            var isIncremental by remember { mutableStateOf(false) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value, onChange, waveHeight = waveHeight)
+                WavySlider2(value, onChange, waveHeight = SliderDefaults.WaveHeight.copy(incremental = isIncremental))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value, onChange, waveHeight = waveHeight)
+                WavySlider3(value, onChange, waveHeight = SliderDefaults.WaveHeight.copy(incremental = isIncremental))
             }
-            Button(onClick = {
-                waveHeight = if (waveHeight is Uniform) {
-                    Gradual(waveHeight.value)
-                } else {
-                    Uniform(waveHeight.value)
-                }
-            }) {
-                Text(text = "Toggle waveHeight mode")
-            }
+            Button(onClick = { isIncremental = !isIncremental }) { Text(text = "Toggle incremental") }
         }
         assert(isPassed)
     }
@@ -439,16 +428,16 @@ class VisualTest {
             expected = "Should not have its wave animation restart (should smoothly continue its animation)\n" +
                        "Also, should have its wave height change with a smooth animation"
         ) { value, onChange ->
-            var waveHeightValue by remember { mutableStateOf(16.dp) }
+            var waveHeight by remember { mutableStateOf(16.dp) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value, onChange, waveHeight = Uniform(waveHeightValue))
+                WavySlider2(value, onChange, waveHeight = WaveHeight(waveHeight))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value, onChange, waveHeight = Uniform(waveHeightValue))
+                WavySlider3(value, onChange, waveHeight = WaveHeight(waveHeight))
             }
-            Button(onClick = { waveHeightValue = if (waveHeightValue == 16.dp) 44.dp else 16.dp }) {
+            Button(onClick = { waveHeight = if (waveHeight == 16.dp) 44.dp else 16.dp }) {
                 Text(text = "Toggle waveHeight")
             }
         }
@@ -462,8 +451,8 @@ class VisualTest {
             given = "LTR animation",
             expected = "The wave start (tail of the slider) should be long enough all the time\n" +
                        "(keep looking at the slider start for a few seconds and ensure the tail does not shrink)",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = Uniform(0.dp), waveMovement = LTR) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = Uniform(0.dp), waveMovement = LTR) }
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = WaveHeight(0.dp), waveMovement = LTR) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = WaveHeight(0.dp), waveMovement = LTR) }
         )
         assert(isPassed)
     }
@@ -493,8 +482,8 @@ class VisualTest {
             name = object {}.javaClass.enclosingMethod.name,
             given = "A wave length larger than slider total length",
             expected = "The wave should be displayed properly",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, modifier = Modifier.width(400.dp), waveHeight = Uniform(24.dp), waveLength = 500.dp) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, modifier = Modifier.width(400.dp), waveHeight = Uniform(24.dp), waveLength = 500.dp) }
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, modifier = Modifier.width(400.dp), waveHeight = WaveHeight(24.dp), waveLength = 500.dp) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, modifier = Modifier.width(400.dp), waveHeight = WaveHeight(24.dp), waveLength = 500.dp) }
         )
         assert(isPassed)
     }
@@ -603,22 +592,14 @@ class VisualTest {
                             value = value,
                             onValueChange = onChange,
                             waveLength = 10.dp + (row + column).dp,
-                            waveHeight = if ((row + column) % 2 == 0) {
-                                Gradual(SliderDefaults.WaveHeight.value)
-                            } else {
-                                Uniform(SliderDefaults.WaveHeight.value)
-                            },
+                            waveHeight = SliderDefaults.WaveHeight.copy(incremental = (row + column) % 2 == 0),
                             modifier = Modifier.size(size)
                         )
                         WavySlider3(
                             value = value,
                             onValueChange = onChange,
                             waveLength = 10.dp + (row + column).dp,
-                            waveHeight = if ((row + column) % 2 == 0) {
-                                Gradual(SliderDefaults.WaveHeight.value)
-                            } else {
-                                Uniform(SliderDefaults.WaveHeight.value)
-                            },
+                            waveHeight = SliderDefaults.WaveHeight.copy(incremental = (row + column) % 2 == 0),
                             modifier = Modifier.size(size)
                         )
                     }
@@ -632,17 +613,17 @@ class VisualTest {
     fun `Test 30`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When container layout direction set to RTL and the height mode is set to "Gradual"""",
-            expected = "Should have incremental height (from the thumb with most height to the tail with least height"
+            given = """When container layout direction set to RTL and the wave height "incremental" is set to "true"""",
+            expected = "Should have proper gradual height (from the thumb with most height to the tail with least height"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value, onChange, waveHeight = Gradual(SliderDefaults.WaveHeight.value))
+                    WavySlider2(value, onChange, waveHeight = SliderDefaults.WaveHeight.copy(incremental = true))
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value, onChange, waveHeight = Gradual(SliderDefaults.WaveHeight.value))
+                    WavySlider3(value, onChange, waveHeight = SliderDefaults.WaveHeight.copy(incremental = true))
                 }
             }
         }
@@ -657,16 +638,16 @@ class VisualTest {
             expected = "Should not have its wave animation restart (should smoothly continue its animation)\n" +
                        "Also, the waveHeight should be animated smoothly"
         ) { value, onChange ->
-            var waveHeightValue by remember { mutableStateOf(16.dp) }
+            var waveHeight by remember { mutableStateOf(16.dp) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value, onChange, waveHeight = Uniform(waveHeightValue))
+                WavySlider2(value, onChange, waveHeight = WaveHeight(waveHeight))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value, onChange, waveHeight = Uniform(waveHeightValue))
+                WavySlider3(value, onChange, waveHeight = WaveHeight(waveHeight))
             }
-            Button(onClick = { waveHeightValue = if (waveHeightValue == 16.dp) 0.dp else 16.dp }) {
+            Button(onClick = { waveHeight = if (waveHeight == 16.dp) 0.dp else 16.dp }) {
                 Text(text = "Toggle waveHeight")
             }
         }

@@ -28,7 +28,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
-import ir.mahozad.multiplatform.wavyslider.WaveHeight.Gradual
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
@@ -123,7 +122,7 @@ fun SliderDefaults.Track(
             sliderValueOffset = sliderValueOffset,
             sliderStart = sliderStart,
             sliderEnd = sliderEnd,
-            isWaveHeightGradual = waveHeight is Gradual,
+            incremental = waveHeight.incremental,
             inactiveTrackColor = inactiveTrackColor.value,
             activeTrackColor = activeTrackColor.value
         )
