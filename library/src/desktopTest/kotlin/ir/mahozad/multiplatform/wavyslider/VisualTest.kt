@@ -204,10 +204,10 @@ class VisualTest {
     fun `Test 6`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "Flattened",
-            expected = "Should be flattened",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, shouldFlatten = true) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, shouldFlatten = true) }
+            given = "Incremental",
+            expected = "Should have its height increase gradually",
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, incremental = true) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, incremental = true) }
         )
         assert(isPassed)
     }
@@ -379,19 +379,19 @@ class VisualTest {
     fun `Test 19`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When "shouldFlatten" is toggled""",
+            given = """When "incremental" is toggled""",
             expected = "Should not have its wave animation restart (should smoothly continue its animation)"
         ) { value, onChange ->
-            var isFlattened by remember { mutableStateOf(false) }
+            var isIncremental by remember { mutableStateOf(false) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 2:")
-                WavySlider2(value, onChange, shouldFlatten = isFlattened)
+                WavySlider2(value, onChange, incremental = isIncremental)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Material 3:")
-                WavySlider3(value, onChange, shouldFlatten = isFlattened)
+                WavySlider3(value, onChange, incremental = isIncremental)
             }
-            Button(onClick = { isFlattened = !isFlattened }) { Text(text = "Toggle shouldFlatten") }
+            Button(onClick = { isIncremental = !isIncremental }) { Text(text = "Toggle incremental") }
         }
         assert(isPassed)
     }
@@ -591,14 +591,14 @@ class VisualTest {
                             value = value,
                             onValueChange = onChange,
                             waveLength = 10.dp + (row + column).dp,
-                            shouldFlatten = (row + column) % 2 == 0,
+                            incremental = (row + column) % 2 == 0,
                             modifier = Modifier.size(size)
                         )
                         WavySlider3(
                             value = value,
                             onValueChange = onChange,
                             waveLength = 10.dp + (row + column).dp,
-                            shouldFlatten = (row + column) % 2 == 0,
+                            incremental = (row + column) % 2 == 0,
                             modifier = Modifier.size(size)
                         )
                     }
@@ -612,17 +612,17 @@ class VisualTest {
     fun `Test 30`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = """When container layout direction set to RTL and the "shouldFlatten" is set to "true"""",
-            expected = "Should be flattened properly (from the thumb with most height to the tail with least height"
+            given = """When container layout direction set to RTL and the "incremental" is set to "true"""",
+            expected = "Should have proper gradual height (from the thumb with most height to the tail with least height"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 2:")
-                    WavySlider2(value, onChange, shouldFlatten = true)
+                    WavySlider2(value, onChange, incremental = true)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value, onChange, shouldFlatten = true)
+                    WavySlider3(value, onChange, incremental = true)
                 }
             }
         }

@@ -61,7 +61,7 @@ val SliderDefaults.WavePeriod: Duration get() = defaultWavePeriod
 val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
 val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
-val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
+val SliderDefaults.Incremental: Boolean get() = defaultIncremental
 
 /**
  * A wavy slider much like the [Material Design 2 slider](https://m2.material.io/components/sliders).
@@ -94,7 +94,7 @@ val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
  * @param waveMovement the horizontal movement of the whole wave. To stop the movement, use [wavePeriod].
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
- * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb.
+ * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
  */
 @Composable
 fun WavySlider(
@@ -111,7 +111,7 @@ fun WavySlider(
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
-    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
+    incremental: Boolean = SliderDefaults.Incremental
 ) {
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val onValueChangeState = rememberUpdatedState(onValueChange)
@@ -206,7 +206,7 @@ fun WavySlider(
             waveMovement,
             waveThickness,
             trackThickness,
-            shouldFlatten
+            incremental
         )
     }
 }
@@ -310,7 +310,7 @@ private fun SliderImpl(
     waveMovement: WaveMovement,
     waveThickness: Dp,
     trackThickness: Dp,
-    shouldFlatten: Boolean
+    incremental: Boolean
 ) {
     Box(modifier.then(DefaultSliderConstraints)) {
         val thumbPx: Float
@@ -338,7 +338,7 @@ private fun SliderImpl(
             waveMovement,
             waveThickness,
             trackThickness,
-            shouldFlatten
+            incremental
         )
         SliderThumb(Modifier, offset, interactionSource, colors, enabled, thumbSize)
     }
@@ -360,7 +360,7 @@ private fun Track(
     waveMovement: WaveMovement,
     waveThickness: Dp,
     trackThickness: Dp,
-    shouldFlatten: Boolean
+    incremental: Boolean
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
     val activeTrackColor = colors.trackColor(enabled, active = true)
@@ -397,7 +397,7 @@ private fun Track(
             sliderValueOffset = sliderValueOffset,
             sliderStart = sliderStart,
             sliderEnd = sliderEnd,
-            shouldFlatten = shouldFlatten,
+            incremental = incremental,
             inactiveTrackColor = inactiveTrackColor.value,
             activeTrackColor = activeTrackColor.value
         )

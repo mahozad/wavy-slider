@@ -39,8 +39,8 @@ enum class WaveMovement {
     AUTO
 }
 
+internal val defaultIncremental = false
 internal val defaultWaveMovement = WaveMovement.AUTO
-internal val defaultShouldFlatten = false
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
@@ -123,7 +123,7 @@ internal inline fun DrawScope.drawTrack(
     waveThicknessPx: Float,
     trackThicknessPx: Float,
     phaseShiftPx: Float,
-    shouldFlatten: Boolean,
+    incremental: Boolean,
     inactiveTrackColor: Color,
     activeTrackColor: Color
 ) {
@@ -134,7 +134,7 @@ internal inline fun DrawScope.drawTrack(
         waveHeightPx = waveHeightPx,
         waveThicknessPx = waveThicknessPx,
         phaseShiftPx = phaseShiftPx,
-        shouldFlatten = shouldFlatten,
+        incremental = incremental,
         color = activeTrackColor
     )
     drawTrackInactivePart(
@@ -168,7 +168,7 @@ private inline fun DrawScope.drawTrackActivePart(
     waveHeightPx: Float,
     waveThicknessPx: Float,
     phaseShiftPx: Float,
-    shouldFlatten: Boolean,
+    incremental: Boolean,
     color: Color
 ) {
     if (waveThicknessPx <= 0f) return
@@ -178,7 +178,7 @@ private inline fun DrawScope.drawTrackActivePart(
             lineTo(valueOffset.x, center.y)
             return@apply
         }
-        val startHeightFactor = if (shouldFlatten) 0f else 1f
+        val startHeightFactor = if (incremental) 0f else 1f
         val startRadians = (startOffset.x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
         val startY = (sin(startRadians) * startHeightFactor * (waveHeightPx / 2)) + (size.height / 2)
         moveTo(startOffset.x, startY.toFloat())
@@ -188,7 +188,7 @@ private inline fun DrawScope.drawTrackActivePart(
             startOffset.x.toInt()..valueOffset.x.toInt()
         }
         for (x in range) {
-            val heightFactor = if (shouldFlatten) (x - range.first).toFloat() / (range.last - range.first) else 1f
+            val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
             val radians = (x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
             val y = (sin(radians) * heightFactor * (waveHeightPx / 2)) + (size.height / 2)
             lineTo(x.toFloat(), y.toFloat())

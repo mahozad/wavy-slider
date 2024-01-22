@@ -44,7 +44,7 @@ val SliderDefaults.WavePeriod: Duration get() = defaultWavePeriod
 val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
 val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
-val SliderDefaults.ShouldFlatten: Boolean get() = defaultShouldFlatten
+val SliderDefaults.Incremental: Boolean get() = defaultIncremental
 
 private val ThumbWidth = SliderTokens.HandleWidth
 private val ThumbHeight = SliderTokens.HandleHeight
@@ -68,7 +68,7 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * @param waveMovement the horizontal movement of the whole wave. To stop the movement, use [wavePeriod].
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
- * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb.
+ * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
  */
 @Composable
 fun SliderDefaults.Track(
@@ -85,7 +85,7 @@ fun SliderDefaults.Track(
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
-    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten
+    incremental: Boolean = SliderDefaults.Incremental
 ) {
     // Because trackColor() function is an internal member in Material library
     // See https://stackoverflow.com/q/62500464/8583692
@@ -125,7 +125,7 @@ fun SliderDefaults.Track(
             sliderValueOffset = sliderValueOffset,
             sliderStart = sliderStart,
             sliderEnd = sliderEnd,
-            shouldFlatten = shouldFlatten,
+            incremental = incremental,
             inactiveTrackColor = inactiveTrackColor.value,
             activeTrackColor = activeTrackColor.value
         )
@@ -153,7 +153,7 @@ fun WavySlider(
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
-    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
+    incremental: Boolean = SliderDefaults.Incremental,
 ) {
     WavySliderImpl(
         modifier = modifier,
@@ -183,7 +183,7 @@ fun WavySlider(
                 waveMovement = waveMovement,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
-                shouldFlatten = shouldFlatten
+                incremental = incremental
             )
         }
     )
@@ -220,7 +220,7 @@ fun WavySlider(
  * @param waveMovement the horizontal movement of the whole wave. To stop the movement, use [wavePeriod].
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
- * @param shouldFlatten whether to decrease the wave height the farther it is from the thumb.
+ * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
  * @param thumb the thumb to be displayed on the WavySlider, it is placed on top of the track. The lambda
  * receives a [SliderPositions] which is used to obtain the current active track.
  * @param track the track to be displayed on the WavySlider, it is placed underneath the thumb. The lambda
@@ -245,7 +245,7 @@ fun WavySlider(
     waveMovement: WaveMovement = SliderDefaults.WaveMovement,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
-    shouldFlatten: Boolean = SliderDefaults.ShouldFlatten,
+    incremental: Boolean = SliderDefaults.Incremental,
     /////////////////
     /////////////////
     /////////////////
@@ -270,7 +270,7 @@ fun WavySlider(
             waveMovement = waveMovement,
             waveThickness = waveThickness,
             trackThickness = trackThickness,
-            shouldFlatten = shouldFlatten
+            incremental = incremental
         )
     }
 ) {

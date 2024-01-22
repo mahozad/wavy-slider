@@ -29,7 +29,7 @@ fun App() {
             waveMovement = WaveMovement.LTR,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
-            shouldFlatten = true,
+            incremental = true,
             colors = SliderDefaults2.colors(activeTrackColor = Color.Red)
         )
         WavySlider2(
@@ -52,7 +52,7 @@ fun App() {
             waveMovement = WaveMovement.LTR,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
-            shouldFlatten = true,
+            incremental = true,
             colors = SliderDefaults3.colors(activeTrackColor = Color.Red)
         )
         WavySlider3(

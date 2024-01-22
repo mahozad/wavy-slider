@@ -81,7 +81,7 @@ fun MyComposable() {
         waveMovement = AUTO,    // Moves based on layout direction
         waveThickness = 4.dp,   // Defaults to the track thickness
         trackThickness = 4.dp,  // Defaults to 4.dp
-        shouldFlatten = false   // Defaults to false
+        incremental = false     // Whether to make waveHeight gradual
     )
 }
 ```
