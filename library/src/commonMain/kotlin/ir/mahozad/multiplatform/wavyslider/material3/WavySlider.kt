@@ -96,7 +96,7 @@ fun SliderDefaults.Track(
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
     val phaseShiftAnimated by animatePhaseShift(waveLength, wavePeriod, waveMovement)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
-    val trackHeight = max(waveHeightAnimated + waveThickness, ThumbSize.height)
+    val trackHeight = max(waveHeight + waveThickness, ThumbSize.height)
     Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)
