@@ -40,7 +40,6 @@ import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
-import kotlin.ranges.coerceAtLeast
 import kotlin.time.Duration
 
 private val ThumbRadius = 10.dp
@@ -371,24 +370,10 @@ private fun Track(
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
     val activeTrackColor = colors.trackColor(enabled, active = true)
-    val waveLengthPx: Float
-    val waveHeightPx: Float
-    val waveThicknessPx: Float
-    val trackThicknessPx: Float
-    val density = LocalDensity.current
-    with(density) {
-        waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
-        waveHeightPx = waveHeight.toPx().absoluteValue
-        waveThicknessPx = waveThickness.toPx()
-        trackThicknessPx = trackThickness.toPx()
-    }
-    val phaseShiftPxAnimated by animatePhaseShiftPx(waveLengthPx, wavePeriod, waveMovement)
-    val waveHeightPxAnimated by animateWaveHeightPx(waveHeightPx, animationSpecs.waveHeightAnimationSpec)
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(max(with(density) { waveHeightPxAnimated.toDp() + waveThickness }, /*thumbSize*/ThumbRadius * 2))
-    ) {
+    val phaseShiftAnimated by animatePhaseShift(waveLength, wavePeriod, waveMovement)
+    val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
+    val trackHeight = max(waveHeightAnimated + waveThickness, ThumbRadius * 2)
+    Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)
         val sliderRight = Offset(size.width - thumbPx, center.y)
@@ -396,11 +381,11 @@ private fun Track(
         val sliderEnd = if (isRtl) sliderLeft else sliderRight
         val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * positionFractionEnd, center.y)
         drawTrack(
-            waveLengthPx = waveLengthPx,
-            waveHeightPx = waveHeightPxAnimated,
-            phaseShiftPx = phaseShiftPxAnimated,
-            waveThicknessPx = waveThicknessPx,
-            trackThicknessPx = trackThicknessPx,
+            waveLength = waveLength,
+            waveHeight = waveHeightAnimated,
+            phaseShift = phaseShiftAnimated,
+            waveThickness = waveThickness,
+            trackThickness = trackThickness,
             sliderValueOffset = sliderValueOffset,
             sliderStart = sliderStart,
             sliderEnd = sliderEnd,

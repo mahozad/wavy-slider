@@ -11,11 +11,13 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.isActive
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.sin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -23,27 +25,27 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * The horizontal movement of the whole wave.
  */
-enum class WaveMovement(internal inline val factor: (LayoutDirection) -> Int) {
+enum class WaveMovement(internal inline val factor: (LayoutDirection) -> Float) {
     /**
      * Always move from right to left (regardless of layout direction).
      */
-    RTL({ 1 }),
+    RTL({ 1f }),
     /**
      * Always move from left to right (regardless of layout direction).
      */
-    LTR({ -1 }),
+    LTR({ -1f }),
     /**
      * Move away from the thumb (depends on layout direction).
      */
-    BACKWARD({ if (it == LayoutDirection.Ltr) 1 else -1 }),
+    BACKWARD({ if (it == LayoutDirection.Ltr) 1f else -1f }),
     /**
      * Move toward the thumb (depends on layout direction).
      */
-    FORWARD({ if (it == LayoutDirection.Ltr) -1 else 1 }),
+    FORWARD({ if (it == LayoutDirection.Ltr) -1f else 1f }),
     /**
      * Do not move.
      */
-    STOPPED({ 0 })
+    STOPPED({ 0f })
 }
 
 /**
@@ -52,7 +54,7 @@ enum class WaveMovement(internal inline val factor: (LayoutDirection) -> Int) {
  * @param waveHeightAnimationSpec used for changes in wave height.
  */
 data class WaveAnimationSpecs(
-    val waveHeightAnimationSpec: AnimationSpec<Float>
+    val waveHeightAnimationSpec: AnimationSpec<Dp>
 )
 
 internal val defaultIncremental = false
@@ -75,53 +77,53 @@ internal expect val KeyEvent.isPgUp: Boolean
 internal expect val KeyEvent.isPgDn: Boolean
 
 @Composable
-internal inline fun animatePhaseShiftPx(
-    waveLengthPx: Float,
+internal inline fun animatePhaseShift(
+    waveLength: Dp,
     wavePeriod: Duration,
     waveMovement: WaveMovement
-): State<Float> {
-    val shift = waveLengthPx * waveMovement.factor(LocalLayoutDirection.current)
-    val phaseShiftPxAnimated = remember { mutableFloatStateOf(0f) }
-    val phaseShiftPxAnimation = remember(shift, wavePeriod) {
+): State<Dp> {
+    val shift = waveLength * waveMovement.factor(LocalLayoutDirection.current)
+    val phaseShiftAnimated = remember { mutableStateOf(0.dp) }
+    val phaseShiftAnimation = remember(shift, wavePeriod) {
         val wavePeriodAdjusted = wavePeriod.toAdjustedMilliseconds()
-        val shiftAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0f else shift
+        val shiftAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0.dp else shift
         TargetBasedAnimation(
             animationSpec = infiniteRepeatable(
                 animation = tween(wavePeriodAdjusted, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
             ),
-            typeConverter = Float.VectorConverter,
-            // Instead of simply 0 and shift, they are added to current phaseShiftPxAnimated to
+            typeConverter = Dp.VectorConverter,
+            // Instead of simply 0 and shift, they are added to current phaseShiftAnimated to
             // smoothly continue the wave shift when wavePeriod or waveMovement is changed
-            initialValue =             0 + phaseShiftPxAnimated.value,
-            targetValue  = shiftAdjusted + phaseShiftPxAnimated.value
+            initialValue =          0.dp + phaseShiftAnimated.value,
+            targetValue  = shiftAdjusted + phaseShiftAnimated.value
         )
     }
     var playTime by remember { mutableStateOf(0L) }
-    LaunchedEffect(phaseShiftPxAnimation) {
+    LaunchedEffect(phaseShiftAnimation) {
         val startTime = withFrameNanos { it }
         while (isActive) {
             playTime = withFrameNanos { it } - startTime
-            phaseShiftPxAnimated.value = phaseShiftPxAnimation.getValueFromNanos(playTime)
+            phaseShiftAnimated.value = phaseShiftAnimation.getValueFromNanos(playTime)
         }
     }
-    return phaseShiftPxAnimated
+    return phaseShiftAnimated
 }
 
 private inline fun Duration.toAdjustedMilliseconds() = this
     .absoluteValue
     .inWholeMilliseconds
     .coerceAtMost(Int.MAX_VALUE.toLong())
-    .toInt() // Do not call before coercion
+    .toInt() // Do not call this before coercion
     .takeIf { it != 0 }
     ?: Int.MAX_VALUE
 
 @Composable
-internal inline fun animateWaveHeightPx(
-    waveHeightPx: Float,
-    animationSpec: AnimationSpec<Float>
-): State<Float> = animateFloatAsState(
-    targetValue = waveHeightPx,
+internal inline fun animateWaveHeight(
+    waveHeight: Dp,
+    animationSpec: AnimationSpec<Dp>
+): State<Dp> = animateDpAsState(
+    targetValue = waveHeight,
     animationSpec = animationSpec
 )
 
@@ -129,11 +131,11 @@ internal inline fun DrawScope.drawTrack(
     sliderStart: Offset,
     sliderValueOffset: Offset,
     sliderEnd: Offset,
-    waveLengthPx: Float,
-    waveHeightPx: Float,
-    waveThicknessPx: Float,
-    trackThicknessPx: Float,
-    phaseShiftPx: Float,
+    waveLength: Dp,
+    waveHeight: Dp,
+    waveThickness: Dp,
+    trackThickness: Dp,
+    phaseShift: Dp,
     incremental: Boolean,
     inactiveTrackColor: Color,
     activeTrackColor: Color
@@ -141,16 +143,16 @@ internal inline fun DrawScope.drawTrack(
     drawTrackActivePart(
         startOffset = sliderStart,
         valueOffset = sliderValueOffset,
-        waveLengthPx = waveLengthPx,
-        waveHeightPx = waveHeightPx,
-        waveThicknessPx = waveThicknessPx,
-        phaseShiftPx = phaseShiftPx,
+        waveLength = waveLength,
+        waveHeight = waveHeight,
+        waveThickness = waveThickness,
+        phaseShift = phaseShift,
         incremental = incremental,
         color = activeTrackColor
     )
     drawTrackInactivePart(
         color = inactiveTrackColor,
-        thicknessPx = trackThicknessPx,
+        thickness = trackThickness,
         startOffset = sliderValueOffset,
         endOffset = sliderEnd,
     )
@@ -158,13 +160,13 @@ internal inline fun DrawScope.drawTrack(
 
 private inline fun DrawScope.drawTrackInactivePart(
     color: Color,
-    thicknessPx: Float,
+    thickness: Dp,
     startOffset: Offset,
     endOffset: Offset
 ) {
-    if (thicknessPx <= 0f) return
+    if (thickness <= 0.dp) return
     drawLine(
-        strokeWidth = thicknessPx,
+        strokeWidth = thickness.toPx(),
         color = color,
         start = startOffset,
         end = endOffset,
@@ -175,20 +177,23 @@ private inline fun DrawScope.drawTrackInactivePart(
 private inline fun DrawScope.drawTrackActivePart(
     startOffset: Offset,
     valueOffset: Offset,
-    waveLengthPx: Float,
-    waveHeightPx: Float,
-    waveThicknessPx: Float,
-    phaseShiftPx: Float,
+    waveLength: Dp,
+    waveHeight: Dp,
+    waveThickness: Dp,
+    phaseShift: Dp,
     incremental: Boolean,
     color: Color
 ) {
-    if (waveThicknessPx <= 0f) return
+    if (waveThickness <= 0.dp) return
     val wave = Path().apply {
-        if (waveLengthPx == 0f || waveHeightPx == 0f) {
+        if (waveLength <= 0.dp || waveHeight == 0.dp) {
             moveTo(startOffset.x, center.y)
             lineTo(valueOffset.x, center.y)
             return@apply
         }
+        val phaseShiftPx = phaseShift.toPx()
+        val waveLengthPx = waveLength.toPx()
+        val waveHeightPx = waveHeight.toPx().absoluteValue
         val startHeightFactor = if (incremental) 0f else 1f
         val startRadians = (startOffset.x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
         val startY = (sin(startRadians) * startHeightFactor * (waveHeightPx / 2)) + (size.height / 2)
@@ -209,7 +214,7 @@ private inline fun DrawScope.drawTrackActivePart(
         path = wave,
         color = color,
         style = Stroke(
-            width = waveThicknessPx,
+            width = waveThickness.toPx(),
             join = StrokeJoin.Round,
             cap = StrokeCap.Round
         )

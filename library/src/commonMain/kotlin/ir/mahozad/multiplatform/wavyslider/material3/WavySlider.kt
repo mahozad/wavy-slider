@@ -20,7 +20,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.disabled
@@ -90,41 +89,27 @@ fun SliderDefaults.Track(
     incremental: Boolean = SliderDefaults.Incremental,
     animationSpecs: WaveAnimationSpecs = SliderDefaults.WaveAnimationSpecs
 ) {
-    // Because trackColor() function is an internal member in Material library
+    // @Suppress("INVISIBLE_MEMBER") is required to be able to access and use
+    // trackColor() function which is marked internal in Material library
     // See https://stackoverflow.com/q/62500464/8583692
     val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
-    val waveLengthPx: Float
-    val waveHeightPx: Float
-    val waveThicknessPx: Float
-    val trackThicknessPx: Float
-    val density = LocalDensity.current
-    with(density) {
-        waveLengthPx = waveLength.coerceAtLeast(0.dp).toPx()
-        waveHeightPx = waveHeight.toPx().absoluteValue
-        waveThicknessPx = waveThickness.toPx()
-        trackThicknessPx = trackThickness.toPx()
-    }
-    val phaseShiftPxAnimated by animatePhaseShiftPx(waveLengthPx, wavePeriod, waveMovement)
-    val waveHeightPxAnimated by animateWaveHeightPx(waveHeightPx, animationSpecs.waveHeightAnimationSpec)
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(max(with(density) { waveHeightPxAnimated.toDp() + waveThickness }, ThumbSize.height))
-    ) {
+    val phaseShiftAnimated by animatePhaseShift(waveLength, wavePeriod, waveMovement)
+    val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
+    val trackHeight = max(waveHeightAnimated + waveThickness, ThumbSize.height)
+    Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)
         val sliderRight = Offset(size.width, center.y)
         val sliderStart = if (isRtl) sliderRight else sliderLeft
         val sliderEnd = if (isRtl) sliderLeft else sliderRight
-        val sliderValueOffset =
-            Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderPositions.activeRange.endInclusive, center.y)
+        val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderPositions.activeRange.endInclusive, center.y)
         drawTrack(
-            waveLengthPx = waveLengthPx,
-            waveHeightPx = waveHeightPxAnimated,
-            phaseShiftPx = phaseShiftPxAnimated,
-            waveThicknessPx = waveThicknessPx,
-            trackThicknessPx = trackThicknessPx,
+            waveLength = waveLength,
+            waveHeight = waveHeightAnimated,
+            phaseShift = phaseShiftAnimated,
+            waveThickness = waveThickness,
+            trackThickness = trackThickness,
             sliderValueOffset = sliderValueOffset,
             sliderStart = sliderStart,
             sliderEnd = sliderEnd,

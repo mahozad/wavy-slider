@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -832,14 +833,14 @@ class VisualTest {
     @OptIn(ExperimentalComposeUiApi::class)
     @Test
     fun `Test 39`() {
-        val spec1 = tween<Float>(durationMillis = 1300, easing = EaseOutBounce)
-        val spec2 = tween<Float>(durationMillis = 150, easing = LinearEasing)
+        val spec1 = tween<Dp>(durationMillis = 1300, easing = EaseOutBounce)
+        val spec2 = tween<Dp>(durationMillis = 150, easing = LinearEasing)
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Different animationSpecs for wave height when dragging vs when toggling wave height",
             expected = "Should stop the wave horizontal movement"
         ) { value, onChange ->
-            var spec: AnimationSpec<Float> by remember { mutableStateOf(spec1) }
+            var spec: AnimationSpec<Dp> by remember { mutableStateOf(spec1) }
             var waveHeight by remember { mutableStateOf(16.dp) }
             val interactionSource = remember { MutableInteractionSource() }
             var isPressed by remember { mutableStateOf(false) }
