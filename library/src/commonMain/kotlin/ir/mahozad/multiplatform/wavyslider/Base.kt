@@ -184,7 +184,7 @@ private inline fun DrawScope.drawTrackActivePart(
 ) {
     if (waveThicknessPx <= 0f) return
     val wave = Path().apply {
-        if (waveLengthPx == 0f) {
+        if (waveLengthPx == 0f || waveHeightPx == 0f) {
             moveTo(startOffset.x, center.y)
             lineTo(valueOffset.x, center.y)
             return@apply
