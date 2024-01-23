@@ -58,15 +58,15 @@ fun App() {
 @Composable
 fun Content() {
     var value by remember { mutableFloatStateOf(0.5f) }
-    var isEnabled by remember { mutableStateOf(true) }
     var waveLength by remember { mutableStateOf(20.dp) }
     var waveHeight by remember { mutableStateOf(6.dp) }
     var wavePeriod by remember { mutableStateOf(2.seconds) }
     var waveThickness by remember { mutableStateOf(4.dp) }
     var trackThickness by remember { mutableStateOf(4.dp) }
-    var isRTL by remember { mutableStateOf(true) }
-    var isFlattened by remember { mutableStateOf(false) }
+    var isEnabled by remember { mutableStateOf(true) }
+    var isBackward by remember { mutableStateOf(true) }
     var isMaterial3 by remember { mutableStateOf(true) }
+    var isIncremental by remember { mutableStateOf(false) }
     var fontRobotoSlab by remember { mutableStateOf<FontFamily?>(null) }
 
     LaunchedEffect(Unit) {
@@ -91,8 +91,8 @@ fun Content() {
                 wavePeriod = wavePeriod,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
-                shouldFlatten = isFlattened,
-                waveMovement = if (isRTL) WaveMovement.RTL else WaveMovement.LTR
+                incremental = isIncremental,
+                waveMovement = if (isBackward) WaveMovement.RTL else WaveMovement.LTR
             )
         } else {
             androidx.compose.material.MaterialTheme(lightColors(primary = material2ColorPrimary)) {
@@ -105,8 +105,8 @@ fun Content() {
                     wavePeriod = wavePeriod,
                     waveThickness = waveThickness,
                     trackThickness = trackThickness,
-                    shouldFlatten = isFlattened,
-                    waveMovement = if (isRTL) WaveMovement.RTL else WaveMovement.LTR
+                    incremental = isIncremental,
+                    waveMovement = if (isBackward) WaveMovement.RTL else WaveMovement.LTR
                 )
             }
         }
@@ -130,8 +130,8 @@ fun Content() {
                     MaterialDesignVersion(isMaterial3) { isMaterial3 = it }
                     Spacer(Modifier.height(0.dp))
                     Toggle(isEnabled, "Enabled:") { isEnabled = it }
-                    Toggle(isFlattened, "Flatten wave tail:") { isFlattened = it }
-                    Toggle(!isRTL, "Reverse animation:") { isRTL = !it }
+                    Toggle(isIncremental, "Incremental wave height:") { isIncremental = it }
+                    Toggle(!isBackward, "Reverse animation:") { isBackward = !it }
                     LabeledSlider(
                         label = "Wave length:",
                         value = waveLength.value,
@@ -173,8 +173,8 @@ fun Content() {
                 wavePeriod = wavePeriod,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
-                isFlattened = isFlattened,
-                isRTL = isRTL,
+                isIncremental = isIncremental,
+                isBackward = isBackward,
                 modifier = Modifier
                     .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                     .padding(16.dp)
@@ -310,8 +310,8 @@ fun Code(
     wavePeriod: Duration,
     waveThickness: Dp,
     trackThickness: Dp,
-    isFlattened: Boolean,
-    isRTL: Boolean,
+    isIncremental: Boolean,
+    isBackward: Boolean,
     modifier: Modifier
 ) {
     // https://stackoverflow.com/q/42791492
@@ -330,7 +330,7 @@ fun Code(
 
     // Equivalent to the following
     """
-        import ...wavyslider.WaveMovement
+        import ...wavyslider.WaveMovement.*
         import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
 
         var value by remember {
@@ -343,10 +343,11 @@ fun Code(
             enabled = ${if (isEnabled) "true" else "false"},
             waveLength = ${waveLength.value.roundToInt()}.dp,
             waveHeight = ${waveHeight.value.roundToInt()}.dp,
+            wavePeriod = ${wavePeriod.inWholeSeconds}.seconds,
+            waveMovement = ${if (isBackward) "BACKWARD" else "FORWARD"},
             waveThickness = ${waveThickness.value.roundToInt()}.dp,
             trackThickness = ${trackThickness.value.roundToInt()}.dp,
-            shouldFlatten = ${if (isFlattened) "true" else "false"},
-            animationDirection = ${if (isRTL) "RTL" else "LTR"}
+            incremental = ${if (isIncremental) "true" else "false"}
         )
     """.trimIndent()
 
@@ -354,7 +355,7 @@ fun Code(
         pushStyle(ParagraphStyle(lineHeight = lineHeight))
         withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) {
-            append("...wavyslider.WaveMovement")
+            append("...wavyslider.WaveMovement.*")
         }
         appendLine()
         withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
@@ -417,8 +418,9 @@ fun Code(
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveMovement ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= WaveMovement.") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append(if (isRTL) "RTL" else "LTR") }
+        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(colorMember, fontSize)) { append(if (isBackward) "BACKWARD" else "FORWARD") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveThickness ") }
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
@@ -434,10 +436,9 @@ fun Code(
         withStyle(SpanStyle(colorMember, fontSize)) { append("dp") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    shouldFlatten ") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    incremental ") }
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorKeyword, fontSize)) { append("$isFlattened") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(colorKeyword, fontSize)) { append("$isIncremental") }
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(")") }
     }
