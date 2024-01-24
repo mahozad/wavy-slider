@@ -156,14 +156,14 @@ class VisualTest {
             expected = "Should be displayed properly"
         ) { value, onChange ->
             WavySlider(value, onChange, thumb = WavySliderThumb.Diamond)
-            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(16.dp))
+            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(36.dp))
             WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(8.dp, 24.dp))
-            // No thumb
+            // Nothing
             WavySlider(value, onChange, thumb = {})
-            // Custom
+            // Anything
             WavySlider(value, onChange, thumb = { Text("XYX") })
             // Default
-            WavySlider(value, onChange, thumb = { SliderDefaults.Thumb(remember { MutableInteractionSource() }, enabled = false) })
+            WavySlider(value, onChange, thumb = { SliderDefaults.Thumb(remember { MutableInteractionSource() }) })
         }
         assert(isPassed)
     }
