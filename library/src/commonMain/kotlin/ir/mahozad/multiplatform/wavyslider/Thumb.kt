@@ -9,28 +9,25 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 sealed class WaveThumb {
-    @Composable internal abstract fun shape()
+
+    internal abstract val drawing: @Composable () -> Unit
 
     open class Diamond(
         val width: Dp,
         val height: Dp = width
     ) : WaveThumb() {
         companion object : Diamond(24.dp, 24.dp)
-        @Composable override fun shape() {
+        override val drawing = @Composable {
             Box(modifier = Modifier.width(width).height(height).background(Color.Red))
         }
     }
 
-    data class Custom(
-        private val drawing: @Composable () -> Unit
-    ) : WaveThumb() {
-        @Composable override fun shape() = drawing()
-    }
+    data class Custom(override val drawing: @Composable () -> Unit) : WaveThumb()
 }
 
 @Composable
 fun ExampleComponent(thumb: WaveThumb) {
-    thumb.shape()
+    thumb.drawing()
     when (thumb) {
         is WaveThumb.Diamond -> println("Diamond")
         is WaveThumb.Custom -> println("Custom")
