@@ -25,7 +25,7 @@ import ir.mahozad.multiplatform.wavyslider.material3.WavySlider
 
 class WavySliderThumb {
     companion object {
-        val Diamond: @Composable (SliderPositions) -> Unit = { Diamond(24.dp) }
+        val Diamond: @Composable (SliderPositions) -> Unit = { Diamond(24.dp)(it) }
         @Composable fun Diamond(
             width: Dp,
             height: Dp = width,
