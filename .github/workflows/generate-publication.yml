@@ -8,7 +8,7 @@ on:
 jobs:
   generate-publication:
     name: Generate library publication
-    # Should be macOS to be able to create IOS variants as well
+    # Should be macOS to be able to create iOS variants as well
     runs-on: macos-latest
     env:
       # For information about signing.* properties,

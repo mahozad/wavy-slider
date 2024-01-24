@@ -35,7 +35,7 @@ kotlin {
         browser()
         binaries.executable()
     }
-    // Building and publishing for IOS target requires a machine running macOS;
+    // Building and publishing for iOS target requires a machine running macOS;
     // otherwise, the .klib will not be produced and the compiler warns about that.
     // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
     listOf(
@@ -110,7 +110,7 @@ tasks.withType<PublishToMavenRepository> {
         isMac.also {
             if (!isMac) logger.error(
                 """
-                    Publishing the library requires macOS to be able to generate IOS artifacts.
+                    Publishing the library requires macOS to be able to generate iOS artifacts.
                     Run the task on a mac or use the project GitHub workflows for publication and release.
                 """
             )
