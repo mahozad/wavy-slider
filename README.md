@@ -86,6 +86,47 @@ fun MyComposable() {
 }
 ```
 
+## Examples
+
+<table>
+<tr>
+<td> Preview </td> <td> Code </td>
+</tr>
+<tr>
+<td> <img src="demo.svg"> </td>
+<td>
+
+```kotlin
+WavySlider(
+    value = fraction,
+    onValueChange = { fraction = it },
+    waveLength = 16.dp,     
+    waveHeight = 16.dp,     
+    wavePeriod = 3.seconds, 
+    waveMovement = FORWARD, 
+    waveThickness = 4.dp,   
+    trackThickness = 4.dp,  
+    incremental = false     
+)
+```
+
+</td>
+</tr>
+<tr>
+<td> <img src="assets/logo-icon.svg"> </td>
+<td>
+
+```kotlin
+WavySlider(
+    value = fraction,
+    onValueChange = { fraction = it }   
+)
+```
+
+</td>
+</tr>
+</table>
+
 ## Related projects
   - Wave slider (similar to ours): https://github.com/galaxygoldfish/waveslider  
   - Sliders with custom styles: https://github.com/krottv/compose-sliders
