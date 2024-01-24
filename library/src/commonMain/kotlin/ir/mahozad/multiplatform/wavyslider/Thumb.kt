@@ -17,9 +17,9 @@ import ir.mahozad.multiplatform.wavyslider.material3.WavySlider
 
 class WavySliderThumb {
     companion object {
-        @Composable fun Custom(content: @Composable (SliderPositions) -> Unit) = content
+        fun Custom(content: @Composable (SliderPositions) -> Unit) = content
         val Diamond: @Composable (SliderPositions) -> Unit = Diamond(24.dp)
-        fun Diamond(width: Dp, height: Dp = width): @Composable (SliderPositions) -> Unit {
+        fun Diamond(width: Dp, height: Dp = width, roundness: Dp = 0.dp): @Composable (SliderPositions) -> Unit {
             val f: @Composable (SliderPositions) -> Unit = {
                 Box(modifier = Modifier.width(width).height(height).background(Color.Red))
             }
