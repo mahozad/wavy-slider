@@ -1,3 +1,5 @@
+// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/release/1.5.11/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+
 @file:Suppress("UnusedReceiverParameter")
 
 package ir.mahozad.multiplatform.wavyslider.material
