@@ -569,4 +569,5 @@ private enum class SliderComponents {
 internal object SliderTokens {
     val HandleHeight = 20.0.dp
     val HandleWidth = 20.0.dp
+    val StateLayerSize = 40.0.dp
 }
