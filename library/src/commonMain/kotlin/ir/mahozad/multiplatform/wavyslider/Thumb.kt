@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ir.mahozad.multiplatform.wavyslider.material3.ThumbDefaultElevation
+import ir.mahozad.multiplatform.wavyslider.material3.ThumbPressedElevation
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider
 
 class WavySliderThumb {
@@ -28,7 +30,7 @@ class WavySliderThumb {
             width: Dp,
             height: Dp = width,
             roundness: Dp = 0.dp,
-            interactionSource: MutableInteractionSource = MutableInteractionSource(),
+            interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
             modifier: Modifier = Modifier,
             enabled: Boolean = true,
             colors: SliderColors = SliderDefaults.colors()
@@ -48,9 +50,9 @@ class WavySliderThumb {
                     }
                 }
                 val elevation = if (interactions.isNotEmpty()) {
-                    /*ThumbPressedElevation*/ 6.dp
+                    ThumbPressedElevation
                 } else {
-                    /*ThumbDefaultElevation*/ 1.dp
+                    ThumbDefaultElevation
                 }
                 val shape = RoundedCornerShape(roundness)
                 Spacer(

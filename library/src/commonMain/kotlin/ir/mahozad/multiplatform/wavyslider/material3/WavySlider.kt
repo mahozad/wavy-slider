@@ -51,6 +51,8 @@ val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAni
 private val ThumbWidth = SliderTokens.HandleWidth
 private val ThumbHeight = SliderTokens.HandleHeight
 private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
+internal val ThumbDefaultElevation = 1.dp
+internal val ThumbPressedElevation = 6.dp
 
 /**
  * The Default track for [WavySlider]
