@@ -27,6 +27,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import ir.mahozad.multiplatform.wavyslider.WaveMovement.*
+import ir.mahozad.multiplatform.wavyslider.material3.WavySlider
 import kotlinx.coroutines.delay
 import org.junit.Test
 import kotlin.time.Duration
@@ -146,15 +147,24 @@ class VisualTest {
         return passed
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Test
     fun `Test 1`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Default wavy sliders with no arguments passed",
-            expected = "Should be displayed properly",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange) }
-        )
+            expected = "Should be displayed properly"
+        ) { value, onChange ->
+            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond)
+            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(16.dp))
+            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(8.dp, 24.dp))
+            // No thumb
+            WavySlider(value, onChange, thumb = {})
+            // Custom
+            WavySlider(value, onChange, thumb = { Text("XYX") })
+            // Default
+            WavySlider(value, onChange, thumb = { SliderDefaults.Thumb(remember { MutableInteractionSource() }, enabled = false) })
+        }
         assert(isPassed)
     }
 

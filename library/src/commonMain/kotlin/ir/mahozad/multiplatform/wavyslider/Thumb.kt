@@ -17,7 +17,6 @@ import ir.mahozad.multiplatform.wavyslider.material3.WavySlider
 
 class WavySliderThumb {
     companion object {
-        fun Custom(content: @Composable (SliderPositions) -> Unit) = content
         val Diamond: @Composable (SliderPositions) -> Unit = Diamond(24.dp)
         fun Diamond(width: Dp, height: Dp = width, roundness: Dp = 0.dp): @Composable (SliderPositions) -> Unit {
             val f: @Composable (SliderPositions) -> Unit = {
@@ -31,8 +30,13 @@ class WavySliderThumb {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Examples() {
-    WavySlider(0.5f, {}, thumb = { SliderDefaults.Thumb(remember { MutableInteractionSource() }) })
     WavySlider(0.5f, {}, thumb = WavySliderThumb.Diamond)
+    WavySlider(0.5f, {}, thumb = WavySliderThumb.Diamond(16.dp))
     WavySlider(0.5f, {}, thumb = WavySliderThumb.Diamond(8.dp, 24.dp))
-    WavySlider(0.5f, {}, thumb = WavySliderThumb.Custom { Text("XYX") })
+    // Nothing
+    WavySlider(0.5f, {}, thumb = {})
+    // Custom
+    WavySlider(0.5f, {}, thumb = { Text("XYX") })
+    // Default
+    WavySlider(0.5f, {}, thumb = { SliderDefaults.Thumb(remember { MutableInteractionSource() }, enabled = false) })
 }
