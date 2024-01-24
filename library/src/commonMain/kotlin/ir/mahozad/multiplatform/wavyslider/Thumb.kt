@@ -8,38 +8,53 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-sealed class WaveThumb {
+sealed class WavySliderThumb {
 
     internal abstract val drawing: @Composable () -> Unit
 
     open class Diamond(
         val width: Dp,
-        val height: Dp = width
-    ) : WaveThumb() {
-        companion object : Diamond(24.dp, 24.dp)
+        val height: Dp = width,
+        val roundness: Dp = 0.dp
+    ) : WavySliderThumb() {
+        override fun toString() = "WavySliderThumb.Diamond"
+        companion object : Diamond(width = 24.dp, height = 24.dp, roundness = 2.dp)
         override val drawing = @Composable {
             Box(modifier = Modifier.width(width).height(height).background(Color.Red))
         }
     }
 
-    data class Custom(override val drawing: @Composable () -> Unit) : WaveThumb()
+    open class Pill(
+        val width: Dp,
+        val height: Dp = width * 4,
+        val roundness: Dp = 0.dp
+    ) : WavySliderThumb() {
+        override fun toString() = "WavySliderThumb.Pill"
+        companion object : Pill(width = 4.dp, height = 20.dp, roundness = 8.dp)
+        override val drawing = @Composable {
+            Box(modifier = Modifier.width(width).height(height).background(Color.Red))
+        }
+    }
+
+    data class Custom(override val drawing: @Composable () -> Unit) : WavySliderThumb()
 }
 
 @Composable
-fun ExampleComponent(thumb: WaveThumb) {
+fun ExampleComponent(thumb: WavySliderThumb) {
     thumb.drawing()
     when (thumb) {
-        is WaveThumb.Diamond -> println("Diamond")
-        is WaveThumb.Custom -> println("Custom")
+        is WavySliderThumb.Pill -> println("Pill")
+        is WavySliderThumb.Diamond -> println("Diamond")
+        is WavySliderThumb.Custom -> println("Custom")
     }
 }
 
 @Composable
 fun ExampleCaller() {
     Column {
-        ExampleComponent(thumb = WaveThumb.Diamond)
-        ExampleComponent(thumb = WaveThumb.Diamond(10.dp))
-        ExampleComponent(thumb = WaveThumb.Custom {
+        ExampleComponent(thumb = WavySliderThumb.Diamond)
+        ExampleComponent(thumb = WavySliderThumb.Diamond(10.dp))
+        ExampleComponent(thumb = WavySliderThumb.Custom {
             Box(modifier = Modifier.size(14.dp).background(Color.Green))
         })
     }
