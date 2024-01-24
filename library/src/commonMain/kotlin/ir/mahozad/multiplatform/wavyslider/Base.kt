@@ -195,8 +195,8 @@ private inline fun DrawScope.drawTrackActivePart(
         val waveLengthPx = waveLength.toPx()
         val waveHeightPx = waveHeight.toPx().absoluteValue
         val startHeightFactor = if (incremental) 0f else 1f
-        val startRadians = (startOffset.x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
-        val startY = (sin(startRadians) * startHeightFactor * (waveHeightPx / 2)) + (size.height / 2)
+        val startRadians = (startOffset.x + phaseShiftPx) / waveLengthPx * (2 * PI)
+        val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
         moveTo(startOffset.x, startY.toFloat())
         val range = if (layoutDirection == LayoutDirection.Rtl) {
             startOffset.x.toInt() downTo valueOffset.x.toInt()
@@ -205,8 +205,8 @@ private inline fun DrawScope.drawTrackActivePart(
         }
         for (x in range) {
             val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
-            val radians = (x + phaseShiftPx) % waveLengthPx / waveLengthPx * (2 * PI)
-            val y = (sin(radians) * heightFactor * (waveHeightPx / 2)) + (size.height / 2)
+            val radians = (x + phaseShiftPx) / waveLengthPx * (2 * PI)
+            val y = (sin(radians) * heightFactor * waveHeightPx + size.height) / 2
             lineTo(x.toFloat(), y.toFloat())
         }
     }
