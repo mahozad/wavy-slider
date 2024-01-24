@@ -93,7 +93,7 @@ fun MyComposable() {
 <td> Preview </td> <td> Code </td>
 </tr>
 <tr>
-<td> <img src="demo.svg"> </td>
+<td> <img src="demo.svg" width="200px"> </td>
 <td>
 
 ```kotlin
@@ -113,7 +113,7 @@ WavySlider(
 </td>
 </tr>
 <tr>
-<td> <img src="assets/logo-icon.svg"> </td>
+<td> <img src="assets/logo-icon.svg" width="200px"> </td>
 <td>
 
 ```kotlin
