@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import ir.mahozad.multiplatform.wavyslider.WaveMovement
+import ir.mahozad.multiplatform.wavyslider.WaveDirection.RIGHT
 import androidx.compose.material.SliderDefaults as SliderDefaults2
 import androidx.compose.material3.SliderDefaults as SliderDefaults3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
@@ -26,7 +26,7 @@ fun App() {
             onValueChange = { value = it },
             waveLength = 12.dp,
             waveHeight = 24.dp,
-            waveMovement = WaveMovement.LTR,
+            waveVelocity = 14.dp to RIGHT,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
             incremental = true,
@@ -49,7 +49,7 @@ fun App() {
             onValueChange = { value = it },
             waveLength = 12.dp,
             waveHeight = 24.dp,
-            waveMovement = WaveMovement.LTR,
+            waveVelocity = 14.dp to RIGHT,
             waveThickness = 1.dp,
             trackThickness = 5.dp,
             incremental = true,

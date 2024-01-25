@@ -41,8 +41,7 @@ import kotlin.time.Duration
 
 val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
 val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
-val SliderDefaults.WavePeriod: Duration get() = defaultWavePeriod
-val SliderDefaults.WaveMovement: WaveMovement get() = defaultWaveMovement
+val SliderDefaults.WaveVelocity: Pair<Dp, WaveDirection> get() = defaultWaveVelocity
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
 val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
 val SliderDefaults.Incremental: Boolean get() = defaultIncremental
@@ -68,9 +67,8 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
- * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally.
- * Setting to [Duration.ZERO] or outside `Int.MIN_VALUE..Int.MAX_VALUE` milliseconds stops the movement.
- * @param waveMovement the horizontal movement of the whole wave.
+ * @param waveVelocity the speed per second and movement direction of the whole wave.
+ * Setting speed to `0.dp` or less stops the movement.
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
  * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
@@ -87,8 +85,7 @@ fun SliderDefaults.Track(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
-    wavePeriod: Duration = SliderDefaults.WavePeriod,
-    waveMovement: WaveMovement = SliderDefaults.WaveMovement,
+    waveVelocity: Pair<Dp, WaveDirection> = SliderDefaults.WaveVelocity,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
     incremental: Boolean = SliderDefaults.Incremental,
@@ -99,7 +96,7 @@ fun SliderDefaults.Track(
     // See https://stackoverflow.com/q/62500464/8583692
     val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
-    val phaseShiftAnimated by animatePhaseShift(waveLength, wavePeriod, waveMovement)
+    val phaseShiftAnimated by animatePhaseShift(waveLength, waveVelocity)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val trackHeight = max(waveHeight + waveThickness, ThumbSize.height)
     Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
@@ -143,8 +140,7 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
-    wavePeriod: Duration = SliderDefaults.WavePeriod,
-    waveMovement: WaveMovement = SliderDefaults.WaveMovement,
+    waveVelocity: Pair<Dp, WaveDirection> = SliderDefaults.WaveVelocity,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
     incremental: Boolean = SliderDefaults.Incremental,
@@ -175,8 +171,7 @@ fun WavySlider(
                 /////////////////
                 waveLength = waveLength,
                 waveHeight = waveHeight,
-                wavePeriod = wavePeriod,
-                waveMovement = waveMovement,
+                waveVelocity = waveVelocity,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
                 incremental = incremental,
@@ -217,9 +212,8 @@ fun WavySlider(
  * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
- * @param wavePeriod the duration it takes for the wave to move by [waveLength] horizontally.
- * Setting to [Duration.ZERO] or outside `Int.MIN_VALUE..Int.MAX_VALUE` milliseconds stops the movement.
- * @param waveMovement the horizontal movement of the whole wave.
+ * @param waveVelocity the speed per second and movement direction of the whole wave.
+ * Setting speed to `0.dp` or less stops the movement.
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
  * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
@@ -245,8 +239,7 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
-    wavePeriod: Duration = SliderDefaults.WavePeriod,
-    waveMovement: WaveMovement = SliderDefaults.WaveMovement,
+    waveVelocity: Pair<Dp, WaveDirection> = SliderDefaults.WaveVelocity,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
     incremental: Boolean = SliderDefaults.Incremental,
@@ -271,8 +264,7 @@ fun WavySlider(
             /////////////////
             waveLength = waveLength,
             waveHeight = waveHeight,
-            wavePeriod = wavePeriod,
-            waveMovement = waveMovement,
+            waveVelocity = waveVelocity,
             waveThickness = waveThickness,
             trackThickness = trackThickness,
             incremental = incremental,

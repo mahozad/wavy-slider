@@ -14,38 +14,30 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
 import kotlinx.coroutines.isActive
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.absoluteValue
-import kotlin.math.sin
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
+import kotlin.math.*
 
 /**
- * The horizontal movement of the whole wave.
+ * The horizontal movement (shift) of the whole wave.
  */
-enum class WaveMovement(internal inline val factor: (LayoutDirection) -> Float) {
+enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float) {
     /**
-     * Always move from right to left (regardless of layout direction).
+     * Always shift toward left (regardless of layout direction).
      */
-    RTL({ 1f }),
+    LEFT({ 1f }),
     /**
-     * Always move from left to right (regardless of layout direction).
+     * Always shift toward right (regardless of layout direction).
      */
-    LTR({ -1f }),
+    RIGHT({ -1f }),
     /**
-     * Move away from the thumb (depends on layout direction).
+     * Shift toward the start (depends on layout direction).
      */
-    BACKWARD({ if (it == LayoutDirection.Ltr) 1f else -1f }),
+    TAIL({ if (it == LayoutDirection.Ltr) 1f else -1f }),
     /**
-     * Move toward the thumb (depends on layout direction).
+     * Shift toward the thumb (depends on layout direction).
      */
-    FORWARD({ if (it == LayoutDirection.Ltr) -1f else 1f }),
-    /**
-     * Do not move.
-     */
-    STOPPED({ 0f })
+    HEAD({ if (it == LayoutDirection.Ltr) -1f else 1f })
 }
 
 /**
@@ -58,11 +50,10 @@ data class WaveAnimationSpecs(
 )
 
 internal val defaultIncremental = false
-internal val defaultWaveMovement = WaveMovement.BACKWARD
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
-internal val defaultWavePeriod = 2.seconds
+internal val defaultWaveVelocity = 10.dp to TAIL
 internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
     waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
 )
@@ -79,17 +70,17 @@ internal expect val KeyEvent.isPgDn: Boolean
 @Composable
 internal inline fun animatePhaseShift(
     waveLength: Dp,
-    wavePeriod: Duration,
-    waveMovement: WaveMovement
+    waveVelocity: Pair<Dp, WaveDirection>
 ): State<Dp> {
-    val shift = waveLength * waveMovement.factor(LocalLayoutDirection.current)
+    val (speed, direction) = waveVelocity
+    val shift = waveLength * direction.factor(LocalLayoutDirection.current)
     val phaseShiftAnimated = remember { mutableStateOf(0.dp) }
-    val phaseShiftAnimation = remember(shift, wavePeriod) {
-        val wavePeriodAdjusted = wavePeriod.toAdjustedMilliseconds()
-        val shiftAdjusted = if (wavePeriodAdjusted == Int.MAX_VALUE) 0.dp else shift
+    val phaseShiftAnimation = remember(shift, waveLength, speed) {
+        val shiftAdjusted = if (speed == 0.dp) 0.dp else shift
+        val duration = computeDuration(waveLength, speed)
         TargetBasedAnimation(
             animationSpec = infiniteRepeatable(
-                animation = tween(wavePeriodAdjusted, easing = LinearEasing),
+                animation = tween(durationMillis = duration, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
             ),
             typeConverter = Dp.VectorConverter,
@@ -110,13 +101,17 @@ internal inline fun animatePhaseShift(
     return phaseShiftAnimated
 }
 
-private inline fun Duration.toAdjustedMilliseconds() = this
-    .absoluteValue
-    .inWholeMilliseconds
-    .coerceAtMost(Int.MAX_VALUE.toLong())
-    .toInt() // Do not call this before coercion
-    .takeIf { it != 0 }
-    ?: Int.MAX_VALUE
+private inline fun computeDuration(
+    waveLength: Dp,
+    speed: Dp
+): Int {
+    val millis = if (speed <= 0.dp || waveLength <= 0.dp) {
+        Int.MAX_VALUE
+    } else {
+        (waveLength / speed) * 1000
+    }
+    return millis.toInt().coerceAtLeast(1)
+}
 
 @Composable
 internal inline fun animateWaveHeight(
