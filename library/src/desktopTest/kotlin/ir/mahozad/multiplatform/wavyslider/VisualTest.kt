@@ -155,6 +155,10 @@ class VisualTest {
             given = "Default wavy sliders with no arguments passed",
             expected = "Should be displayed properly"
         ) { value, onChange ->
+            Slider3(value, onChange, thumb = WavySliderThumb.Diamond)
+
+
+
             // Not specified
             WavySlider(value, onChange)
             // Empty
@@ -165,8 +169,8 @@ class VisualTest {
             WavySlider(value, onChange, thumb = { SliderDefaults.Thumb(remember { MutableInteractionSource() }) })
             // Shapes
             WavySlider(value, onChange, thumb = WavySliderThumb.Diamond)
-            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(36.dp))
-            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(20.dp, 6.dp))
+            WavySlider(value, onChange, thumb = { WavySliderThumb.Diamond(36.dp) })
+            WavySlider(value, onChange, thumb = { WavySliderThumb.Diamond(24.dp, 5.dp) })
         }
         assert(isPassed)
     }

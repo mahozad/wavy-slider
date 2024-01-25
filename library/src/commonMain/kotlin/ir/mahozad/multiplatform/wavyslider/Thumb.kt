@@ -31,8 +31,10 @@ import ir.mahozad.multiplatform.wavyslider.material3.ThumbPressedElevation
 
 class WavySliderThumb {
     companion object {
-        val Diamond: @Composable (SliderPositions) -> Unit = { Diamond(18.dp, 4.dp)(it) }
-        @Composable fun Diamond(
+        val Diamond: @Composable (SliderPositions) -> Unit = { Diamond(18.dp, 4.dp) }
+
+        @Composable
+        fun Diamond(
             size: Dp,
             roundness: Dp = 0.dp,
             /////////////////
@@ -42,45 +44,41 @@ class WavySliderThumb {
             modifier: Modifier = Modifier,
             colors: SliderColors = SliderDefaults.colors(),
             enabled: Boolean = true
-        ): @Composable (SliderPositions) -> Unit {
-           return remember(size, roundness, interactionSource, modifier, colors, enabled) {
-                return@remember {
-                    val interactions = remember { mutableStateListOf<Interaction>() }
-                    LaunchedEffect(interactionSource) {
-                        interactionSource.interactions.collect { interaction ->
-                            when (interaction) {
-                                is PressInteraction.Press -> interactions.add(interaction)
-                                is PressInteraction.Release -> interactions.remove(interaction.press)
-                                is PressInteraction.Cancel -> interactions.remove(interaction.press)
-                                is DragInteraction.Start -> interactions.add(interaction)
-                                is DragInteraction.Stop -> interactions.remove(interaction.start)
-                                is DragInteraction.Cancel -> interactions.remove(interaction.start)
-                            }
-                        }
+        ) {
+            val interactions = remember { mutableStateListOf<Interaction>() }
+            LaunchedEffect(interactionSource) {
+                interactionSource.interactions.collect { interaction ->
+                    when (interaction) {
+                        is PressInteraction.Press -> interactions.add(interaction)
+                        is PressInteraction.Release -> interactions.remove(interaction.press)
+                        is PressInteraction.Cancel -> interactions.remove(interaction.press)
+                        is DragInteraction.Start -> interactions.add(interaction)
+                        is DragInteraction.Stop -> interactions.remove(interaction.start)
+                        is DragInteraction.Cancel -> interactions.remove(interaction.start)
                     }
-                    val elevation = if (interactions.isNotEmpty()) {
-                        ThumbPressedElevation
-                    } else {
-                        ThumbDefaultElevation
-                    }
-                    val shape = RoundedCornerShape(roundness)
-                    Spacer(
-                        modifier
-                            .size(size)
-                            .rotate(45f)
-                            .indication(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(
-                                    bounded = false,
-                                    radius = SliderTokens.StateLayerSize / 2
-                                )
-                            )
-                            .hoverable(interactionSource = interactionSource)
-                            .shadow(if (enabled) elevation else 0.dp, shape, clip = false)
-                            .background(@Suppress("INVISIBLE_MEMBER") colors.thumbColor(enabled).value, shape)
-                    )
                 }
             }
+            val elevation = if (interactions.isNotEmpty()) {
+                ThumbPressedElevation
+            } else {
+                ThumbDefaultElevation
+            }
+            val shape = RoundedCornerShape(roundness)
+            Spacer(
+                modifier
+                    .size(size)
+                    .rotate(45f)
+                    .indication(
+                        interactionSource = interactionSource,
+                        indication = rememberRipple(
+                            bounded = false,
+                            radius = SliderTokens.StateLayerSize / 2
+                        )
+                    )
+                    .hoverable(interactionSource = interactionSource)
+                    .shadow(if (enabled) elevation else 0.dp, shape, clip = false)
+                    .background(@Suppress("INVISIBLE_MEMBER") colors.thumbColor(enabled).value, shape)
+            )
         }
     }
 }
