@@ -166,7 +166,7 @@ class VisualTest {
             // Shapes
             WavySlider(value, onChange, thumb = WavySliderThumb.Diamond)
             WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(36.dp))
-            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(8.dp, 24.dp))
+            WavySlider(value, onChange, thumb = WavySliderThumb.Diamond(20.dp, 6.dp))
         }
         assert(isPassed)
     }
