@@ -134,6 +134,7 @@ fun WavySlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     onValueChangeFinished: (() -> Unit)? = null,
     colors: SliderColors = SliderDefaults.colors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -156,6 +157,7 @@ fun WavySlider(
         onValueChange = onValueChange,
         onValueChangeFinished = onValueChangeFinished,
         value = value,
+        valueRange = valueRange,
         thumb = {
             SliderDefaults.Thumb(
                 interactionSource = interactionSource,
@@ -194,11 +196,13 @@ fun WavySlider(
  * Note that range sliders do not make sense for the wavy slider.
  * So, there is no RangeWavySlider counterpart.
  *
- * @param value current value of the WavySlider. it will be coerced to the range `0f..1f`.
+ * @param value current value of the WavySlider. Will be coerced to [valueRange].
  * @param onValueChange onValueChange callback in which value should be updated
  * @param modifier the [Modifier] to be applied to this WavySlider
  * @param enabled controls the enabled state of this WavySlider. When `false`, this component will not
  * respond to user input, and it will appear visually disabled and disabled to accessibility services.
+ * @param valueRange range of values that this slider can take. The passed [value] will be coerced
+ * to this range.
  * @param onValueChangeFinished called when value change has ended. This should not be used to
  * update the slider value (use [onValueChange] instead), but rather to know when the user has
  * completed selecting a new value by ending a drag or a click.
@@ -232,6 +236,7 @@ fun WavySlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     onValueChangeFinished: (() -> Unit)? = null,
     colors: SliderColors = SliderDefaults.colors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -280,6 +285,7 @@ fun WavySlider(
         onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
+        valueRange = valueRange,
         onValueChangeFinished = onValueChangeFinished,
         interactionSource = interactionSource,
         thumb = thumb,
@@ -295,6 +301,7 @@ private fun WavySliderImpl(
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)?,
     value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
     thumb: @Composable (SliderPositions) -> Unit,
     track: @Composable (SliderPositions) -> Unit
 ) {
@@ -310,22 +317,22 @@ private fun WavySliderImpl(
     val totalWidth = remember { mutableIntStateOf(0) }
 
     fun scaleToUserValue(minPx: Float, maxPx: Float, offset: Float) =
-        scale(minPx, maxPx, offset, 0f, 1f)
+        scale(minPx, maxPx, offset, valueRange.start, valueRange.endInclusive)
 
     fun scaleToOffset(minPx: Float, maxPx: Float, userValue: Float) =
-        scale(0f, 1f, userValue, minPx, maxPx)
+        scale(valueRange.start, valueRange.endInclusive, userValue, minPx, maxPx)
 
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val rawOffset = remember { mutableFloatStateOf(scaleToOffset(0f, 0f, value)) }
     val pressOffset = remember { mutableFloatStateOf(0f) }
-    val coerced = value.coerceIn(0f, 1f)
+    val coerced = value.coerceIn(valueRange.start, valueRange.endInclusive)
 
-    val positionFraction = calcFraction(0f, 1f, coerced)
+    val positionFraction = calcFraction(valueRange.start, valueRange.endInclusive, coerced)
     val sliderPositions = remember(positionFraction, tickFractions) {
         SliderPositions(0f..positionFraction, tickFractions)
     }
 
-    val draggableState = remember {
+    val draggableState = remember(valueRange) {
         SliderDraggableState {
             val maxPx = max(totalWidth.value - thumbWidth.value / 2, 0f)
             val minPx = min(thumbWidth.value / 2, maxPx)
@@ -380,7 +387,7 @@ private fun WavySliderImpl(
                 enabled,
                 onValueChange,
                 onValueChangeFinished,
-                0f..1f,
+                valueRange,
                 0
             )
             .focusable(enabled, interactionSource)

@@ -14,10 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.MutatorMutex
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderColors
-import androidx.compose.material.SliderDefaults
-import androidx.compose.material.minimumInteractiveComponentSize
+import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -75,10 +72,12 @@ val SliderDefaults.Incremental: Boolean get() = defaultIncremental
  * Note that range sliders do not make sense for the wavy slider.
  * So, there is no RangeWavySlider counterpart.
  *
- * @param value current value of the WavySlider
+ * @param value current value of the WavySlider. Will be coerced to [valueRange].
  * @param onValueChange lambda in which value should be updated
  * @param modifier modifiers for the WavySlider layout
  * @param enabled whether or not component is enabled and can be interacted with or not
+ * @param valueRange range of values that WavySlider value can take. Passed [value] will be coerced to
+ * this range.
  * @param onValueChangeFinished lambda to be invoked when value change has ended. This callback
  * shouldn't be used to update the wavy slider value (use [onValueChange] for that), but rather to
  * know when the user has completed selecting a new value by ending a drag or a click.
@@ -108,6 +107,7 @@ fun WavySlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     onValueChangeFinished: (() -> Unit)? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: SliderColors = SliderDefaults.colors(),
@@ -135,11 +135,12 @@ fun WavySlider(
                 value,
                 enabled,
                 onValueChange,
-                onValueChangeFinished
+                onValueChangeFinished,
+                valueRange
             )
             .focusRequester(focusRequester)
             .focusable(enabled, interactionSource)
-            .slideOnKeyEvents(enabled, value, isRtl, onValueChangeState, onValueChangeFinishedState)
+            .slideOnKeyEvents(enabled, valueRange, value, isRtl, onValueChangeState, onValueChangeFinishedState)
     ) {
         val widthPx = constraints.maxWidth.toFloat()
         val maxPx: Float
@@ -151,15 +152,15 @@ fun WavySlider(
         }
 
         fun scaleToUserValue(offset: Float) =
-            scale(minPx, maxPx, offset, 0f, 1f)
+            scale(minPx, maxPx, offset, valueRange.start, valueRange.endInclusive)
 
         fun scaleToOffset(userValue: Float) =
-            scale(0f, 1f, userValue, minPx, maxPx)
+            scale(valueRange.start, valueRange.endInclusive, userValue, minPx, maxPx)
 
         val rawOffset = remember { mutableFloatStateOf(scaleToOffset(value)) }
         val pressOffset = remember { mutableFloatStateOf(0f) }
 
-        val draggableState = remember(minPx, maxPx, 0f..1f) {
+        val draggableState = remember(minPx, maxPx, valueRange) {
             SliderDraggableState {
                 rawOffset.floatValue = (rawOffset.floatValue + it + pressOffset.floatValue)
                 pressOffset.floatValue = 0f
@@ -168,7 +169,7 @@ fun WavySlider(
             }
         }
 
-        CorrectValueSideEffect(::scaleToOffset, 0f..1f, minPx..maxPx, rawOffset, value)
+        CorrectValueSideEffect(::scaleToOffset, valueRange, minPx..maxPx, rawOffset, value)
 
         val gestureEndAction = rememberUpdatedState { _: Float ->
             focusRequester.requestFocus()
@@ -198,8 +199,8 @@ fun WavySlider(
             state = draggableState
         )
 
-        val coerced = value.coerceIn(0f, 1f)
-        val fraction = calcFraction(0f, 1f, coerced)
+        val coerced = value.coerceIn(valueRange.start, valueRange.endInclusive)
+        val fraction = calcFraction(valueRange.start, valueRange.endInclusive, coerced)
         SliderImpl(
             enabled,
             fraction,
@@ -225,6 +226,7 @@ fun WavySlider(
 // TODO: Edge case - losing focus on slider while key is pressed will end up with onValueChangeFinished not being invoked
 private fun Modifier.slideOnKeyEvents(
     enabled: Boolean,
+    valueRange: ClosedFloatingPointRange<Float>,
     value: Float,
     isRtl: Boolean,
     onValueChangeState: State<(Float) -> Unit>,
@@ -235,52 +237,53 @@ private fun Modifier.slideOnKeyEvents(
 
         when (it.type) {
             KeyEventType.KeyDown -> {
+                val rangeLength = abs(valueRange.endInclusive - valueRange.start)
                 // A user is not limited by a step length (delta) when using touch or mouse.
                 // But it is not possible to adjust the value continuously when using keyboard buttons -
                 // the delta has to be discrete. In this case, 1% of the valueRange seems to make sense.
-                val delta = 1f / 100
+                val delta = rangeLength / 100
                 when {
                     it.isDirectionUp -> {
-                        onValueChangeState.value((value + delta).coerceIn(0f..1f))
+                        onValueChangeState.value((value + delta).coerceIn(valueRange))
                         true
                     }
 
                     it.isDirectionDown -> {
-                        onValueChangeState.value((value - delta).coerceIn(0f..1f))
+                        onValueChangeState.value((value - delta).coerceIn(valueRange))
                         true
                     }
 
                     it.isDirectionRight -> {
                         val sign = if (isRtl) -1 else 1
-                        onValueChangeState.value((value + sign * delta).coerceIn(0f..1f))
+                        onValueChangeState.value((value + sign * delta).coerceIn(valueRange))
                         true
                     }
 
                     it.isDirectionLeft -> {
                         val sign = if (isRtl) -1 else 1
-                        onValueChangeState.value((value - sign * delta).coerceIn(0f..1f))
+                        onValueChangeState.value((value - sign * delta).coerceIn(valueRange))
                         true
                     }
 
                     it.isHome -> {
-                        onValueChangeState.value(0f)
+                        onValueChangeState.value(valueRange.start)
                         true
                     }
 
                     it.isMoveEnd -> {
-                        onValueChangeState.value(1f)
+                        onValueChangeState.value(valueRange.endInclusive)
                         true
                     }
 
                     it.isPgUp -> {
                         val page = 10
-                        onValueChangeState.value((value - page * delta).coerceIn(0f..1f))
+                        onValueChangeState.value((value - page * delta).coerceIn(valueRange))
                         true
                     }
 
                     it.isPgDn -> {
                         val page = 10
-                        onValueChangeState.value((value + page * delta).coerceIn(0f..1f))
+                        onValueChangeState.value((value + page * delta).coerceIn(valueRange))
                         true
                     }
 
@@ -473,14 +476,15 @@ private fun Modifier.sliderSemantics(
     value: Float,
     enabled: Boolean,
     onValueChange: (Float) -> Unit,
-    onValueChangeFinished: (() -> Unit)? = null
+    onValueChangeFinished: (() -> Unit)? = null,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f
 ): Modifier {
-    val coerced = value.coerceIn(0f, 1f)
+    val coerced = value.coerceIn(valueRange.start, valueRange.endInclusive)
     return semantics {
         if (!enabled) disabled()
         setProgress(
             action = { targetValue ->
-                val newValue = targetValue.coerceIn(0f, 1f)
+                val newValue = targetValue.coerceIn(valueRange.start, valueRange.endInclusive)
                 // This is to keep it consistent with AbsSeekbar.java: return false if no
                 // change from current.
                 if (newValue == coerced) {
@@ -492,7 +496,7 @@ private fun Modifier.sliderSemantics(
                 }
             }
         )
-    }.progressSemantics(value, 0f..1f, 0)
+    }.progressSemantics(value, valueRange, 0)
 }
 
 private fun Modifier.sliderTapModifier(

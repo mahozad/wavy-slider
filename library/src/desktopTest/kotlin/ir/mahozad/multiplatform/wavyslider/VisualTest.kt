@@ -951,4 +951,25 @@ class VisualTest {
         }
         assert(isPassed)
     }
+
+    @Test
+    fun `Test 43`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """A custom "valueRange" (4f..20f)""",
+            expected = "Should have proper behaviour"
+        ) { _, _ ->
+            var value by remember { mutableFloatStateOf(4f) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(value, { value = it }, valueRange = 4f..20f)
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(value, { value = it }, valueRange = 4f..20f)
+            }
+            Text(text = "Value: $value")
+        }
+        assert(isPassed)
+    }
 }
