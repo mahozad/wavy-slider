@@ -77,7 +77,6 @@ class WavySliderThumb {
                         .background(@Suppress("INVISIBLE_MEMBER") colors.thumbColor(enabled).value, shape)
                 )
             }
-            // return content
         }
     }
 }
