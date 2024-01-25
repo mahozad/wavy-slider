@@ -20,9 +20,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ir.mahozad.multiplatform.wavyslider.material3.SliderTokens
 import ir.mahozad.multiplatform.wavyslider.material3.ThumbDefaultElevation
 import ir.mahozad.multiplatform.wavyslider.material3.ThumbPressedElevation
 
@@ -35,10 +37,10 @@ class WavySliderThumb {
             roundness: Dp = 0.dp,
             interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
             modifier: Modifier = Modifier,
-            enabled: Boolean = true,
-            colors: SliderColors = SliderDefaults.colors()
+            colors: SliderColors = SliderDefaults.colors(),
+            enabled: Boolean = true
         ): @Composable (SliderPositions) -> Unit {
-            val f: @Composable (SliderPositions) -> Unit = {
+            return {
                 val interactions = remember { mutableStateListOf<Interaction>() }
                 LaunchedEffect(interactionSource) {
                     interactionSource.interactions.collect { interaction ->
@@ -62,11 +64,12 @@ class WavySliderThumb {
                     modifier
                         .width(width)
                         .height(height)
+                        .rotate(45f)
                         .indication(
                             interactionSource = interactionSource,
                             indication = rememberRipple(
                                 bounded = false,
-                                radius = ir.mahozad.multiplatform.wavyslider.material3.SliderTokens.StateLayerSize / 2
+                                radius = SliderTokens.StateLayerSize / 2
                             )
                         )
                         .hoverable(interactionSource = interactionSource)
@@ -74,7 +77,7 @@ class WavySliderThumb {
                         .background(@Suppress("INVISIBLE_MEMBER") colors.thumbColor(enabled).value, shape)
                 )
             }
-            return f
+            // return content
         }
     }
 }
