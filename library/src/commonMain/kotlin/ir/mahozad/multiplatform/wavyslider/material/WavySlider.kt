@@ -88,6 +88,9 @@ val SliderDefaults.Incremental: Boolean get() = defaultIncremental
  * appearance / behavior of this WavySlider in different [Interaction]s.
  * @param colors [SliderColors] that will be used to determine the color of the WavySlider parts in
  * different state. See [SliderDefaults.colors] to customize.
+ *
+ *
+ *
  * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
@@ -108,6 +111,9 @@ fun WavySlider(
     onValueChangeFinished: (() -> Unit)? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: SliderColors = SliderDefaults.colors(),
+    /////////////////
+    /////////////////
+    /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
     wavePeriod: Duration = SliderDefaults.WavePeriod,

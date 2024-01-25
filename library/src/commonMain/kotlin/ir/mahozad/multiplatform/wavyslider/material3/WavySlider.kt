@@ -62,6 +62,9 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * @param enabled controls the enabled state of this WavySlider. When `false`, this component will
  * not respond to user input, and it will appear visually disabled and disabled to
  * accessibility services.
+ *
+ *
+ *
  * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
@@ -204,6 +207,9 @@ fun WavySlider(
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
  * for this WavySlider. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the appearance / behavior of this WavySlider in different states.
+ *
+ *
+ *
  * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
