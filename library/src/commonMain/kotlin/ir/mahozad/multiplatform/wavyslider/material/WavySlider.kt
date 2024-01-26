@@ -373,7 +373,7 @@ private fun Track(
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
     val activeTrackColor = colors.trackColor(enabled, active = true)
-    val phaseShiftAnimated by animatePhaseShift(waveLength, waveVelocity)
+    val phaseShiftAnimated by animatePhaseShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val trackHeight = max(waveHeight + waveThickness, ThumbRadius * 2)
     Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {

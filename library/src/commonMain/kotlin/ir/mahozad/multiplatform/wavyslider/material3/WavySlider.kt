@@ -96,7 +96,7 @@ fun SliderDefaults.Track(
     // See https://stackoverflow.com/q/62500464/8583692
     val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
-    val phaseShiftAnimated by animatePhaseShift(waveLength, waveVelocity)
+    val phaseShiftAnimated by animatePhaseShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val trackHeight = max(waveHeight + waveThickness, ThumbSize.height)
     Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {

@@ -13,9 +13,9 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
-import kotlinx.coroutines.isActive
 import kotlin.math.*
 
 /**
@@ -44,9 +44,11 @@ enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float)
  * Custom animation configurations for various properties of the wave.
  *
  * @param waveHeightAnimationSpec used for changes in wave height.
+ * @param waveVelocityAnimationSpec used for changes in wave velocity (whether in speed or direction).
  */
 data class WaveAnimationSpecs(
-    val waveHeightAnimationSpec: AnimationSpec<Dp>
+    val waveHeightAnimationSpec: AnimationSpec<Dp>,
+    val waveVelocityAnimationSpec: AnimationSpec<Dp>
 )
 
 internal val defaultIncremental = false
@@ -55,7 +57,8 @@ internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
 internal val defaultWaveVelocity = 10.dp to TAIL
 internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
-    waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+    waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+    waveVelocityAnimationSpec = tween(durationMillis = 2000, easing = LinearOutSlowInEasing),
 )
 
 internal expect val KeyEvent.isDirectionUp: Boolean
@@ -69,47 +72,22 @@ internal expect val KeyEvent.isPgDn: Boolean
 
 @Composable
 internal inline fun animatePhaseShift(
-    waveLength: Dp,
-    waveVelocity: Pair<Dp, WaveDirection>
+    waveVelocity: Pair<Dp, WaveDirection>,
+    animationSpec: AnimationSpec<Dp>
 ): State<Dp> {
-    val (speed, direction) = waveVelocity
-    val shift = waveLength * direction.factor(LocalLayoutDirection.current)
-    val phaseShiftAnimated = remember { mutableStateOf(0.dp) }
-    val phaseShiftAnimation = remember(shift, waveLength, speed) {
-        val shiftAdjusted = if (speed == 0.dp) 0.dp else shift
-        val duration = computeDuration(waveLength, speed)
-        TargetBasedAnimation(
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = duration, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            ),
-            typeConverter = Dp.VectorConverter,
-            // Instead of simply 0 and shift, they are added to current phaseShiftAnimated to
-            // smoothly continue the wave shift when wavePeriod or waveMovement is changed
-            initialValue =          0.dp + phaseShiftAnimated.value,
-            targetValue  = shiftAdjusted + phaseShiftAnimated.value
-        )
-    }
-    LaunchedEffect(phaseShiftAnimation) {
+    val shift = remember { mutableStateOf(0.dp) }
+    val speed = waveVelocity.first.coerceAtLeast(0.dp)
+    val factor = waveVelocity.second.factor(LocalLayoutDirection.current)
+    val amount by animateDpAsState(speed * factor, animationSpec)
+    LaunchedEffect(waveVelocity) {
+        val startShift = shift.value
         val startTime = withFrameNanos { it }
         while (true /* Android itself uses true instead of isActive */) {
-            val playTime = withFrameNanos { it } - startTime
-            phaseShiftAnimated.value = phaseShiftAnimation.getValueFromNanos(playTime)
+            val playTime = (withFrameNanos { it } - startTime) / 1_000_000_000f
+            shift.value = startShift + (amount * playTime)
         }
     }
-    return phaseShiftAnimated
-}
-
-private inline fun computeDuration(
-    waveLength: Dp,
-    speed: Dp
-): Int {
-    val millis = if (speed <= 0.dp || waveLength <= 0.dp) {
-        Int.MAX_VALUE
-    } else {
-        (waveLength / speed) * 1000
-    }
-    return millis.toInt().coerceAtLeast(1)
+    return shift
 }
 
 @Composable

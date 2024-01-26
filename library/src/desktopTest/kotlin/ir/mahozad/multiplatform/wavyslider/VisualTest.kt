@@ -1,9 +1,6 @@
 package ir.mahozad.multiplatform.wavyslider
 
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.EaseOutBounce
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,6 +24,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
+import ir.mahozad.multiplatform.wavyslider.material3.WaveAnimationSpecs
 import kotlinx.coroutines.delay
 import org.junit.Test
 import kotlin.time.Duration.Companion.milliseconds
@@ -854,7 +852,7 @@ class VisualTest {
                     onChange,
                     waveHeight = waveHeight,
                     interactionSource = interactionSource,
-                    animationSpecs = WaveAnimationSpecs(spec),
+                    animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(waveHeightAnimationSpec = spec),
                     modifier = Modifier
                         .onPointerEvent(PointerEventType.Press) { isPressed = true }
                         .onPointerEvent(PointerEventType.Release) { isPressed = false }
@@ -867,7 +865,7 @@ class VisualTest {
                     onChange,
                     waveHeight = waveHeight,
                     interactionSource = interactionSource,
-                    animationSpecs = WaveAnimationSpecs(spec),
+                    animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(waveHeightAnimationSpec = spec),
                     modifier = Modifier
                         .onPointerEvent(PointerEventType.Press) { isPressed = true }
                         .onPointerEvent(PointerEventType.Release) { isPressed = false }
@@ -939,6 +937,43 @@ class VisualTest {
                 WavySlider3(value, { value = it }, valueRange = 4f..20f)
             }
             Text(text = "Value: $value")
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 43`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "Custom animationSpecs for wave velocity",
+            expected = "Should change wave velocity gracefully according to the animation spec"
+        ) { value, onChange ->
+            var direction by remember { mutableStateOf(HEAD) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 2:")
+                WavySlider2(
+                    value,
+                    onChange,
+                    waveVelocity = 16.dp to direction,
+                    animationSpecs = SliderDefaults
+                        .WaveAnimationSpecs
+                        .copy(waveVelocityAnimationSpec = tween(durationMillis = 4000, easing = EaseOutBounce))
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Material 3:")
+                WavySlider3(
+                    value,
+                    onChange,
+                    waveVelocity = 16.dp to direction,
+                    animationSpecs = SliderDefaults
+                        .WaveAnimationSpecs
+                        .copy(waveVelocityAnimationSpec = tween(durationMillis = 4000, easing = EaseOutBounce))
+                )
+            }
+            Button(onClick = { direction = if (direction == HEAD) TAIL else HEAD }) {
+                Text(text = "Toggle direction")
+            }
         }
         assert(isPassed)
     }
