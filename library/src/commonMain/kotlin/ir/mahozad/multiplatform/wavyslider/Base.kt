@@ -43,11 +43,17 @@ enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float)
 /**
  * Custom animation configurations for various properties of the wave.
  *
- * @param waveHeightAnimationSpec used for changes in wave height.
- * @param waveVelocityAnimationSpec used for changes in wave velocity (whether in speed or direction).
+ * @param waveHeightAnimationSpec used for **changes** in wave height.
+ * @param waveVelocityAnimationSpec used for **changes** in wave velocity (whether in speed or direction).
  */
 data class WaveAnimationSpecs(
+    /**
+     * Used for **changes** in wave height.
+     */
     val waveHeightAnimationSpec: AnimationSpec<Dp>,
+    /**
+     * Used for **changes** in wave velocity (whether in speed or direction).
+     */
     val waveVelocityAnimationSpec: AnimationSpec<Dp>
 )
 
