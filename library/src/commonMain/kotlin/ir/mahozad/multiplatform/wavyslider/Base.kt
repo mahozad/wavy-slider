@@ -61,7 +61,21 @@ internal val defaultIncremental = false
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
+// Instead of providing a dedicated type for this, the existing "Pair" class of Kotlin stdlib is used.
+// One benefit is that in Kotlin, any object (including "Dp") has the infix extension function "to"
+// which makes it easy and more readable to create "Pair"s (including creating this property).
+// In addition, if a dedicated type were provided, the users would have to either pass the velocity argument
+// like "WaveVelocity(10.dp, TAIL)" which is not very easy and very readable, or, to make it easier,
+// we'd have to also provide an infix extension function on Dp (for example, call it "toward") to
+// enable users to create an instance of the velocity like how they do using the "to" for "Pair"s.
+// But in that case, the IDE completion on "Dp" would be polluted by our new "toward" function
+// even if the user wanted to access something else on "Dp".
 internal val defaultWaveVelocity = 10.dp to TAIL
+// These are provided so that users of library can specify custom animation specs for the changes in certain properties.
+// This way, they do not have to animate those properties themselves (for example, using animateDpAsState()).
+// This also enables us to provide a default animation for changes of those properties
+// if user of library is not aware or does not care about making the changes animated/graceful/gradual.
+// If they want to make the changes immediate/abrupt/sudden, they can simply pass a snap() animation spec.
 internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
     waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
     waveVelocityAnimationSpec = tween(durationMillis = 2000, easing = LinearOutSlowInEasing),
