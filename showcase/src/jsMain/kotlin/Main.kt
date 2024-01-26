@@ -16,14 +16,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
-import ir.mahozad.multiplatform.wavyslider.WaveMovement
+import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
+import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.resource
 import org.jetbrains.skiko.wasm.onWasmReady
 import kotlin.math.roundToInt
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
@@ -60,7 +59,7 @@ fun Content() {
     var value by remember { mutableFloatStateOf(0.5f) }
     var waveLength by remember { mutableStateOf(20.dp) }
     var waveHeight by remember { mutableStateOf(6.dp) }
-    var wavePeriod by remember { mutableStateOf(2.seconds) }
+    var waveSpeed by remember { mutableStateOf(10.dp) }
     var waveThickness by remember { mutableStateOf(4.dp) }
     var trackThickness by remember { mutableStateOf(4.dp) }
     var isEnabled by remember { mutableStateOf(true) }
@@ -88,11 +87,10 @@ fun Content() {
                 onValueChange = { value = it },
                 waveLength = waveLength,
                 waveHeight = waveHeight,
-                wavePeriod = wavePeriod,
+                waveVelocity = waveSpeed to if (isBackward) TAIL else HEAD,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
-                incremental = isIncremental,
-                waveMovement = if (isBackward) WaveMovement.RTL else WaveMovement.LTR
+                incremental = isIncremental
             )
         } else {
             androidx.compose.material.MaterialTheme(lightColors(primary = material2ColorPrimary)) {
@@ -102,11 +100,10 @@ fun Content() {
                     onValueChange = { value = it },
                     waveLength = waveLength,
                     waveHeight = waveHeight,
-                    wavePeriod = wavePeriod,
+                    waveVelocity = waveSpeed to if (isBackward) TAIL else HEAD,
                     waveThickness = waveThickness,
                     trackThickness = trackThickness,
-                    incremental = isIncremental,
-                    waveMovement = if (isBackward) WaveMovement.RTL else WaveMovement.LTR
+                    incremental = isIncremental
                 )
             }
         }
@@ -145,10 +142,10 @@ fun Content() {
                         onValueChange = { waveHeight = it.dp }
                     )
                     LabeledSlider(
-                        label = "Wave period:",
-                        value = wavePeriod.inWholeSeconds.toFloat(),
-                        valueRange = 0f..5f,
-                        onValueChange = { wavePeriod = it.toInt().seconds }
+                        label = "Wave speed:",
+                        value = waveSpeed.value,
+                        valueRange = 0f..100f,
+                        onValueChange = { waveSpeed = it.dp }
                     )
                     LabeledSlider(
                         label = "Wave thickness:",
@@ -170,7 +167,7 @@ fun Content() {
                 isEnabled = isEnabled,
                 waveLength = waveLength,
                 waveHeight = waveHeight,
-                wavePeriod = wavePeriod,
+                waveSpeed = waveSpeed,
                 waveThickness = waveThickness,
                 trackThickness = trackThickness,
                 isIncremental = isIncremental,
@@ -307,7 +304,7 @@ fun Code(
     isEnabled: Boolean,
     waveLength: Dp,
     waveHeight: Dp,
-    wavePeriod: Duration,
+    waveSpeed: Dp,
     waveThickness: Dp,
     trackThickness: Dp,
     isIncremental: Boolean,
@@ -330,24 +327,24 @@ fun Code(
 
     // Equivalent to the following
     """
-        import ...wavyslider.WaveMovement.*
         import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
+        import ...wavyslider.WaveDirection.*
 
         var value by remember {
             mutableFloatStateOf(${valueRounded}f)
         }
-        
+
         WavySlider(
             value = value,
             onValueChange = { value = it },
             enabled = ${if (isEnabled) "true" else "false"},
             waveLength = ${waveLength.value.roundToInt()}.dp,
             waveHeight = ${waveHeight.value.roundToInt()}.dp,
-            wavePeriod = ${wavePeriod.inWholeSeconds}.seconds,
-            waveMovement = ${if (isBackward) "BACKWARD" else "FORWARD"},
+            waveVelocity = ${waveSpeed.value.roundToInt()}.dp to ${if (isBackward) "TAIL" else "HEAD"},
             waveThickness = ${waveThickness.value.roundToInt()}.dp,
             trackThickness = ${trackThickness.value.roundToInt()}.dp,
-            incremental = ${if (isIncremental) "true" else "false"}
+            incremental = ${if (isIncremental) "true" else "false"},
+            animationSpecs = ...
         )
     """.trimIndent()
 
@@ -355,12 +352,12 @@ fun Code(
         pushStyle(ParagraphStyle(lineHeight = lineHeight))
         withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) {
-            append("...wavyslider.WaveMovement.*")
+            append("...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider")
         }
         appendLine()
         withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) {
-            append("...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider")
+            append("...wavyslider.WaveDirection.*")
         }
         appendLine()
         appendLine()
@@ -410,16 +407,13 @@ fun Code(
         withStyle(SpanStyle(colorMember, fontSize)) { append("dp") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    wavePeriod ") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveVelocity ") }
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorNumber, fontSize)) { append("${wavePeriod.inWholeSeconds}") }
+        withStyle(SpanStyle(colorNumber, fontSize)) { append("${waveSpeed.value.roundToInt()}") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append("seconds") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
-        appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveMovement ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append(if (isBackward) "BACKWARD" else "FORWARD") }
+        withStyle(SpanStyle(colorMember, fontSize)) { append("dp ") }
+        withStyle(SpanStyle(colorFunction, fontSize)) { append("to ") }
+        withStyle(SpanStyle(colorMember, fontSize)) { append(if (isBackward) "TAIL" else "HEAD") }
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveThickness ") }
@@ -439,6 +433,11 @@ fun Code(
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    incremental ") }
         withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
         withStyle(SpanStyle(colorKeyword, fontSize)) { append("$isIncremental") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        appendLine()
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    animationSpecs ") }
+        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("...") }
         appendLine()
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(")") }
     }
