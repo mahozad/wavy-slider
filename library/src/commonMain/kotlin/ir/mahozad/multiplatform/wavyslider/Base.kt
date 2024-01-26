@@ -90,11 +90,10 @@ internal inline fun animatePhaseShift(
             targetValue  = shiftAdjusted + phaseShiftAnimated.value
         )
     }
-    var playTime by remember { mutableStateOf(0L) }
     LaunchedEffect(phaseShiftAnimation) {
         val startTime = withFrameNanos { it }
-        while (isActive) {
-            playTime = withFrameNanos { it } - startTime
+        while (true /* Android itself uses true instead of isActive */) {
+            val playTime = withFrameNanos { it } - startTime
             phaseShiftAnimated.value = phaseShiftAnimation.getValueFromNanos(playTime)
         }
     }
