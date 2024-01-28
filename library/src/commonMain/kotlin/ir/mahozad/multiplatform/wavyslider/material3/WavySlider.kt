@@ -31,7 +31,10 @@ import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 // Instead of directly exposing the following defaults as public properties,
 // we want to provide them in the SliderDefaults object so the user can access all the defaults
@@ -72,7 +75,7 @@ private val ThumbHeight = SliderTokens.HandleHeight
 private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
 
 /**
- * The Default track for [WavySlider]
+ * The Default track for [WavySlider].
  *
  * @param sliderPositions [SliderPositions] which is used to obtain the current active track.
  * @param modifier the [Modifier] to be applied to the track.

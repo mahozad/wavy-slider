@@ -42,7 +42,9 @@ import androidx.compose.ui.unit.max
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 private val ThumbRadius = 10.dp
 private val ThumbRippleRadius = 24.dp
