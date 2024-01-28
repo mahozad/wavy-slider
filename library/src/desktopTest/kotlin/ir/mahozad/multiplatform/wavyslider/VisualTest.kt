@@ -977,4 +977,35 @@ class VisualTest {
         }
         assert(isPassed)
     }
+
+    @Test
+    fun `Test 44`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When velocity is relative (HEAD or TAIL) and container layout direction is toggled",
+            expected = "Should change wave direction gracefully according to the default animation spec"
+        ) { value, onChange ->
+            var layoutDirection by remember { mutableStateOf(LayoutDirection.Ltr) }
+            CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 16.dp to TAIL)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange, waveVelocity = 16.dp to TAIL)
+                }
+            }
+            Button(onClick = {
+                layoutDirection = if (layoutDirection == LayoutDirection.Rtl) {
+                    LayoutDirection.Ltr
+                } else {
+                    LayoutDirection.Rtl
+                }
+            }) {
+                Text(text = "Toggle layout direction")
+            }
+        }
+        assert(isPassed)
+    }
 }

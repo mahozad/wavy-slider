@@ -99,7 +99,7 @@ internal inline fun animatePhaseShift(
     val speed = waveVelocity.first.coerceAtLeast(0.dp)
     val factor = waveVelocity.second.factor(LocalLayoutDirection.current)
     val amount by animateDpAsState(speed * factor, animationSpec)
-    LaunchedEffect(waveVelocity) {
+    LaunchedEffect(waveVelocity, LocalLayoutDirection.current) {
         val startShift = shift.value
         val startTime = withFrameNanos { it }
         while (true /* Android itself uses true instead of isActive */) {
