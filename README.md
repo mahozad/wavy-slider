@@ -68,6 +68,7 @@ Using the WavySlider is much like using the Material Slider
 
 ```kotlin
 import ir.mahozad.multiplatform.wavyslider.material/*OR material3*/.WavySlider
+import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
 
 @Composable
 fun MyComposable() {
@@ -75,12 +76,13 @@ fun MyComposable() {
     WavySlider(
         value = fraction,
         onValueChange = { fraction = it },
-        waveLength = 16.dp,    // Set this to 0.dp to get a regular Slider
-        waveHeight = 16.dp,    // Set this to 0.dp to get a regular Slider
+        waveLength = 16.dp,     // Set this to 0.dp to get a regular Slider
+        waveHeight = 16.dp,     // Set this to 0.dp to get a regular Slider
         waveVelocity = 15.dp to HEAD, // Speed per second and direction
-        waveThickness = 4.dp,  // Defaults to the track thickness
-        trackThickness = 4.dp, // Defaults to 4.dp
-        incremental = false    // Whether to gradually increase waveHeight
+        waveThickness = 4.dp,   // Defaults to the track thickness
+        trackThickness = 4.dp,  // Defaults to 4.dp, same as regular Slider
+        incremental = false,    // Whether to gradually increase waveHeight
+        // animationSpecs = ... // Customize animations used for properties 
     )
 }
 ```
