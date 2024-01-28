@@ -945,7 +945,7 @@ class VisualTest {
     fun `Test 43`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "Custom animationSpecs for wave velocity",
+            given = "Custom animationSpec for wave velocity",
             expected = "Should change wave velocity gracefully according to the animation spec"
         ) { value, onChange ->
             var direction by remember { mutableStateOf(HEAD) }
