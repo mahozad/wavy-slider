@@ -56,13 +56,34 @@ private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 // using that namespace. But SliderDefaults object is in Material library, and we cannot modify it.
 // So, we provide the defaults as extension properties of SliderDefaults object.
 
+/**
+ * Default wave length
+ */
 val SliderDefaults.WaveLength: Dp get() = defaultWaveLength
+/**
+ * Default wave height
+ */
 val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
+/**
+ * Default wave velocity (speed and direction)
+ */
 val SliderDefaults.WaveVelocity: Pair<Dp, WaveDirection> get() = defaultWaveVelocity
+/**
+ * Default wave thickness
+ */
 val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
-val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAnimationSpecs
+/**
+ * Default track thickness
+ */
 val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+/**
+ * Default progression of wave height (whether gradual or not)
+ */
 val SliderDefaults.Incremental: Boolean get() = defaultIncremental
+/**
+ * Default animation configurations for various properties of the wave
+ */
+val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAnimationSpecs
 
 /**
  * A wavy slider much like the [Material Design 2 slider](https://m2.material.io/components/sliders).
