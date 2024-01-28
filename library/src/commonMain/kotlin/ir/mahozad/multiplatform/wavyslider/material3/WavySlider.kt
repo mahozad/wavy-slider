@@ -32,7 +32,6 @@ import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.*
-import kotlin.time.Duration
 
 // Instead of directly exposing the following defaults as public properties,
 // we want to provide them in the SliderDefaults object so the user can access all the defaults
@@ -98,7 +97,7 @@ fun SliderDefaults.Track(
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
     val phaseShiftAnimated by animatePhaseShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
-    val trackHeight = max(waveHeight + waveThickness, ThumbSize.height)
+    val trackHeight = max((if (waveHeight < 0.dp) -waveHeight else waveHeight) + waveThickness, ThumbSize.height)
     Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)

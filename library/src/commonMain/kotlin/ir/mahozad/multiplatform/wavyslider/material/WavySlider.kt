@@ -12,9 +12,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.MutatorMutex
-import androidx.compose.material.*
+import androidx.compose.material.Slider
+import androidx.compose.material.SliderColors
+import androidx.compose.material.SliderDefaults
+import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +35,10 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -375,7 +379,7 @@ private fun Track(
     val activeTrackColor = colors.trackColor(enabled, active = true)
     val phaseShiftAnimated by animatePhaseShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
-    val trackHeight = max(waveHeight + waveThickness, ThumbRadius * 2)
+    val trackHeight = max((if (waveHeight < 0.dp) -waveHeight else waveHeight) + waveThickness, ThumbRadius * 2)
     Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)
