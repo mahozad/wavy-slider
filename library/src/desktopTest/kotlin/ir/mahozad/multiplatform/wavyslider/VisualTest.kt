@@ -15,11 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
@@ -1043,6 +1041,52 @@ class VisualTest {
                             modifier = Modifier.size(size)
                         )
                     }
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 47`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When the screen density is something low",
+            expected = "Should have everything scaled proportionally",
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange) }
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalDensity provides Density(0.43f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 48`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When the device screen density is something high",
+            expected = "Should have everything scaled proportionally",
+            wavySlider2 = { value, onChange -> WavySlider2(value, onChange) },
+            wavySlider3 = { value, onChange -> WavySlider3(value, onChange) }
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalDensity provides Density(2.43f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange)
                 }
             }
         }
