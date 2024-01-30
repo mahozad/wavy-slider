@@ -118,7 +118,7 @@ val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAni
  * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
  * The final rendered height of the wave will be [waveHeight] + [waveThickness].
- * @param waveVelocity the speed per second and movement direction of the whole wave.
+ * @param waveVelocity the horizontal movement (phase shift) of the whole wave (i.e. speed per second and direction).
  * Setting speed to `0.dp` or less stops the movement.
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
@@ -400,8 +400,8 @@ private fun Track(
 ) {
     val inactiveTrackColor = colors.trackColor(enabled, active = false)
     val activeTrackColor = colors.trackColor(enabled, active = true)
-    val phaseShiftAnimated by animatePhaseShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
+    val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max((if (waveHeight < 0.dp) -waveHeight else waveHeight) + waveThickness, ThumbRadius * 2)
     Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
@@ -413,7 +413,7 @@ private fun Track(
         drawTrack(
             waveLength = waveLength,
             waveHeight = waveHeightAnimated,
-            phaseShift = phaseShiftAnimated,
+            waveShift = waveShiftAnimated,
             waveThickness = waveThickness,
             trackThickness = trackThickness,
             sliderValueOffset = sliderValueOffset,

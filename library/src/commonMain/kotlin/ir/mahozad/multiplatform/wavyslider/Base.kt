@@ -91,7 +91,7 @@ internal expect val KeyEvent.isPgUp: Boolean
 internal expect val KeyEvent.isPgDn: Boolean
 
 @Composable
-internal inline fun animatePhaseShift(
+internal inline fun animateWaveShift(
     waveVelocity: Pair<Dp, WaveDirection>,
     animationSpec: AnimationSpec<Dp>
 ): State<Dp> {
@@ -125,9 +125,9 @@ internal inline fun DrawScope.drawTrack(
     sliderEnd: Offset,
     waveLength: Dp,
     waveHeight: Dp,
+    waveShift: Dp,
     waveThickness: Dp,
     trackThickness: Dp,
-    phaseShift: Dp,
     incremental: Boolean,
     inactiveTrackColor: Color,
     activeTrackColor: Color
@@ -137,8 +137,8 @@ internal inline fun DrawScope.drawTrack(
         valueOffset = sliderValueOffset,
         waveLength = waveLength,
         waveHeight = waveHeight,
+        waveShift = waveShift,
         waveThickness = waveThickness,
-        phaseShift = phaseShift,
         incremental = incremental,
         color = activeTrackColor
     )
@@ -172,7 +172,7 @@ private inline fun DrawScope.drawTrackActivePart(
     waveLength: Dp,
     waveHeight: Dp,
     waveThickness: Dp,
-    phaseShift: Dp,
+    waveShift: Dp,
     incremental: Boolean,
     color: Color
 ) {
@@ -183,11 +183,11 @@ private inline fun DrawScope.drawTrackActivePart(
             lineTo(valueOffset.x, center.y)
             return@apply
         }
-        val phaseShiftPx = phaseShift.toPx()
+        val waveShiftPx = waveShift.toPx()
         val waveLengthPx = waveLength.toPx()
         val waveHeightPx = waveHeight.toPx().absoluteValue
         val startHeightFactor = if (incremental) 0f else 1f
-        val startRadians = (startOffset.x + phaseShiftPx) / waveLengthPx * (2 * PI)
+        val startRadians = (startOffset.x + waveShiftPx) / waveLengthPx * (2 * PI)
         val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
         moveTo(startOffset.x, startY.toFloat())
         val range = if (layoutDirection == LayoutDirection.Rtl) {
@@ -197,7 +197,7 @@ private inline fun DrawScope.drawTrackActivePart(
         }
         for (x in range) {
             val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
-            val radians = (x + phaseShiftPx) / waveLengthPx * (2 * PI)
+            val radians = (x + waveShiftPx) / waveLengthPx * (2 * PI)
             val y = (sin(radians) * heightFactor * waveHeightPx + size.height) / 2
             lineTo(x.toFloat(), y.toFloat())
         }
