@@ -14,12 +14,12 @@
 
 # Wavy slider
 
-This is an animated Material wavy slider and progress bar similar to the one introduced in **Android 13** media player.  
+This is an animated [Material](https://material.io) wavy slider and progress bar similar to the one used in [**Android 13** media controls](https://www.xda-developers.com/android-13-beta-1-media-controls-animation/).  
 It has curly, wobbly, squiggly, wiggly, jiggly, wriggly, dancing movements.
 Some users call it the **sperm**.
 
 The library can be used in [Jetpack Compose](https://developer.android.com/jetpack/compose) and [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) projects like
-a regular [Material Slider](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#Slider(kotlin.Float,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.ranges.ClosedFloatingPointRange,kotlin.Int,kotlin.Function0,androidx.compose.material3.SliderColors,androidx.compose.foundation.interaction.MutableInteractionSource)).  
+a regular Material [Slider](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#Slider(kotlin.Float,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.ranges.ClosedFloatingPointRange,kotlin.Int,kotlin.Function0,androidx.compose.material3.SliderColors,androidx.compose.foundation.interaction.MutableInteractionSource)).  
 Supported target platforms are Android, iOS, Desktop (JVM), and JavaScript (Kotlin/JS).
 
 ## Demo
