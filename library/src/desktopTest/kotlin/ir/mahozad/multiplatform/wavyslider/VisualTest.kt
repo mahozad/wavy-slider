@@ -1018,6 +1018,77 @@ class VisualTest {
     fun `Test 46`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
+            given = "When the screen density is something low",
+            expected = "Should have everything scaled proportionally"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalDensity provides Density(0.43f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 47`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When the device screen density is something high",
+            expected = "Should have everything scaled proportionally"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalDensity provides Density(2.43f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    // See https://github.com/JetBrains/compose-multiplatform/issues/4199
+    @Test
+    fun `Test 48`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "Measure FPS of the app",
+            showRegularSliders = false
+        ) { value, onChange ->
+            @Composable
+            fun FPSCounter(onUpdateFPS: (Int) -> Unit) {
+                LaunchedEffect(Unit) {
+                    val fpsCounter = org.jetbrains.skiko.FPSCounter(logOnTick = true)
+                    while (true) {
+                        withFrameNanos {
+                            onUpdateFPS(fpsCounter.average)
+                            fpsCounter.tick()
+                        }
+                    }
+                }
+            }
+            var fps by remember { mutableIntStateOf(0) }
+            FPSCounter { fps = it }
+            Text(text = "FPS: $fps")
+            WavySlider2(value, onChange)
+            WavySlider3(value, onChange)
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 49`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
             given = "When there are many wavy sliders",
             showRegularSliders = false,
             windowSize = DpSize(800.dp, 800.dp)
@@ -1041,52 +1112,6 @@ class VisualTest {
                             modifier = Modifier.size(size)
                         )
                     }
-                }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 47`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When the screen density is something low",
-            expected = "Should have everything scaled proportionally",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange) }
-        ) { value, onChange ->
-            CompositionLocalProvider(LocalDensity provides Density(0.43f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value, onChange)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value, onChange)
-                }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 48`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When the device screen density is something high",
-            expected = "Should have everything scaled proportionally",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange) }
-        ) { value, onChange ->
-            CompositionLocalProvider(LocalDensity provides Density(2.43f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value, onChange)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value, onChange)
                 }
             }
         }
