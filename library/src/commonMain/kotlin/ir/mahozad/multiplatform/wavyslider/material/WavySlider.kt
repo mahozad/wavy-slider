@@ -360,7 +360,7 @@ private fun SliderImpl(
         val offset = widthDp * positionFraction
 
         Track(
-            Modifier.fillMaxSize(),
+            modifier,
             colors,
             enabled,
             positionFraction,
@@ -403,7 +403,7 @@ private fun Track(
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max((if (waveHeight < 0.dp) -waveHeight else waveHeight) + waveThickness, ThumbRadius * 2)
-    Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
+    Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)
         val sliderRight = Offset(size.width - thumbPx, center.y)

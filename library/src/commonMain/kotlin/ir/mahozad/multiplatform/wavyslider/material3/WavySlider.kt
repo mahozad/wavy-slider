@@ -122,7 +122,7 @@ fun SliderDefaults.Track(
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max((if (waveHeight < 0.dp) -waveHeight else waveHeight) + waveThickness, ThumbSize.height)
-    Canvas(modifier = Modifier.fillMaxWidth().height(trackHeight)) {
+    Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)
         val sliderRight = Offset(size.width, center.y)
