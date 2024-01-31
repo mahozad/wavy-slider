@@ -1039,7 +1039,7 @@ class VisualTest {
     fun `Test 47`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "When the device screen density is something high",
+            given = "When the screen density is something high",
             expected = "Should have everything scaled proportionally"
         ) { value, onChange ->
             CompositionLocalProvider(LocalDensity provides Density(2.43f)) {
