@@ -2,6 +2,7 @@
 gradle = "8.5"
 java = "17"
 kotlin = "1.9.21"
+kotlin-compatibility = "0.14.0"
 compose-multiplatform = "1.5.11"
 agp = "8.2.0" # Android Gradle plugin
 android-minSdk = "21"
@@ -21,6 +22,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 [plugins]
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlin-compatibility" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

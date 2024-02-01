@@ -6,6 +6,7 @@ import java.util.*
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.compatibility)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.dokka)
