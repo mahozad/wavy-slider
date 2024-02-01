@@ -3,7 +3,7 @@
 [![Latest Maven Central release]][Library on Maven Central]
 
 <div align="center">
-    <img src="demo.svg" alt="Decorative demo"/>
+    <img src="assets/demo.svg" alt="Decorative demo"/>
 </div>
 
 <br>
