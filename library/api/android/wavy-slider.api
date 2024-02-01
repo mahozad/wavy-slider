@@ -1,0 +1,48 @@
+public final class ir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/animation/core/AnimationSpec;Landroidx/compose/animation/core/AnimationSpec;)V
+	public final fun component1 ()Landroidx/compose/animation/core/AnimationSpec;
+	public final fun component2 ()Landroidx/compose/animation/core/AnimationSpec;
+	public final fun copy (Landroidx/compose/animation/core/AnimationSpec;Landroidx/compose/animation/core/AnimationSpec;)Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;
+	public static synthetic fun copy$default (Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;Landroidx/compose/animation/core/AnimationSpec;Landroidx/compose/animation/core/AnimationSpec;ILjava/lang/Object;)Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getWaveHeightAnimationSpec ()Landroidx/compose/animation/core/AnimationSpec;
+	public final fun getWaveVelocityAnimationSpec ()Landroidx/compose/animation/core/AnimationSpec;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ir/mahozad/multiplatform/wavyslider/WaveDirection : java/lang/Enum {
+	public static final field HEAD Lir/mahozad/multiplatform/wavyslider/WaveDirection;
+	public static final field LEFT Lir/mahozad/multiplatform/wavyslider/WaveDirection;
+	public static final field RIGHT Lir/mahozad/multiplatform/wavyslider/WaveDirection;
+	public static final field TAIL Lir/mahozad/multiplatform/wavyslider/WaveDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lir/mahozad/multiplatform/wavyslider/WaveDirection;
+	public static fun values ()[Lir/mahozad/multiplatform/wavyslider/WaveDirection;
+}
+
+public final class ir/mahozad/multiplatform/wavyslider/material/WavySliderKt {
+	public static final fun WavySlider-0Pw0hko (FLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLkotlin/ranges/ClosedFloatingPointRange;Lkotlin/jvm/functions/Function0;Landroidx/compose/foundation/interaction/MutableInteractionSource;Landroidx/compose/material/SliderColors;FFLkotlin/Pair;FFZLir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;Landroidx/compose/runtime/Composer;III)V
+	public static final fun getIncremental (Landroidx/compose/material/SliderDefaults;)Z
+	public static final fun getTrackThickness (Landroidx/compose/material/SliderDefaults;)F
+	public static final fun getWaveAnimationSpecs (Landroidx/compose/material/SliderDefaults;)Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;
+	public static final fun getWaveHeight (Landroidx/compose/material/SliderDefaults;)F
+	public static final fun getWaveLength (Landroidx/compose/material/SliderDefaults;)F
+	public static final fun getWaveThickness (Landroidx/compose/material/SliderDefaults;)F
+	public static final fun getWaveVelocity (Landroidx/compose/material/SliderDefaults;)Lkotlin/Pair;
+}
+
+public final class ir/mahozad/multiplatform/wavyslider/material3/WavySliderKt {
+	public static final fun Track-WQcUZsY (Landroidx/compose/material3/SliderDefaults;Landroidx/compose/material3/SliderPositions;Landroidx/compose/ui/Modifier;Landroidx/compose/material3/SliderColors;ZFFLkotlin/Pair;FFZLir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;Landroidx/compose/runtime/Composer;III)V
+	public static final fun WavySlider-0Pw0hko (FLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLkotlin/ranges/ClosedFloatingPointRange;Lkotlin/jvm/functions/Function0;Landroidx/compose/material3/SliderColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;FFLkotlin/Pair;FFZLir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;Landroidx/compose/runtime/Composer;III)V
+	public static final fun WavySlider-HVrqmNY (FLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLkotlin/ranges/ClosedFloatingPointRange;Lkotlin/jvm/functions/Function0;Landroidx/compose/material3/SliderColors;Landroidx/compose/foundation/interaction/MutableInteractionSource;FFLkotlin/Pair;FFZLir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;III)V
+	public static final fun getIncremental (Landroidx/compose/material3/SliderDefaults;)Z
+	public static final fun getTrackThickness (Landroidx/compose/material3/SliderDefaults;)F
+	public static final fun getWaveAnimationSpecs (Landroidx/compose/material3/SliderDefaults;)Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;
+	public static final fun getWaveHeight (Landroidx/compose/material3/SliderDefaults;)F
+	public static final fun getWaveLength (Landroidx/compose/material3/SliderDefaults;)F
+	public static final fun getWaveThickness (Landroidx/compose/material3/SliderDefaults;)F
+	public static final fun getWaveVelocity (Landroidx/compose/material3/SliderDefaults;)Lkotlin/Pair;
+}
+
