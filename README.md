@@ -86,7 +86,8 @@ fun MyComposable() {
 ```
 
 ## Related projects
-  - Wave slider (similar to ours): https://github.com/galaxygoldfish/waveslider  
+  - Wave slider (similar to ours): https://github.com/galaxygoldfish/waveslider
+  - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
   - Sliders with custom styles: https://github.com/krottv/compose-sliders
   - Squiggly text underlines: https://github.com/saket/ExtendedSpans
   - Android 13 music app: https://android.googlesource.com/platform/packages/apps/Music/
