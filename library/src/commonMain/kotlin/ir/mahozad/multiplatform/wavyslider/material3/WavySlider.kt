@@ -1,4 +1,4 @@
-// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/release/1.5.11/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
+// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/release/1.5.12/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
 
 @file:Suppress("UnusedReceiverParameter")
 
