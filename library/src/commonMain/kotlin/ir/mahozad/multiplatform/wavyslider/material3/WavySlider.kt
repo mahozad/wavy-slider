@@ -52,7 +52,7 @@ val SliderDefaults.WaveHeight: Dp get() = defaultWaveHeight
 /**
  * Default wave velocity (speed and direction)
  */
-val SliderDefaults.WaveVelocity: Pair<Dp, WaveDirection> get() = defaultWaveVelocity
+val SliderDefaults.WaveVelocity: WaveVelocity get() = defaultWaveVelocity
 /**
  * Default wave thickness
  */
@@ -108,7 +108,7 @@ fun SliderDefaults.Track(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
-    waveVelocity: Pair<Dp, WaveDirection> = SliderDefaults.WaveVelocity,
+    waveVelocity: WaveVelocity = SliderDefaults.WaveVelocity,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
     incremental: Boolean = SliderDefaults.Incremental,
@@ -163,7 +163,7 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
-    waveVelocity: Pair<Dp, WaveDirection> = SliderDefaults.WaveVelocity,
+    waveVelocity: WaveVelocity = SliderDefaults.WaveVelocity,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
     incremental: Boolean = SliderDefaults.Incremental,
@@ -262,7 +262,7 @@ fun WavySlider(
     /////////////////
     waveLength: Dp = SliderDefaults.WaveLength,
     waveHeight: Dp = SliderDefaults.WaveHeight,
-    waveVelocity: Pair<Dp, WaveDirection> = SliderDefaults.WaveVelocity,
+    waveVelocity: WaveVelocity = SliderDefaults.WaveVelocity,
     waveThickness: Dp = SliderDefaults.WaveThickness,
     trackThickness: Dp = SliderDefaults.TrackThickness,
     incremental: Boolean = SliderDefaults.Incremental,

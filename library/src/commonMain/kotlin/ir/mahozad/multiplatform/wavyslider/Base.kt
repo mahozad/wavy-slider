@@ -57,6 +57,27 @@ data class WaveAnimationSpecs(
     val waveVelocityAnimationSpec: AnimationSpec<Dp>
 )
 
+/**
+ * A better and more clear type name for wave velocity.
+ *
+ * This helps improve code readability if a velocity variable should be declared.
+ * For example:
+ *
+ * ```kotlin
+ * // val velocity: Pair<Dp, WaveDirection>? = null
+ *    val velocity: WaveVelocity? = null
+ *    velocity = 10.dp to TAIL // OR WaveVelocity(10.dp, TAIL)
+ * ```
+ */
+// Ktor also has done this kind of thing pervasively:
+//   https://github.com/search?q=repo%3Aktorio%2Fktor%20public%20typealias&type=code
+// Another alternative way to implement this would be to do the following:
+//   data class WaveVelocity(val speed: Dp, val direction: WaveDirection)
+//   infix fun Dp.to(direction: WaveDirection) = WaveVelocity(this, that)
+// An advantage would be that instead of waveVelocity.first (or .second), waveVelocity.speed (or .direction) could be used.
+// A disadvantage would be that the client of library would have to import ir.mahozad.multiplatform.wavyslider.to.
+typealias WaveVelocity = Pair<Dp, WaveDirection>
+
 internal val defaultIncremental = false
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
@@ -92,7 +113,7 @@ internal expect val KeyEvent.isPgDn: Boolean
 
 @Composable
 internal inline fun animateWaveShift(
-    waveVelocity: Pair<Dp, WaveDirection>,
+    waveVelocity: WaveVelocity,
     animationSpec: AnimationSpec<Dp>
 ): State<Dp> {
     val shift = remember { mutableStateOf(0.dp) }
