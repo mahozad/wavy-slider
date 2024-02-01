@@ -71,8 +71,8 @@ data class WaveAnimationSpecs(
  * import ir.mahozad.multiplatform.wavyslider.WaveVelocity
  *
  * fun doSomething(
- *  // velocity: Pair<Dp, WaveDirection>? = null
- *     velocity: WaveVelocity?
+ *  // velocity: Pair<Dp, WaveDirection>
+ *     velocity: WaveVelocity
  * ) {
  *  // var newVelocity: Pair<Dp, WaveDirection>? = null
  *     var newVelocity: WaveVelocity? = null
@@ -80,7 +80,7 @@ data class WaveAnimationSpecs(
  * }
  * ```
  */
-// For wave velocity, the existing "Pair" class of Kotlin stdlib is used along with the following alias for it.
+// For wave velocity, the existing "Pair" class of Kotlin stdlib is used along with the below alias for it.
 // Ktor has also done this kind of thing pervasively: https://github.com/search?q=repo%3Aktorio%2Fktor%20public%20typealias&type=code
 // A benefit of using "Pair" is that in Kotlin, any object (including "Dp") has the infix extension function "to"
 // which makes it easy and more readable to create "Pair"s (including creating instances of our wave velocity).
@@ -95,7 +95,7 @@ data class WaveAnimationSpecs(
 // even if the client wanted to access something else on "Dp".
 // Note that we could have just omitted declaring this. In that case, if the clients wanted to
 // improve their code readability, they could have introduced this alias themselves.
-// But, our own code has also used this alias. So, keeping it is a good idea.
+// But, our own code has also used this alias. So, keeping it seems a good idea.
 typealias WaveVelocity = Pair<Dp, WaveDirection>
 
 internal val defaultIncremental = false
