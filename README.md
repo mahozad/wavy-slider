@@ -3,13 +3,11 @@
 [![Latest Maven Central release]][Library on Maven Central]
 
 <div align="center">
-    <img src="assets/demo.svg" alt="Decorative demo"/>
-</div>
-
-<br>
-
-<div align="center">
-    <img src="assets/demo-movie.gif"  alt="Real-world demo"/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/demo-dark.gif">
+    <source media="(prefers-color-scheme: light)" srcset="assets/demo-light.gif">
+    <img alt="Real-world demo" src="assets/demo-light.gif">
+  </picture>
 </div>
 
 # Wavy slider

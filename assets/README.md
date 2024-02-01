@@ -1,5 +1,7 @@
 The [logo-styles.css](logo-styles.css) and [logo-icon.svg](logo-icon.svg) are used for Kdoc (Dokka).
 
+To produce the [demo.gif](demo-light.gif), executed the visual test #50 and then followed steps after 7 below.
+
 To generate the [demo-movie.gif](demo-movie.gif) did as follows:
 
 1. Downloaded AutoMouse Pro 1.0.5
@@ -67,7 +69,7 @@ To generate the [demo-movie.gif](demo-movie.gif) did as follows:
 5. Saved the output in a *file.arf* file
 6. Loaded the *file.arf* into AutoMouse using its *Load* button
 7. Clicked AutoMouse *Replay* button
-8. Took the video with Bandicam
+8. Took the video with https://github.com/mmozeiko/wcap or Bandicam
 9. Converted the video to GIF using FFmpeg (https://superuser.com/q/556029):
     ```shell
     ffmpeg \
@@ -75,7 +77,7 @@ To generate the [demo-movie.gif](demo-movie.gif) did as follows:
     -ss 2800ms \
     -to 14800ms \
     -i demo.mp4 \
-    -vf "fps=25,split[s0][s1];[s0]palettegen=max_colors=32[p];[s1][p]paletteuse" \
+    -vf "fps=30,split[s0][s1];[s0]palettegen=max_colors=32[p];[s1][p]paletteuse" \
     -loop 0 \
     output.gif
     ```
