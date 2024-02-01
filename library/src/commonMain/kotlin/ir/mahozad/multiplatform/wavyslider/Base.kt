@@ -46,6 +46,11 @@ enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float)
  * @param waveHeightAnimationSpec used for **changes** in wave height.
  * @param waveVelocityAnimationSpec used for **changes** in wave velocity (whether in speed or direction).
  */
+// This class enables clients of library to specify custom animation specs for changes in certain properties.
+// This way, they do not have to animate those properties themselves (for example, using animateDpAsState()).
+// More importantly, it enables us to provide a default animation for changes of those properties even
+// if client of library is not aware or does not care about making the changes animated/graceful/gradual.
+// If they want to make the changes immediate/abrupt/sudden, they can simply pass a snap() animation spec.
 data class WaveAnimationSpecs(
     /**
      * Used for **changes** in wave height.
@@ -60,43 +65,44 @@ data class WaveAnimationSpecs(
 /**
  * A better and more clear type name for wave velocity.
  *
- * This helps improve code readability if a velocity variable should be declared.
+ * This improves code readability for function parameters or variable declarations.
  * For example:
- *
  * ```kotlin
- * // val velocity: Pair<Dp, WaveDirection>? = null
- *    val velocity: WaveVelocity? = null
- *    velocity = 10.dp to TAIL // OR WaveVelocity(10.dp, TAIL)
+ * import ir.mahozad.multiplatform.wavyslider.WaveVelocity
+ *
+ * fun doSomething(
+ *  // velocity: Pair<Dp, WaveDirection>? = null
+ *     velocity: WaveVelocity?
+ * ) {
+ *  // var newVelocity: Pair<Dp, WaveDirection>? = null
+ *     var newVelocity: WaveVelocity? = null
+ *     newVelocity = 10.dp to TAIL // OR WaveVelocity(10.dp, TAIL)
+ * }
  * ```
  */
-// Ktor also has done this kind of thing pervasively:
-//   https://github.com/search?q=repo%3Aktorio%2Fktor%20public%20typealias&type=code
-// Another alternative way to implement this would be to do the following:
+// For wave velocity, the existing "Pair" class of Kotlin stdlib is used along with the following alias for it.
+// Ktor has also done this kind of thing pervasively: https://github.com/search?q=repo%3Aktorio%2Fktor%20public%20typealias&type=code
+// A benefit of using "Pair" is that in Kotlin, any object (including "Dp") has the infix extension function "to"
+// which makes it easy and more readable to create "Pair"s (including creating instances of our wave velocity).
+// Another alternative implementation would be the following:
 //   data class WaveVelocity(val speed: Dp, val direction: WaveDirection)
-//   infix fun Dp.to(direction: WaveDirection) = WaveVelocity(this, that)
-// An advantage would be that instead of waveVelocity.first (or .second), waveVelocity.speed (or .direction) could be used.
-// A disadvantage would be that the client of library would have to import ir.mahozad.multiplatform.wavyslider.to.
+//   infix fun Dp.to/* OR toward */(direction: WaveDirection) = WaveVelocity(this, that)
+// Advantages would be that instead of waveVelocity.first/.second, waveVelocity.speed/.direction could be used,
+// and it would probably make it easier to change only one property of the default wave velocity (using copy method).
+// Downsides would be that in addition to importing ir.mahozad.multiplatform.wavyslider.WaveVelocity,
+// the client of library would also have to import ir.mahozad.multiplatform.wavyslider.to/toward
+// and the IDE completion on "Dp" would be polluted by our new "to/toward" function
+// even if the client wanted to access something else on "Dp".
+// Note that we could have just omitted declaring this. In that case, if the clients wanted to
+// improve their code readability, they could have introduced this alias themselves.
+// But, our own code has also used this alias. So, keeping it is a good idea.
 typealias WaveVelocity = Pair<Dp, WaveDirection>
 
 internal val defaultIncremental = false
 internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
-// Instead of providing a dedicated type for this, the existing "Pair" class of Kotlin stdlib is used.
-// One benefit is that in Kotlin, any object (including "Dp") has the infix extension function "to"
-// which makes it easy and more readable to create "Pair"s (including creating this property).
-// In addition, if a dedicated type were provided, the users would have to either pass the velocity argument
-// like "WaveVelocity(10.dp, TAIL)" which is not very easy and very readable, or, to make it easier,
-// we'd have to also provide an infix extension function on Dp (for example, call it "toward") to
-// enable users to create an instance of the velocity like how they do using the "to" for "Pair"s.
-// But in that case, the IDE completion on "Dp" would be polluted by our new "toward" function
-// even if the user wanted to access something else on "Dp".
 internal val defaultWaveVelocity = 10.dp to TAIL
-// These are provided so that users of library can specify custom animation specs for the changes in certain properties.
-// This way, they do not have to animate those properties themselves (for example, using animateDpAsState()).
-// This also enables us to provide a default animation for changes of those properties
-// if user of library is not aware or does not care about making the changes animated/graceful/gradual.
-// If they want to make the changes immediate/abrupt/sudden, they can simply pass a snap() animation spec.
 internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
     waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
     waveVelocityAnimationSpec = tween(durationMillis = 2000, easing = LinearOutSlowInEasing),
