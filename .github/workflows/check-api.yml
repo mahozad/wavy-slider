@@ -1,0 +1,21 @@
+name: Check library API binary compatibility
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-api-compatibility:
+    name: Check API compatibility
+    runs-on: windows-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Set up a specific Java version
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin" # OR adopt OR microsoft OR...
+          java-version: "17"
+      - name: Run the check
+        run: ./gradlew apiCheck
