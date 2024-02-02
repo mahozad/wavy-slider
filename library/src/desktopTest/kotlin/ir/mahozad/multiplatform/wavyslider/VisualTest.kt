@@ -1121,7 +1121,7 @@ class VisualTest {
         assert(isPassed)
     }
 
-    // See the README in the <PROJECT ROOT>/assets directory
+    // See the README in the <PROJECT ROOT>/asset directory
     @Test
     fun `Test 50`() {
         val isPassed = testApp(

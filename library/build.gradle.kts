@@ -133,8 +133,8 @@ tasks.dokkaHtml {
     // See the buildscript block above and also
     // https://github.com/Kotlin/dokka/issues/2406
     pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-        customAssets = listOf(file("../assets/logo-icon.svg"))
-        customStyleSheets = listOf(file("../assets/logo-styles.css"))
+        customAssets = listOf(file("../asset/logo-icon.svg"))
+        customStyleSheets = listOf(file("../asset/logo-styles.css"))
         separateInheritedMembers = true
     }
 

@@ -4,9 +4,9 @@
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/demo-dark.gif">
-    <source media="(prefers-color-scheme: light)" srcset="assets/demo-light.gif">
-    <img alt="Real-world demo" src="assets/demo-light.gif">
+    <source media="(prefers-color-scheme: dark)" srcset="asset/demo-dark.gif">
+    <source media="(prefers-color-scheme: light)" srcset="asset/demo-light.gif">
+    <img alt="Real-world demo" src="asset/demo-light.gif">
   </picture>
 </div>
 
