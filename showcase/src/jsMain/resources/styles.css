@@ -43,6 +43,12 @@ main > * {
 }
 
 canvas {
+    /*
+     * TODO: Make all sides of the canvas wavy;
+     *  see https://stackoverflow.com/questions/42441472/draw-a-squiggly-line-in-svg
+     *  and https://stackoverflow.com/questions/63128291/konva-js-waved-stroke-around-rect-element
+     *  and https://stackoverflow.com/questions/33907082/draw-squiggly-line-along-a-curve-in-javascript?noredirect=1&lq=1
+     */
     /* See https://css-tricks.com/how-to-create-wavy-shapes-patterns-in-css
        and https://css-tricks.com/css-borders-using-masks
        and https://css-generators.com/custom-borders */
