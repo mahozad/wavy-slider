@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
 import kotlin.math.*
 
+// For the Android implementation, see the main README file.
+
 /**
  * The horizontal movement (shift) of the whole wave.
  */
