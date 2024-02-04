@@ -1,6 +1,25 @@
 The [logo-styles.css](logo-styles.css) and [logo-icon.svg](logo-icon.svg) are used for Kdoc (Dokka).
 
-To produce the [demo.gif](demo-light.gif), executed the visual test #50 and then followed steps after 7 below.
+---
+
+To produce the [demo Animated PNGs](demo-light.png) did as follows:
+1. Executed the visual test #50
+2. Make sure its window is not minimized (to prevent FFmpeg error)
+3. Executed *FFmpeg v5.1-gpl* `./ffmpeg.exe -f gdigrab -framerate 30 -i title="WavySliderDemo" -plays 0 out.apng`
+4. Trimmed the duration using `./ffmpeg.exe -ss 5s -to 7s -i out.apng -plays 0 out-trimmed.apng`
+5. Optimized using online tools
+
+---
+
+To produce the [demo GIFs](demo-light.gif) did as follows:
+
+1. Produced animated PNGs using the prevoius method
+2. Executed the *apng2gif* program in the [apng2gif](apng2gif) directory
+3. Selected or dragged and dropped the *out.apng* file in step 2 in it
+4. Clicked *Convert*
+5. Optimized the GIF with https://ezgif.com/optimize
+
+---
 
 To generate the [demo-movie.gif](demo-movie.gif) did as follows:
 

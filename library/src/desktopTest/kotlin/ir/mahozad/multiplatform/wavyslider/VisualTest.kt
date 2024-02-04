@@ -18,13 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
-import androidx.compose.ui.window.application
+import androidx.compose.ui.window.*
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
 import ir.mahozad.multiplatform.wavyslider.material3.WaveAnimationSpecs
 import kotlinx.coroutines.delay
@@ -1124,37 +1122,39 @@ class VisualTest {
     // See the README in the <PROJECT ROOT>/asset directory
     @Test
     fun `Test 50`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "Used to produce demos",
-            showRegularSliders = false
-        ) { value, onChange ->
-            val isDark = false
-            val colorBackgroundLight = Color(0xffffffff)
-            val colorBackgroundDark = Color(0xff0d1117)
-            val colorsLight = SliderDefaults.colors(
-                thumbColor = Color(0xff727d1a), // Primary
-                activeTrackColor = Color(0xff727d1a), // Primary
-                inactiveTrackColor = Color(0xffe4e3d2) // Light SurfaceVariant
-            )
-            val colorsDark = SliderDefaults.colors(
-                thumbColor = Color(0xff727d1a), // Primary
-                activeTrackColor = Color(0xff727d1a), // Primary
-                inactiveTrackColor = Color(0xff47483b) // Dark SurfaceVariant
-            )
-            val colorBackground = if (isDark) colorBackgroundDark else colorBackgroundLight
-            val colors = if (isDark) colorsDark else colorsLight
-            CompositionLocalProvider(LocalDensity provides Density(2f)) {
-                Surface(color = colorBackground) {
-                    Column {
-                        WavySlider3(value, onChange, colors = colors)
-                        WavySlider3(value, onChange, colors = colors, waveLength = 30.dp, waveVelocity = 15.dp to TAIL)
-                        WavySlider3(value, onChange, colors = colors, waveHeight = 12.dp, waveVelocity = 20.dp to TAIL, incremental = true)
-                        WavySlider3(value, onChange, colors = colors, waveHeight = 0.dp)
+        application(exitProcessOnExit = false) {
+            Window(
+                title = "WavySliderDemo",
+                undecorated = true,
+                transparent = true,
+                resizable = false,
+                state = rememberWindowState(size = DpSize(640.dp, Dp.Unspecified)),
+                onCloseRequest = ::exitApplication
+            ) {
+                MaterialTheme3 {
+                    var value by remember { mutableStateOf(0.5f) }
+                    val isDark = false
+                    val colorsLight = SliderDefaults.colors(
+                        thumbColor = Color(0xff727d1a), // Primary
+                        activeTrackColor = Color(0xff727d1a), // Primary
+                        inactiveTrackColor = Color(0xffe4e3d2) // Light SurfaceVariant
+                    )
+                    val colorsDark = SliderDefaults.colors(
+                        thumbColor = Color(0xff727d1a), // Primary
+                        activeTrackColor = Color(0xff727d1a), // Primary
+                        inactiveTrackColor = Color(0xff47483b) // Dark SurfaceVariant
+                    )
+                    val colors = if (isDark) colorsDark else colorsLight
+                    CompositionLocalProvider(LocalDensity provides Density(2f)) {
+                        Column {
+                            WavySlider3(value, { value = it }, colors = colors)
+                            WavySlider3(value, { value = it }, colors = colors, waveLength = 30.dp, waveVelocity = 15.dp to TAIL)
+                            WavySlider3(value, { value = it }, colors = colors, waveHeight = 12.dp, waveVelocity = 20.dp to TAIL, incremental = true)
+                            WavySlider3(value, { value = it }, colors = colors, waveHeight = 0.dp)
+                        }
                     }
                 }
             }
         }
-        assert(isPassed)
     }
 }
