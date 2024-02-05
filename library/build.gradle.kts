@@ -144,7 +144,7 @@ tasks.dokkaHtml {
             noAndroidSdkLink = false
             noStdlibLink = false
             noJdkLink = false
-            jdkVersion = JavaVersion.VERSION_17.majorVersion.toInt()
+            jdkVersion = libs.versions.java.get().toInt()
             // sourceLink {
             //     // Unix based directory relative path to the root of the project (where you execute gradle respectively).
             //     // localDirectory.set(file("src/main/kotlin"))
