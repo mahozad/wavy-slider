@@ -29,6 +29,7 @@ import ir.mahozad.multiplatform.wavyslider.material3.SliderTokens
 import ir.mahozad.multiplatform.wavyslider.material3.ThumbDefaultElevation
 import ir.mahozad.multiplatform.wavyslider.material3.ThumbPressedElevation
 
+// https://en.wikipedia.org/wiki/List_of_two-dimensional_geometric_shapes
 class WavySliderThumb {
     companion object {
         val Diamond: @Composable (SliderPositions) -> Unit = { Diamond(18.dp, 4.dp) }
