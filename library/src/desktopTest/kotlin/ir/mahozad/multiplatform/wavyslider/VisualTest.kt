@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
@@ -76,7 +75,7 @@ class VisualTest {
         windowSize: DpSize = DpSize(800.dp, 600.dp),
         wavySlider2: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
         wavySlider3: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null,
-        content: (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null
+        content:     (@Composable ColumnScope.(value: Float, onChange: (Float) -> Unit) -> Unit)? = null
     ): Boolean {
         var passed = false
         val green = Color(0xff539c05)
@@ -84,7 +83,7 @@ class VisualTest {
         application(exitProcessOnExit = false) {
             Window(
                 title = name,
-                state = WindowState(
+                state = rememberWindowState(
                     size = windowSize,
                     position = WindowPosition(Alignment.Center)
                 ),
