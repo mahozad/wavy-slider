@@ -26,21 +26,22 @@ For real-world apps in various platforms using the library, see the [showcase](s
 
 ## Getting started
 
-For a single-platform project (Android or iOS or Desktop or JS):
-
 ```kotlin
-dependencies {
-    implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.0.0-rc")
-}
+implementation("ir.mahozad.multiplatform:wavy-slider:1.0.0-rc")
 ```
 
-For a multiplatform project (if you target a subset of the library supported platforms):
+<details>
+
+<summary>Setup for multiplatform projects</summary>
+
+If you target a subset of the library supported platforms, add the library to your common source set:
 
 ```kotlin
 kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.0.0-rc")
+            // ...
         }
 // ...
 ```
@@ -53,13 +54,17 @@ kotlin {
     val desktopMain /* OR jvmMain */ by getting {
         dependencies {
             implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.0.0-rc")
+            // ...
         }
     }
     androidMain.dependencies {
         implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.0.0-rc")
+        // ...
     }
-    // etc.
+    // Other targets...
 ```
+
+</details>
 
 Using the WavySlider is much like using the Material Slider
 (you can even make it a regular flat slider):
