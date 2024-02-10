@@ -4,7 +4,7 @@ The [logo-styles.css](logo-styles.css) and [logo-icon.svg](logo-icon.svg) are us
 
 To produce the [demo Animated PNGs](demo-light.png) did as follows:
 1. Executed the visual test #50
-2. Make sure its window is not minimized (to prevent FFmpeg error)
+2. Made sure its window is not minimized (to prevent FFmpeg error)
 3. Executed *FFmpeg v5.1-gpl* `./ffmpeg.exe -f gdigrab -framerate 30 -i title="WavySliderDemo" -plays 0 out.apng`
 4. Trimmed the duration using `./ffmpeg.exe -ss 5s -to 7s -i out.apng -plays 0 out-trimmed.apng`
 5. Optimized using online tools

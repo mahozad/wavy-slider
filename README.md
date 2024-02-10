@@ -352,7 +352,7 @@ fun MyComposable() {
       + [Android 13](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt)
       + [Android Music app](https://android.googlesource.com/platform/packages/apps/Music/)
       + [Everything you see in Android that's not an app](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/)
-  - Wave slider (similar to ours): https://github.com/galaxygoldfish/waveslider
+  - Wave slider (Android-only): https://github.com/galaxygoldfish/waveslider
   - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
   - Sliders with custom styles: https://github.com/krottv/compose-sliders
   - Squiggly text underlines: https://github.com/saket/ExtendedSpans
