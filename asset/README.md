@@ -7,13 +7,14 @@ To produce the [demo Animated PNGs](demo-light.png) did as follows:
 2. Made sure its window is not minimized (to prevent FFmpeg error)
 3. Executed *FFmpeg v5.1-gpl* `./ffmpeg.exe -f gdigrab -framerate 30 -i title="WavySliderDemo" -plays 0 out.apng`
 4. Trimmed the duration using `./ffmpeg.exe -ss 5s -to 7s -i out.apng -plays 0 out-trimmed.apng`
-5. Optimized using online tools
+5. Changed the extension of the result from `apng` to `png`
+6. Optimized using online tools (for example, https://tinypng.com)
 
 ---
 
 To produce the [demo GIFs](demo-light.gif) did as follows:
 
-1. Produced animated PNGs using the prevoius method
+1. Produced animated PNGs using the previous method
 2. Executed the *apng2gif* program in the [apng2gif](apng2gif) directory
 3. Selected or dragged and dropped the *out.apng* file in step 2 in it
 4. Clicked *Convert*

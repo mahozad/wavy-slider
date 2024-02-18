@@ -1132,7 +1132,7 @@ class VisualTest {
             ) {
                 MaterialTheme3 {
                     var value by remember { mutableStateOf(0.5f) }
-                    val isDark = false
+                    val isDark = true
                     val colorsLight = SliderDefaults.colors(
                         thumbColor = Color(0xff727d1a), // Primary
                         activeTrackColor = Color(0xff727d1a), // Primary
@@ -1144,11 +1144,11 @@ class VisualTest {
                         inactiveTrackColor = Color(0xff47483b) // Dark SurfaceVariant
                     )
                     val colors = if (isDark) colorsDark else colorsLight
-                    CompositionLocalProvider(LocalDensity provides Density(2f)) {
+                    CompositionLocalProvider(LocalDensity provides Density(1.6f)) {
                         Column {
                             WavySlider3(value, { value = it }, colors = colors)
-                            WavySlider3(value, { value = it }, colors = colors, waveLength = 30.dp, waveVelocity = 15.dp to TAIL)
-                            WavySlider3(value, { value = it }, colors = colors, waveHeight = 12.dp, waveVelocity = 20.dp to TAIL, incremental = true)
+                            WavySlider3(value, { value = it }, colors = colors, waveLength = 30.dp, waveVelocity = 15.dp to HEAD)
+                            WavySlider3(value, { value = it }, colors = colors, waveHeight = 14.dp, waveVelocity = 20.dp to TAIL, waveThickness = 3.dp, incremental = true)
                             WavySlider3(value, { value = it }, colors = colors, waveHeight = 0.dp)
                         }
                     }
