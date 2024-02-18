@@ -18,7 +18,11 @@ import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
 import kotlin.math.*
 
-// For the Android implementation, see the main README file.
+// For source code of the original squiggly progress in Android OS, see the main README file.
+// Also, for the source code of default Android apps (for example Music app),
+//   see https://android.googlesource.com/platform/packages/apps/Music/
+// And, for the source code of everything visible in Android that's not an app,
+//   see https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/
 
 /**
  * The horizontal movement (shift) of the whole wave.
@@ -83,12 +87,13 @@ data class WaveAnimationSpecs(
  * ```
  */
 // For wave velocity, the existing "Pair" class of Kotlin stdlib is used along with the below alias for it.
-// Ktor has also done this kind of thing pervasively: https://github.com/search?q=repo%3Aktorio%2Fktor%20public%20typealias&type=code
+// As an example, Ktor has also done this kind of thing pervasively:
+//   https://github.com/search?q=repo%3Aktorio%2Fktor%20public%20typealias&type=code
 // A benefit of using "Pair" is that in Kotlin, any object (including "Dp") has the infix extension function "to"
 // which makes it easy and more readable to create "Pair"s (including creating instances of our wave velocity).
 // Another alternative implementation would be the following:
 //   data class WaveVelocity(val speed: Dp, val direction: WaveDirection)
-//   infix fun Dp.to/* OR toward */(direction: WaveDirection) = WaveVelocity(this, that)
+//   infix fun Dp.to/* OR toward */(that: WaveDirection) = WaveVelocity(this, that)
 // Advantages would be that instead of waveVelocity.first/.second, waveVelocity.speed/.direction could be used,
 // and it would probably make it easier to change only one property of the default wave velocity (using copy method).
 // Downsides would be that in addition to importing ir.mahozad.multiplatform.wavyslider.WaveVelocity,

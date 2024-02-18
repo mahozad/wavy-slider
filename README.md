@@ -2,6 +2,8 @@
 [![Compose Multiplatform version]][Compose Multiplatform release]
 [![Latest Maven Central release]][Library on Maven Central]
 
+<br>
+
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="asset/demo-dark.png">
@@ -91,9 +93,9 @@ fun MyComposable() {
 ```
 
 ## Related
-  - Android squiggly progress:
+  - Android squiggly progress ([Main branch][Android main branch implementation] ❖ [Android 14][Android 14 branch implementation] ❖ [Android 13][Android 13 branch implementation])
       + <details>
-        <summary>Current implementation (as of 2024-02-02)</summary>
+        <summary>Implementation (as of 2024-02-02)</summary>
         
         ```kotlin
         /*
@@ -352,11 +354,6 @@ fun MyComposable() {
         }
         ```
         </details>
-      + [Main branch](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt)
-      + [Android 14](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt)
-      + [Android 13](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt)
-      + [Android Music app](https://android.googlesource.com/platform/packages/apps/Music/)
-      + [Everything you see in Android that's not an app](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/)
   - Wave slider (Android-only): https://github.com/galaxygoldfish/waveslider
   - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
   - Sliders with custom styles: https://github.com/krottv/compose-sliders
@@ -372,3 +369,6 @@ fun MyComposable() {
 [Kotlin release]: https://github.com/JetBrains/kotlin/releases/tag/v1.9.22
 [Compose Multiplatform release]: https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.5.12
 [Library on Maven Central]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/1.0.0/
+[Android main branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
+[Android 14 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt
+[Android 13 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
