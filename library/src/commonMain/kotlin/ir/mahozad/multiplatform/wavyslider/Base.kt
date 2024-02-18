@@ -16,7 +16,10 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.absoluteValue
+import kotlin.math.sin
 
 // For source code of the original squiggly progress in Android OS, see the main README file.
 // Also, for the source code of default Android apps (for example Music app),
@@ -205,39 +208,19 @@ private inline fun DrawScope.drawTrackActivePart(
     valueOffset: Offset,
     waveLength: Dp,
     waveHeight: Dp,
-    waveThickness: Dp,
     waveShift: Dp,
+    waveThickness: Dp,
     incremental: Boolean,
     color: Color
 ) {
     if (waveThickness <= 0.dp) return
-    val wave = Path().apply {
-        if (waveLength <= 0.dp || waveHeight == 0.dp) {
-            moveTo(startOffset.x, center.y)
-            lineTo(valueOffset.x, center.y)
-            return@apply
-        }
-        val waveShiftPx = waveShift.toPx()
-        val waveLengthPx = waveLength.toPx()
-        val waveHeightPx = waveHeight.toPx().absoluteValue
-        val startHeightFactor = if (incremental) 0f else 1f
-        val startRadians = (startOffset.x + waveShiftPx) / waveLengthPx * (2 * PI)
-        val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
-        moveTo(startOffset.x, startY.toFloat())
-        val range = if (layoutDirection == LayoutDirection.Rtl) {
-            startOffset.x.toInt() downTo valueOffset.x.toInt()
-        } else {
-            startOffset.x.toInt()..valueOffset.x.toInt()
-        }
-        for (x in range) {
-            val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
-            val radians = (x + waveShiftPx) / waveLengthPx * (2 * PI)
-            val y = (sin(radians) * heightFactor * waveHeightPx + size.height) / 2
-            lineTo(x.toFloat(), y.toFloat())
-        }
+    val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
+        createFlatPath(startOffset, valueOffset)
+    } else {
+        createWavyPath(startOffset, valueOffset, waveLength, waveHeight, waveShift, incremental)
     }
     drawPath(
-        path = wave,
+        path = path,
         color = color,
         style = Stroke(
             width = waveThickness.toPx(),
@@ -245,6 +228,42 @@ private inline fun DrawScope.drawTrackActivePart(
             cap = StrokeCap.Round
         )
     )
+}
+
+private inline fun DrawScope.createFlatPath(
+    startOffset: Offset,
+    valueOffset: Offset
+): Path = Path().apply {
+    moveTo(startOffset.x, center.y)
+    lineTo(valueOffset.x, center.y)
+}
+
+private inline fun DrawScope.createWavyPath(
+    startOffset: Offset,
+    valueOffset: Offset,
+    waveLength: Dp,
+    waveHeight: Dp,
+    waveShift: Dp,
+    incremental: Boolean
+): Path = Path().apply {
+    val waveShiftPx = waveShift.toPx()
+    val waveLengthPx = waveLength.toPx()
+    val waveHeightPx = waveHeight.toPx().absoluteValue
+    val startHeightFactor = if (incremental) 0f else 1f
+    val startRadians = (startOffset.x + waveShiftPx) / waveLengthPx * (2 * PI)
+    val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
+    moveTo(startOffset.x, startY.toFloat())
+    val range = if (layoutDirection == LayoutDirection.Rtl) {
+        startOffset.x.toInt() downTo valueOffset.x.toInt()
+    } else {
+        startOffset.x.toInt()..valueOffset.x.toInt()
+    }
+    for (x in range) {
+        val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
+        val radians = (x + waveShiftPx) / waveLengthPx * (2 * PI)
+        val y = (sin(radians) * heightFactor * waveHeightPx + size.height) / 2
+        lineTo(x.toFloat(), y.toFloat())
+    }
 }
 
 internal inline fun snapValueToTick(
