@@ -354,6 +354,7 @@ fun MyComposable() {
         }
         ```
         </details>
+  - Squiggly slider (Android-only): https://github.com/saket/squiggly-slider
   - Wave slider (Android-only): https://github.com/galaxygoldfish/waveslider
   - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
   - Sliders with custom styles: https://github.com/krottv/compose-sliders
