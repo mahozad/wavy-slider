@@ -53,10 +53,12 @@ private val ThumbPressedElevation = 6.dp
 private val SliderMinWidth = 144.dp // TODO: clarify min width
 private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 
-// Instead of directly exposing the following defaults as public properties,
-// we want to provide them in the SliderDefaults object so the user can access all the defaults
-// using that namespace. But SliderDefaults object is in Material library, and we cannot modify it.
-// So, we provide the defaults as extension properties of SliderDefaults object.
+/*
+ * Instead of directly exposing the following defaults as public properties,
+ * we want to provide them in the SliderDefaults object so the user can access all the defaults
+ * using that namespace. But SliderDefaults object is in Material library, and we cannot modify it.
+ * So, we provide the defaults as extension properties of SliderDefaults object.
+ */
 
 /**
  * Default wave length
