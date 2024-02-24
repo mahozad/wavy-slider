@@ -69,7 +69,7 @@ kotlin {
 </details>
 
 Using the WavySlider is much like using the Material Slider
-(you can even make it a regular flat slider):
+(you can even make it a regular flat Slider):
 
 ```kotlin
 import ir.mahozad.multiplatform.wavyslider.material/*OR material3*/.WavySlider
@@ -84,10 +84,10 @@ fun MyComposable() {
         waveLength = 16.dp,     // Set this to 0.dp to get a regular Slider
         waveHeight = 16.dp,     // Set this to 0.dp to get a regular Slider
         waveVelocity = 15.dp to HEAD, // Speed per second and its direction
-        waveThickness = 4.dp,   // Defaults to the track thickness
+        waveThickness = 4.dp,   // Defaults to the specified trackThickness
         trackThickness = 4.dp,  // Defaults to 4.dp, same as regular Slider
         incremental = false,    // Whether to gradually increase waveHeight
-        // animationSpecs = ... // Customize animations used for properties 
+        // animationSpecs = ... // Customize animations used for properties
     )
 }
 ```
