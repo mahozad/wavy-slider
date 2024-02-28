@@ -959,7 +959,7 @@ class VisualTest {
             given = "When a custom thumb is set",
             expected = "The custom thumb should be displayed and its height be taken into account in overall component height"
         ) { value, onChange ->
-            val thumb: @Composable (SliderPositions) -> Unit = @Composable {
+            val thumb: @Composable (SliderState) -> Unit = @Composable {
                 Box(Modifier.width(6.dp).height(128.dp).background(Color.Red))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {

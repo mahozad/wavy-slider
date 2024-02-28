@@ -1,4 +1,4 @@
-// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/release/1.5.12/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/release/1.6.0/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
 
 @file:Suppress("UnusedReceiverParameter")
 
@@ -90,28 +90,26 @@ val SliderDefaults.Incremental: Boolean get() = defaultIncremental
 val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAnimationSpecs
 
 /**
- * A wavy slider much like the [Material Design 2 slider](https://m2.material.io/components/sliders).
+ * A wavy slider much like the [Material Design 2 Slider](https://m2.material.io/components/sliders).
  *
- * Setting [waveHeight] or [waveLength] to `0.dp` results in a regular Material [Slider].
+ * Setting [waveHeight] or [waveLength] to `0.dp` results in a regular [Slider].
  *
- * This component can also be used as a progress bar.
- *
- * Note that range sliders do not make sense for the wavy slider.
+ * Note that range sliders do not make sense for the WavySlider.
  * So, there is no RangeWavySlider counterpart.
  *
  * @param value current value of the WavySlider. Will be coerced to [valueRange].
- * @param onValueChange lambda in which value should be updated
- * @param modifier modifiers for the WavySlider layout
- * @param enabled whether or not component is enabled and can be interacted with or not
+ * @param onValueChange lambda in which value should be updated.
+ * @param modifier modifiers for the WavySlider layout.
+ * @param enabled whether or not component is enabled and can be interacted with or not.
  * @param valueRange range of values that WavySlider value can take. Passed [value] will be coerced to
  * this range.
  * @param onValueChangeFinished lambda to be invoked when value change has ended. This callback
- * shouldn't be used to update the wavy slider value (use [onValueChange] for that), but rather to
+ * shouldn't be used to update the WavySlider value (use [onValueChange] for that), but rather to
  * know when the user has completed selecting a new value by ending a drag or a click.
  * @param interactionSource the [MutableInteractionSource] representing the stream of
  * [Interaction]s for this WavySlider. You can create and pass in your own remembered
  * [MutableInteractionSource] if you want to observe [Interaction]s and customize the
- * appearance / behavior of this WavySlider in different [Interaction]s.
+ * appearance / behavior of this Slider in different [Interaction]s.
  * @param colors [SliderColors] that will be used to determine the color of the WavySlider parts in
  * different state. See [SliderDefaults.colors] to customize.
  *
@@ -226,7 +224,7 @@ fun WavySlider(
 
         val coerced = value.coerceIn(valueRange.start, valueRange.endInclusive)
         val fraction = calcFraction(valueRange.start, valueRange.endInclusive, coerced)
-        SliderImpl(
+        WavySliderImpl(
             enabled,
             fraction,
             colors,
@@ -332,7 +330,7 @@ private fun Modifier.slideOnKeyEvents(
 }
 
 @Composable
-private fun SliderImpl(
+private fun WavySliderImpl(
     enabled: Boolean,
     positionFraction: Float,
     colors: SliderColors,
