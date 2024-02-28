@@ -29,7 +29,7 @@ For real-world apps in various platforms using the library, see the [showcase](s
 ## Getting started
 
 ```kotlin
-implementation("ir.mahozad.multiplatform:wavy-slider:1.0.0")
+implementation("ir.mahozad.multiplatform:wavy-slider:1.1.0")
 ```
 
 <details>
@@ -42,7 +42,7 @@ If you target a subset of the library supported platforms, add the library to yo
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.0.0")
+            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.1.0")
             // ...
         }
 // ...
@@ -55,12 +55,12 @@ add the library separately to each supported target:
 kotlin {
     val desktopMain /* OR jvmMain */ by getting {
         dependencies {
-            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.0.0")
+            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.1.0")
             // ...
         }
     }
     androidMain.dependencies {
-        implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.0.0")
+        implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:1.1.0")
         // ...
     }
     // Other targets...
@@ -109,7 +109,7 @@ fun MyComposable() {
 [Latest Maven Central release]: https://img.shields.io/maven-central/v/ir.mahozad.multiplatform/wavy-slider?label=Maven%20Central&labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE2IDE2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzPgogICAgPHN0eWxlPi5he2ZpbGw6bm9uZTt9LmJ7Y2xpcC1wYXRoOnVybCgjYSk7fS5je2ZpbGw6I2ZmZjt9PC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iYSI+CiAgICAgIDxyZWN0IGNsYXNzPSJhIiB4PSIxNC43IiB5PSIxMSIgd2lkdGg9IjE3MSIgaGVpZ2h0PSIxNTEiLz4KICAgIDwvY2xpcFBhdGg+CiAgICA8Y2xpcFBhdGggaWQ9ImNsaXBQYXRoMTMiPgogICAgICA8cmVjdCBjbGFzcz0iYSIgeD0iMTQuNyIgeT0iMTEiIHdpZHRoPSIxNzEiIGhlaWdodD0iMTUxIi8+CiAgICA8L2NsaXBQYXRoPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iYyIgdHJhbnNmb3JtPSJtYXRyaXgoLjE2NCAwIDAgLjE2NCAtOC4zNyAtMS44MSkiIGQ9Im0xMDAgMTEtNDIuMyAyNC40djQ4LjlsNDIuMyAyNC40IDQyLjMtMjQuNHYtNDguOXptMzAuMiA2Ni4zLTMwLjIgMTcuNC0zMC4yLTE3LjR2LTM0LjlsMzAuMi0xNy40IDMwLjIgMTcuNHoiIGNsaXAtcGF0aD0idXJsKCNjbGlwUGF0aDEzKSIvPgo8L3N2Zz4K
 [Kotlin release]: https://github.com/JetBrains/kotlin/releases/tag/v1.9.22
 [Compose Multiplatform release]: https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.6.0
-[Library on Maven Central]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/1.0.0/
+[Library on Maven Central]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/1.1.0/
 [Android main branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
 [Android 14 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt
 [Android 13 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
