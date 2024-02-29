@@ -7,20 +7,20 @@ import androidx.compose.material.lightColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.CanvasBasedWindow
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.resource
+import org.jetbrains.compose.resources.*
 import org.jetbrains.skiko.wasm.onWasmReady
 import kotlin.math.roundToInt
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
@@ -31,9 +31,15 @@ private val material2ColorPrimary = Color(0xff591b52)
 /**
  * To generate the website, see the README in the website branch.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     onWasmReady {
-        Window(title = "Wavy slider showcase") {
+        CanvasBasedWindow(
+            title = "Wavy slider showcase",
+            canvasElementId = "content",
+            applyDefaultStyles = false,
+            requestResize = { IntSize(width = 900, height = 800) }
+        ) {
             App()
         }
     }
@@ -58,8 +64,8 @@ fun App() {
 fun Content() {
     var value by remember { mutableFloatStateOf(0.5f) }
     var waveLength by remember { mutableStateOf(20.dp) }
-    var waveHeight by remember { mutableStateOf(6.dp) }
-    var waveSpeed by remember { mutableStateOf(10.dp) }
+    var waveHeight by remember { mutableStateOf(7.dp) }
+    var waveSpeed by remember { mutableStateOf(12.dp) }
     var waveThickness by remember { mutableStateOf(4.dp) }
     var trackThickness by remember { mutableStateOf(4.dp) }
     var isEnabled by remember { mutableStateOf(true) }
@@ -196,7 +202,7 @@ fun MaterialDesignVersion(isMaterial3: Boolean, onChange: (Boolean) -> Unit) {
             )
         ) {
             Icon(
-                painterResource("m$n-logo.png"),
+                painterResource(DrawableResource("m$n-logo.png")),
                 contentDescription = "Material $n",
                 modifier = Modifier.size(34.dp),
                 tint = if (n == 3 && isMaterial3) {
@@ -453,7 +459,7 @@ fun Code(
     // }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(InternalResourceApi::class)
 suspend fun loadResource(path: String): ByteArray {
-    return resource(path).readBytes()
+    return readResourceBytes(path)
 }
