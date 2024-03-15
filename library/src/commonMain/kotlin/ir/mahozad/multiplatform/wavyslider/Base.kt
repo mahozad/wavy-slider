@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
 import kotlin.math.PI
-import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sin
 
@@ -281,8 +280,8 @@ private inline fun DrawScope.createWavyPath(
     val waveShiftPx = waveShift.toPx()
     val waveLengthPx = waveLength.toPx()
     val waveHeightPx = waveHeight.toPx().absoluteValue
-    val startHeightFactor = if (incremental) 0f else 1f
     val startRadians = waveSpread * (waveShiftPx) / waveLengthPx * (2 * PI)
+    val startHeightFactor = if (incremental) 0f else 1f
     val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
     moveTo(startOffset.x, startY.toFloat())
     val range = if (layoutDirection == LayoutDirection.Rtl) {
