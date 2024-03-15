@@ -1012,7 +1012,7 @@ class VisualTest {
 
     // See the README in the <PROJECT ROOT>/asset directory
     @Test
-    fun `Test 41`() {
+    fun `Wavy slider demo`() {
         application(exitProcessOnExit = false) {
             Window(
                 title = "WavySliderDemo",
