@@ -43,6 +43,7 @@ import ir.mahozad.multiplatform.wavyslider.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
 
@@ -402,7 +403,7 @@ private fun Track(
     val activeTrackColor = colors.trackColor(enabled, active = true)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
-    val trackHeight = max(waveThickness + if (waveHeight < 0.dp) -waveHeight else waveHeight, ThumbRadius * 2)
+    val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbRadius * 2)
     Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(thumbPx, center.y)

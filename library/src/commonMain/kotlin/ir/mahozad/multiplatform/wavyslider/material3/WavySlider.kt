@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.util.fastFirst
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -125,7 +126,7 @@ fun SliderDefaults.Track(
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
-    val trackHeight = max(waveThickness + if (waveHeight < 0.dp) -waveHeight else waveHeight, ThumbSize.height)
+    val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)
     Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)
@@ -198,7 +199,7 @@ fun SliderDefaults.Track(
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
-    val trackHeight = max(waveThickness + if (waveHeight < 0.dp) -waveHeight else waveHeight, ThumbSize.height)
+    val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)
     Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)
