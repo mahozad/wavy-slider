@@ -87,7 +87,7 @@ fun MyComposable() {
         waveThickness = 4.dp,   // Defaults to the specified trackThickness
         trackThickness = 4.dp,  // Defaults to 4.dp, same as regular Slider
         incremental = false,    // Whether to gradually increase waveHeight
-        // animationSpecs = ... // Customize animations used for properties
+        // animationSpecs = ... // Customize various animations of the wave
     )
 }
 ```
