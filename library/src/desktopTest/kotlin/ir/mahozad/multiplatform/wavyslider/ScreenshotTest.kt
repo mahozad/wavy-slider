@@ -94,8 +94,8 @@ class ScreenshotTest {
         windowSize = IntSize(width = 400, height = 100),
         referenceName = "reference-3.png"
     ) {
-        WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveThickness = 9.dp)
-        WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveThickness = 9.dp)
+        WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, waveThickness = 9.dp)
+        WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, waveThickness = 9.dp)
     }
 
     @Test
@@ -103,18 +103,17 @@ class ScreenshotTest {
         windowSize = IntSize(width = 400, height = 100),
         referenceName = "reference-4.png"
     ) {
-        WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, trackThickness = 0.dp)
-        WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, trackThickness = 0.dp)
+        WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = 0.dp)
+        WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = 0.dp)
     }
-
 
     @Test
     fun `When trackThickness is negative, should have the same behaviour as if the thickness was 0`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
         referenceName = "reference-4.png"
     ) {
-        WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, trackThickness = (-10).dp)
-        WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, trackThickness = (-10).dp)
+        WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = (-10).dp)
+        WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = (-10).dp)
     }
 
     @Test
@@ -137,7 +136,7 @@ class ScreenshotTest {
             scene.density = Density(density = 1f, fontScale = 1f)
             mainClock.autoAdvance = false
             setContent { Column(content = content) }
-            mainClock.advanceTimeBy(milliseconds = 100)
+            mainClock.advanceTimeBy(milliseconds = 10_000)
             val screenshot = Image.makeFromBitmap(captureToImage().asSkiaBitmap())
             val screenshotData = screenshot
                 .encodeToData(EncodedImageFormat.PNG)

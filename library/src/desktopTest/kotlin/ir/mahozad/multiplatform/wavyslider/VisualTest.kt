@@ -1010,6 +1010,35 @@ class VisualTest {
         assert(isPassed)
     }
 
+    @Test
+    fun `Test 41`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "Start animation",
+            expected = "The sliders in RTL container should have the same animation speed as those in LTR container",
+            showRegularSliders = false,
+            windowSize = DpSize(800.dp, 800.dp)
+        ) { value, onChange ->
+            var isShown by remember { mutableStateOf(false) }
+            Button(onClick = { isShown = !isShown }) {
+                Text(text = "Toggle")
+            }
+            if (isShown) {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                    WavySlider2(value, onChange, waveVelocity = 10.dp to TAIL)
+                    WavySlider3(value, onChange, waveVelocity = 10.dp to TAIL)
+                    WavySlider2(value, onChange, waveVelocity = 10.dp to HEAD)
+                    WavySlider3(value, onChange, waveVelocity = 10.dp to HEAD)
+                }
+                WavySlider2(value, onChange, waveVelocity = 10.dp to TAIL)
+                WavySlider3(value, onChange, waveVelocity = 10.dp to TAIL)
+                WavySlider2(value, onChange, waveVelocity = 10.dp to HEAD)
+                WavySlider3(value, onChange, waveVelocity = 10.dp to HEAD)
+            }
+        }
+        assert(isPassed)
+    }
+
     // See the README in the <PROJECT ROOT>/asset directory
     @Test
     fun `Wavy slider demo`() {
