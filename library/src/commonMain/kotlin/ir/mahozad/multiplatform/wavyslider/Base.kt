@@ -48,6 +48,7 @@ enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float)
  *
  * @param waveHeightAnimationSpec used for **changes** in wave height.
  * @param waveVelocityAnimationSpec used for **changes** in wave velocity (whether in speed or direction).
+ * @param waveStartSpreadAnimationSpec Used for wave expansion at the start of the composition.
  */
 /*
  * This class enables clients of library to specify custom animation specs for changes in certain properties.
