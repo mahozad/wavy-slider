@@ -2,6 +2,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import java.util.*
 
 plugins {
@@ -29,9 +30,16 @@ version = "1.2.0"
 kotlin {
     androidTarget { publishLibraryVariants("release") }
     // Windows, Linux, macOS (with Java runtime)
-    jvm(name = "desktop" /* Renames jvm to desktop */)
+    jvm(name = "desktop")
     // Kotlin/JS drawing to a canvas
     js(compiler = IR) {
+        nodejs()
+        browser()
+        binaries.executable()
+    }
+    // Kotlin/Wasm drawing to a canvas
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         nodejs()
         browser()
         binaries.executable()
@@ -51,7 +59,6 @@ kotlin {
         }
     }
 
-    // wasmJs { browser() }
     // Native targets:
     // macosX64()
     // macosArm64()
