@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
 import kotlin.math.PI
-import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sin
 
@@ -48,6 +47,7 @@ enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float)
  *
  * @param waveHeightAnimationSpec used for **changes** in wave height.
  * @param waveVelocityAnimationSpec used for **changes** in wave velocity (whether in speed or direction).
+ * @param waveStartSpreadAnimationSpec Used for wave expansion at the start of the composition.
  */
 /*
  * This class enables clients of library to specify custom animation specs for changes in certain properties.
@@ -64,7 +64,11 @@ data class WaveAnimationSpecs(
     /**
      * Used for **changes** in wave velocity (whether in speed or direction).
      */
-    val waveVelocityAnimationSpec: AnimationSpec<Dp>
+    val waveVelocityAnimationSpec: AnimationSpec<Dp>,
+    /**
+     * Used for wave expansion at the start of the composition.
+     */
+    val waveStartSpreadAnimationSpec: AnimationSpec<Float>,
 )
 
 /**
@@ -114,6 +118,7 @@ internal val defaultWaveVelocity = 10.dp to TAIL
 internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
     waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
     waveVelocityAnimationSpec = tween(durationMillis = 2000, easing = LinearOutSlowInEasing),
+    waveStartSpreadAnimationSpec = tween(durationMillis = 6000, easing = EaseOutQuad)
 )
 
 internal expect val KeyEvent.isDirectionUp: Boolean
@@ -154,12 +159,26 @@ internal inline fun animateWaveHeight(
     animationSpec = animationSpec
 )
 
+@Composable
+internal inline fun animateWaveSpread(
+    animationSpec: AnimationSpec<Float>
+): State<Float> {
+    var spreadFactor by remember { mutableFloatStateOf(0f) }
+    val spreadFactorAnimated = animateFloatAsState(
+        targetValue = spreadFactor,
+        animationSpec = animationSpec
+    )
+    LaunchedEffect(Unit) { spreadFactor = 1f }
+    return spreadFactorAnimated
+}
+
 internal inline fun DrawScope.drawTrack(
     sliderStart: Offset,
     sliderValueOffset: Offset,
     sliderEnd: Offset,
     waveLength: Dp,
     waveHeight: Dp,
+    waveSpread: Float,
     waveShift: Dp,
     waveThickness: Dp,
     trackThickness: Dp,
@@ -172,6 +191,7 @@ internal inline fun DrawScope.drawTrack(
         valueOffset = sliderValueOffset,
         waveLength = waveLength,
         waveHeight = waveHeight,
+        waveSpread = waveSpread,
         waveShift = waveShift,
         waveThickness = waveThickness,
         incremental = incremental,
@@ -206,6 +226,7 @@ private inline fun DrawScope.drawTrackActivePart(
     valueOffset: Offset,
     waveLength: Dp,
     waveHeight: Dp,
+    waveSpread: Float,
     waveShift: Dp,
     waveThickness: Dp,
     incremental: Boolean,
@@ -213,9 +234,20 @@ private inline fun DrawScope.drawTrackActivePart(
 ) {
     if (waveThickness <= 0.dp) return
     val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
-        createFlatPath(startOffset, valueOffset)
+        createFlatPath(
+            startOffset,
+            valueOffset
+        )
     } else {
-        createWavyPath(startOffset, valueOffset, waveLength, waveHeight, waveShift, incremental)
+        createWavyPath(
+            startOffset,
+            valueOffset,
+            waveLength,
+            waveHeight,
+            waveSpread,
+            waveShift,
+            incremental
+        )
     }
     drawPath(
         path = path,
@@ -241,14 +273,15 @@ private inline fun DrawScope.createWavyPath(
     valueOffset: Offset,
     waveLength: Dp,
     waveHeight: Dp,
+    waveSpread: Float,
     waveShift: Dp,
     incremental: Boolean
 ): Path = Path().apply {
     val waveShiftPx = waveShift.toPx()
     val waveLengthPx = waveLength.toPx()
     val waveHeightPx = waveHeight.toPx().absoluteValue
+    val startRadians = waveSpread * (waveShiftPx) / waveLengthPx * (2 * PI)
     val startHeightFactor = if (incremental) 0f else 1f
-    val startRadians = (startOffset.x + waveShiftPx) / waveLengthPx * (2 * PI)
     val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
     moveTo(startOffset.x, startY.toFloat())
     val range = if (layoutDirection == LayoutDirection.Rtl) {
@@ -258,23 +291,10 @@ private inline fun DrawScope.createWavyPath(
     }
     for (x in range) {
         val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
-        val radians = (x + waveShiftPx) / waveLengthPx * (2 * PI)
+        val radians = waveSpread * (x - range.first + waveShiftPx) / waveLengthPx * (2 * PI)
         val y = (sin(radians) * heightFactor * waveHeightPx + size.height) / 2
         lineTo(x.toFloat(), y.toFloat())
     }
-}
-
-internal inline fun snapValueToTick(
-    current: Float,
-    tickFractions: FloatArray,
-    minPx: Float,
-    maxPx: Float
-): Float {
-    // target is a closest anchor to the `current`, if exists
-    return tickFractions
-        .minByOrNull { abs(lerp(minPx, maxPx, it) - current) }
-        ?.run { lerp(minPx, maxPx, this) }
-        ?: current
 }
 
 // Scale x1 from a1..b1 range to a2..b2 range

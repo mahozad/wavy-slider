@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.progressSemantics
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
@@ -34,6 +31,7 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.util.fastFirst
 import ir.mahozad.multiplatform.wavyslider.*
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -123,9 +121,10 @@ fun SliderDefaults.Track(
     // See https://stackoverflow.com/q/62500464/8583692
     val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
+    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
-    val trackHeight = max(waveThickness + if (waveHeight < 0.dp) -waveHeight else waveHeight, ThumbSize.height)
+    val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)
     Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)
@@ -137,6 +136,7 @@ fun SliderDefaults.Track(
         drawTrack(
             waveLength = waveLength,
             waveHeight = waveHeightAnimated,
+            waveSpread = waveSpreadAnimated,
             waveShift = waveShiftAnimated,
             waveThickness = waveThickness,
             trackThickness = trackThickness,
@@ -196,9 +196,10 @@ fun SliderDefaults.Track(
     // See https://stackoverflow.com/q/62500464/8583692
     val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
     val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
+    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
-    val trackHeight = max(waveThickness + if (waveHeight < 0.dp) -waveHeight else waveHeight, ThumbSize.height)
+    val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)
     Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val sliderLeft = Offset(0f, center.y)
@@ -209,6 +210,7 @@ fun SliderDefaults.Track(
         drawTrack(
             waveLength = waveLength,
             waveHeight = waveHeightAnimated,
+            waveSpread = waveSpreadAnimated,
             waveShift = waveShiftAnimated,
             waveThickness = waveThickness,
             trackThickness = trackThickness,
@@ -410,6 +412,21 @@ fun WavySlider(
     val state = remember(valueRange, onValueChangeFinished) {
         SliderState(value, 0, onValueChangeFinished, valueRange)
     }
+    /*
+     TODO: Replace above with the below Compose Multiplatform 1.6.1 implementation
+      The @Suppress("INVISIBLE_SETTER") below does not work on Android because
+      the fix in https://github.com/JetBrains/compose-multiplatform/issues/4366
+      has not yet been upstreamed to Compose in AOSP.
+      ```
+      val onValueChangeFinishedState = rememberUpdatedState(onValueChangeFinished)
+      val state = remember(valueRange) {
+          SliderState(value, 0, { onValueChangeFinishedState.value?.invoke() }, valueRange)
+      }
+      @Suppress("INVISIBLE_SETTER")
+      state.onValueChangeFinished = onValueChangeFinished
+      ```
+     */
+
     @Suppress("INVISIBLE_MEMBER")
     state.onValueChange = onValueChange
     state.value = value
