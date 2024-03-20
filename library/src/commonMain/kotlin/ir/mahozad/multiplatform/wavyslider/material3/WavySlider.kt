@@ -412,6 +412,21 @@ fun WavySlider(
     val state = remember(valueRange, onValueChangeFinished) {
         SliderState(value, 0, onValueChangeFinished, valueRange)
     }
+    /*
+     TODO: Replace above with the below Compose Multiplatform 1.6.1 implementation
+      The @Suppress("INVISIBLE_SETTER") below does not work on Android because
+      the fix in https://github.com/JetBrains/compose-multiplatform/issues/4366
+      has not yet been upstreamed to Compose in AOSP.
+      ```
+      val onValueChangeFinishedState = rememberUpdatedState(onValueChangeFinished)
+      val state = remember(valueRange) {
+          SliderState(value, 0, { onValueChangeFinishedState.value?.invoke() }, valueRange)
+      }
+      @Suppress("INVISIBLE_SETTER")
+      state.onValueChangeFinished = onValueChangeFinished
+      ```
+     */
+
     @Suppress("INVISIBLE_MEMBER")
     state.onValueChange = onValueChange
     state.value = value
