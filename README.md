@@ -14,13 +14,13 @@
 
 # Wavy slider
 
-This is an animated [Material](https://material.io) wavy slider and progress bar similar to the one used in [**Android 13** media controls](https://www.xda-developers.com/android-13-beta-1-media-controls-animation/).  
+Animated [Material](https://material.io) wavy slider and progress/seek bar similar to the one used in [**Android 13** media controls](https://www.xda-developers.com/android-13-beta-1-media-controls-animation/).  
 It has curly, wobbly, squiggly, wiggly, jiggly, wriggly, dancing movements.
 Some users call it the **sperm**.
 
 The library can be used in [Jetpack Compose](https://developer.android.com/jetpack/compose) and [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) projects like
 a regular Material [Slider](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#Slider(kotlin.Float,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.ranges.ClosedFloatingPointRange,kotlin.Int,kotlin.Function0,androidx.compose.material3.SliderColors,androidx.compose.foundation.interaction.MutableInteractionSource)).  
-Supported target platforms are Android, iOS, Desktop (JVM), and JavaScript (Kotlin/JS).
+Supported target platforms are Android, iOS, Desktop (JVM), and JavaScript (Kotlin/JS and Kotlin/Wasm).
 
 ## Demo
 For a live, interactive Web demo go to https://mahozad.ir/wavy-slider.  
@@ -98,9 +98,14 @@ fun MyComposable() {
   - Wave slider (Android-only): https://github.com/galaxygoldfish/waveslider
   - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
   - Sliders with custom styles: https://github.com/krottv/compose-sliders
+  - Customizable seeker/slider: https://github.com/2307vivek/Seeker
   - Squiggly text underlines: https://github.com/saket/ExtendedSpans
+  - Waveform seekbar: https://github.com/massoudss/waveformSeekBar
+  - Colorful sliders: https://github.com/SmartToolFactory/Compose-Colorful-Sliders
   - StackOverflow posts:
     + [How to create the Android 13 squiggly slider using Jetpack Compose?](https://stackoverflow.com/q/77927207/8583692) 
+    + [Implement new slider in Android 13 media player via Jetpack Compose](https://stackoverflow.com/q/75268182/8583692)
+    + [Wave like seek bar for music player app in android jetpack compose](https://stackoverflow.com/q/77661902/8583692)
     + [Squiggly Seekbar with Animation in Flutter](https://stackoverflow.com/q/75889414/8583692)
     + [Is it possible to make a squiggly line?](https://stackoverflow.com/q/17285514/8583692)
 
