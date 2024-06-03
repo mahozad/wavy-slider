@@ -1,12 +1,16 @@
 package showcase
 
-import androidx.compose.ui.window.Window
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.CanvasBasedWindow
 import org.jetbrains.skiko.wasm.onWasmReady
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     console.log("Hello, Kotlin/JS!")
     onWasmReady {
-        Window(title = "Wavy slider showcase") {
+        CanvasBasedWindow(
+            title = "Wavy slider showcase"
+        ) {
             MainView()
         }
     }
