@@ -116,11 +116,11 @@ fun SliderDefaults.Track(
     incremental: Boolean = SliderDefaults.Incremental,
     animationSpecs: WaveAnimationSpecs = SliderDefaults.WaveAnimationSpecs
 ) {
-    // @Suppress("INVISIBLE_MEMBER") is required to be able to access and use
+    // @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") is required to be able to access and use
     // trackColor() function which is marked internal in Material library
     // See https://stackoverflow.com/q/62500464/8583692
-    val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
-    val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
+    val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") colors.trackColor(enabled, active = false)
+    val activeTrackColor = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") colors.trackColor(enabled, active = true)
     val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
@@ -131,7 +131,7 @@ fun SliderDefaults.Track(
         val sliderRight = Offset(size.width, center.y)
         val sliderStart = if (isRtl) sliderRight else sliderLeft
         val sliderEnd = if (isRtl) sliderLeft else sliderRight
-        val sliderValueFraction = @Suppress("INVISIBLE_MEMBER") sliderState.coercedValueAsFraction
+        val sliderValueFraction = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") sliderState.coercedValueAsFraction
         val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderValueFraction, center.y)
         drawTrack(
             waveLength = waveLength,
@@ -194,8 +194,9 @@ fun SliderDefaults.Track(
     // @Suppress("INVISIBLE_MEMBER") is required to be able to access and use
     // trackColor() function which is marked internal in Material library
     // See https://stackoverflow.com/q/62500464/8583692
-    val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = false)
-    val activeTrackColor = @Suppress("INVISIBLE_MEMBER") colors.trackColor(enabled, active = true)
+    // and https://youtrack.jetbrains.com/issue/KT-60304
+    val inactiveTrackColor = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") colors.trackColor(enabled, active = false)
+    val activeTrackColor = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") colors.trackColor(enabled, active = true)
     val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
@@ -427,7 +428,7 @@ fun WavySlider(
       ```
      */
 
-    @Suppress("INVISIBLE_MEMBER")
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     state.onValueChange = onValueChange
     state.value = value
     WavySlider(
@@ -550,7 +551,7 @@ private fun WavySliderImpl(
     thumb: @Composable (SliderState) -> Unit,
     track: @Composable (SliderState) -> Unit
 ) {
-    @Suppress("INVISIBLE_MEMBER")
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     state.isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val press = Modifier.sliderTapModifier(
         state,
@@ -559,11 +560,11 @@ private fun WavySliderImpl(
     )
     val drag = Modifier.draggable(
         orientation = Orientation.Horizontal,
-        reverseDirection = @Suppress("INVISIBLE_MEMBER") state.isRtl,
+        reverseDirection = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.isRtl,
         enabled = enabled,
         interactionSource = interactionSource,
-        onDragStopped = { @Suppress("INVISIBLE_MEMBER") state.gestureEndAction.invoke() },
-        startDragImmediately = @Suppress("INVISIBLE_MEMBER") state.isDragging,
+        onDragStopped = { @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.gestureEndAction.invoke() },
+        startDragImmediately = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.isDragging,
         state = state
     )
 
@@ -592,14 +593,14 @@ private fun WavySliderImpl(
         val sliderWidth = thumbPlaceable.width + trackPlaceable.width
         val sliderHeight = max(trackPlaceable.height, thumbPlaceable.height)
 
-        @Suppress("INVISIBLE_MEMBER")
+        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
         state.updateDimensions(
             thumbPlaceable.width.toFloat(),
             sliderWidth
         )
 
         val trackOffsetX = thumbPlaceable.width / 2
-        val thumbOffsetX = ((trackPlaceable.width) * @Suppress("INVISIBLE_MEMBER") state.coercedValueAsFraction).roundToInt()
+        val thumbOffsetX = ((trackPlaceable.width) * @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.coercedValueAsFraction).roundToInt()
         val trackOffsetY = (sliderHeight - trackPlaceable.height) / 2
         val thumbOffsetY = (sliderHeight - thumbPlaceable.height) / 2
 
@@ -655,8 +656,8 @@ private fun Modifier.sliderSemantics(
                     false
                 } else {
                     if (resolvedValue != state.value) {
-                        if (@Suppress("INVISIBLE_MEMBER") state.onValueChange != null) {
-                            @Suppress("INVISIBLE_MEMBER") state.onValueChange?.let {
+                        if (@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.onValueChange != null) {
+                            @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.onValueChange?.let {
                                 it(resolvedValue)
                             }
                         } else {
@@ -685,10 +686,10 @@ private fun Modifier.sliderTapModifier(
 ) = if (enabled) {
     pointerInput(state, interactionSource) {
         detectTapGestures(
-            onPress = { @Suppress("INVISIBLE_MEMBER") state.onPress(it) },
+            onPress = { @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.onPress(it) },
             onTap = {
                 state.dispatchRawDelta(0f)
-                @Suppress("INVISIBLE_MEMBER")
+                @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
                 state.gestureEndAction.invoke()
             }
         )

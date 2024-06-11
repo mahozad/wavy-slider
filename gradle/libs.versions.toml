@@ -1,9 +1,9 @@
 [versions]
 gradle = "8.8"
 java = "17"
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 kotlin-compatibility = "0.14.0"
-compose-multiplatform = "1.6.1"
+compose-multiplatform = "1.6.11"
 agp = "8.3.0" # Android Gradle plugin
 android-minSdk = "21"
 android-compileSdk = "34"
@@ -20,6 +20,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 
 [plugins]
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlin-compatibility" }
