@@ -2,13 +2,10 @@ package ir.mahozad.multiplatform.wavyslider
 
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.geometry.*
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
@@ -27,19 +24,19 @@ enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float)
     /**
      * Always shift toward left (regardless of layout direction).
      */
-    LEFT({ 1f }),
+    LEFT({ if (it == LayoutDirection.Ltr) 1f else -1f }),
     /**
      * Always shift toward right (regardless of layout direction).
      */
-    RIGHT({ -1f }),
+    RIGHT({ if (it == LayoutDirection.Ltr) -1f else 1f }),
     /**
      * Shift toward the start (depends on layout direction).
      */
-    TAIL({ if (it == LayoutDirection.Ltr) 1f else -1f }),
+    TAIL({ 1f }),
     /**
      * Shift toward the thumb (depends on layout direction).
      */
-    HEAD({ if (it == LayoutDirection.Ltr) -1f else 1f })
+    HEAD({ -1f })
 }
 
 /**
@@ -111,7 +108,6 @@ data class WaveAnimationSpecs(
 typealias WaveVelocity = Pair<Dp, WaveDirection>
 
 internal val defaultIncremental = false
-internal val defaultTrackThickness = 4.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
 internal val defaultWaveVelocity = 10.dp to TAIL
@@ -121,6 +117,7 @@ internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
     waveStartSpreadAnimationSpec = tween(durationMillis = 6000, easing = EaseOutQuad)
 )
 
+// Copied from https://github.com/JetBrains/compose-multiplatform-core/blob/jb-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/NavigationKeyEvents.kt
 internal expect val KeyEvent.isDirectionUp: Boolean
 internal expect val KeyEvent.isDirectionDown: Boolean
 internal expect val KeyEvent.isDirectionRight: Boolean
@@ -172,95 +169,7 @@ internal inline fun animateWaveSpread(
     return spreadFactorAnimated
 }
 
-internal inline fun DrawScope.drawTrack(
-    sliderStart: Offset,
-    sliderValueOffset: Offset,
-    sliderEnd: Offset,
-    waveLength: Dp,
-    waveHeight: Dp,
-    waveSpread: Float,
-    waveShift: Dp,
-    waveThickness: Dp,
-    trackThickness: Dp,
-    incremental: Boolean,
-    inactiveTrackColor: Color,
-    activeTrackColor: Color
-) {
-    drawTrackActivePart(
-        startOffset = sliderStart,
-        valueOffset = sliderValueOffset,
-        waveLength = waveLength,
-        waveHeight = waveHeight,
-        waveSpread = waveSpread,
-        waveShift = waveShift,
-        waveThickness = waveThickness,
-        incremental = incremental,
-        color = activeTrackColor
-    )
-    drawTrackInactivePart(
-        color = inactiveTrackColor,
-        thickness = trackThickness,
-        startOffset = sliderValueOffset,
-        endOffset = sliderEnd,
-    )
-}
-
-private inline fun DrawScope.drawTrackInactivePart(
-    color: Color,
-    thickness: Dp,
-    startOffset: Offset,
-    endOffset: Offset
-) {
-    if (thickness <= 0.dp) return
-    drawLine(
-        strokeWidth = thickness.toPx(),
-        color = color,
-        start = startOffset,
-        end = endOffset,
-        cap = StrokeCap.Round
-    )
-}
-
-private inline fun DrawScope.drawTrackActivePart(
-    startOffset: Offset,
-    valueOffset: Offset,
-    waveLength: Dp,
-    waveHeight: Dp,
-    waveSpread: Float,
-    waveShift: Dp,
-    waveThickness: Dp,
-    incremental: Boolean,
-    color: Color
-) {
-    if (waveThickness <= 0.dp) return
-    val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
-        createFlatPath(
-            startOffset,
-            valueOffset
-        )
-    } else {
-        createWavyPath(
-            startOffset,
-            valueOffset,
-            waveLength,
-            waveHeight,
-            waveSpread,
-            waveShift,
-            incremental
-        )
-    }
-    drawPath(
-        path = path,
-        color = color,
-        style = Stroke(
-            width = waveThickness.toPx(),
-            join = StrokeJoin.Round,
-            cap = StrokeCap.Round
-        )
-    )
-}
-
-private inline fun DrawScope.createFlatPath(
+internal inline fun DrawScope.createFlatPath(
     startOffset: Offset,
     valueOffset: Offset
 ): Path = Path().apply {
@@ -268,7 +177,7 @@ private inline fun DrawScope.createFlatPath(
     lineTo(valueOffset.x, center.y)
 }
 
-private inline fun DrawScope.createWavyPath(
+internal inline fun DrawScope.createWavyPath(
     startOffset: Offset,
     valueOffset: Offset,
     waveLength: Dp,
@@ -284,11 +193,7 @@ private inline fun DrawScope.createWavyPath(
     val startHeightFactor = if (incremental) 0f else 1f
     val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
     moveTo(startOffset.x, startY.toFloat())
-    val range = if (layoutDirection == LayoutDirection.Rtl) {
-        startOffset.x.toInt() downTo valueOffset.x.toInt()
-    } else {
-        startOffset.x.toInt()..valueOffset.x.toInt()
-    }
+    val range = startOffset.x.toInt()..valueOffset.x.toInt()
     for (x in range) {
         val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
         val radians = waveSpread * (x - range.first + waveShiftPx) / waveLengthPx * (2 * PI)
@@ -317,7 +222,7 @@ see https://android.googlesource.com/platform/packages/apps/Music/
 And, for source code of everything visible in Android that's not an app,
 see https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/
 
-Here is the implementation in Android as of 2024-02-02:
+Here is the implementation in AOSP as of 2024-02-02:
 
 /*
  * Copyright (C) 2022 The Android Open Source Project

@@ -1,4 +1,4 @@
-// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/release/1.6.0/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/release/1.7.0-alpha01/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
 
 @file:Suppress("UnusedReceiverParameter")
 
@@ -12,19 +12,21 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderColors
-import androidx.compose.material.SliderDefaults
-import androidx.compose.material.minimumInteractiveComponentSize
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
@@ -51,7 +53,7 @@ private val ThumbRadius = 10.dp
 private val ThumbRippleRadius = 24.dp
 private val ThumbDefaultElevation = 1.dp
 private val ThumbPressedElevation = 6.dp
-private val SliderMinWidth = 144.dp // TODO: clarify min width
+private val SliderMinWidth = 144.dp // TODO from compose-multiplatform-core: clarify min width
 private val DefaultSliderConstraints = Modifier.widthIn(min = SliderMinWidth)
 
 /*
@@ -76,11 +78,11 @@ val SliderDefaults.WaveVelocity: WaveVelocity get() = defaultWaveVelocity
 /**
  * Default wave thickness
  */
-val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.WaveThickness: Dp get() = SliderDefaults.TrackThickness
 /**
  * Default track thickness
  */
-val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.TrackThickness: Dp get() = 4.dp
 /**
  * Default progression of wave height (whether gradual or not)
  */
@@ -103,24 +105,24 @@ val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAni
  * @param modifier modifiers for the WavySlider layout.
  * @param enabled whether or not component is enabled and can be interacted with or not.
  * @param valueRange range of values that WavySlider value can take. Passed [value] will be coerced to
- * this range.
+ *   this range.
  * @param onValueChangeFinished lambda to be invoked when value change has ended. This callback
- * shouldn't be used to update the WavySlider value (use [onValueChange] for that), but rather to
- * know when the user has completed selecting a new value by ending a drag or a click.
- * @param interactionSource the [MutableInteractionSource] representing the stream of
- * [Interaction]s for this WavySlider. You can create and pass in your own remembered
- * [MutableInteractionSource] if you want to observe [Interaction]s and customize the
- * appearance / behavior of this Slider in different [Interaction]s.
+ *   shouldn't be used to update the WavySlider value (use [onValueChange] for that), but rather to
+ *   know when the user has completed selecting a new value by ending a drag or a click.
+ * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
+ *   emitting [Interaction]s for this WavySlider. You can use this to change the WavySlider's
+ *   appearance or preview the WavySlider in different states. Note that if `null` is provided,
+ *   interactions will still happen internally.
  * @param colors [SliderColors] that will be used to determine the color of the WavySlider parts in
- * different state. See [SliderDefaults.colors] to customize.
+ *   different state. See [SliderDefaults.colors] to customize.
  *
  *
  *
  * @param waveLength the distance over which the wave's shape repeats.
  * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
- * The final rendered height of the wave will be [waveHeight] + [waveThickness].
+ *   The final rendered height of the wave will be [waveHeight] + [waveThickness].
  * @param waveVelocity the horizontal movement (speed per second and direction) of the whole wave (aka phase shift).
- * Setting speed to `0.dp` or less stops the movement.
+ *   Setting speed to `0.dp` or less stops the movement.
  * @param waveThickness the thickness of the active line (whether animated or not).
  * @param trackThickness the thickness of the inactive line.
  * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
@@ -134,7 +136,7 @@ fun WavySlider(
     enabled: Boolean = true,
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     onValueChangeFinished: (() -> Unit)? = null,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    interactionSource: MutableInteractionSource? = null,
     colors: SliderColors = SliderDefaults.colors(),
     /////////////////
     /////////////////
@@ -147,6 +149,8 @@ fun WavySlider(
     incremental: Boolean = SliderDefaults.Incremental,
     animationSpecs: WaveAnimationSpecs = SliderDefaults.WaveAnimationSpecs
 ) {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val onValueChangeState = rememberUpdatedState(onValueChange)
     val onValueChangeFinishedState = rememberUpdatedState(onValueChangeFinished)
@@ -246,7 +250,7 @@ fun WavySlider(
     }
 }
 
-// TODO: Edge case - losing focus on slider while key is pressed will end up with onValueChangeFinished not being invoked
+// TODO from compose-multiplatform-core: Edge case - losing focus on slider while key is pressed will end up with onValueChangeFinished not being invoked
 private fun Modifier.slideOnKeyEvents(
     enabled: Boolean,
     valueRange: ClosedFloatingPointRange<Float>,
@@ -399,34 +403,94 @@ private fun Track(
     incremental: Boolean,
     animationSpecs: WaveAnimationSpecs
 ) {
-    val inactiveTrackColor = colors.trackColor(enabled, active = false)
-    val activeTrackColor = colors.trackColor(enabled, active = true)
+    val activeTrackColor by colors.trackColor(enabled, active = true)
+    val inactiveTrackColor by colors.trackColor(enabled, active = false)
     val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbRadius * 2)
-    Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
-        val isRtl = layoutDirection == LayoutDirection.Rtl
-        val sliderLeft = Offset(thumbPx, center.y)
-        val sliderRight = Offset(size.width - thumbPx, center.y)
-        val sliderStart = if (isRtl) sliderRight else sliderLeft
-        val sliderEnd = if (isRtl) sliderLeft else sliderRight
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(trackHeight)
+            .rotate(if (LocalLayoutDirection.current == LayoutDirection.Rtl) 180f else 0f)
+    ) {
+        val sliderStart = Offset(thumbPx, center.y)
+        val sliderEnd = Offset(size.width - thumbPx, center.y)
         val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * positionFractionEnd, center.y)
-        drawTrack(
+        drawTrackActivePart(
+            startOffset = sliderStart,
+            valueOffset = sliderValueOffset,
             waveLength = waveLength,
             waveHeight = waveHeightAnimated,
             waveSpread = waveSpreadAnimated,
             waveShift = waveShiftAnimated,
             waveThickness = waveThickness,
-            trackThickness = trackThickness,
-            sliderValueOffset = sliderValueOffset,
-            sliderStart = sliderStart,
-            sliderEnd = sliderEnd,
             incremental = incremental,
-            inactiveTrackColor = inactiveTrackColor.value,
-            activeTrackColor = activeTrackColor.value
+            color = activeTrackColor
+        )
+        drawTrackInactivePart(
+            color = inactiveTrackColor,
+            thickness = trackThickness,
+            startOffset = sliderValueOffset,
+            endOffset = sliderEnd
         )
     }
+}
+
+private inline fun DrawScope.drawTrackActivePart(
+    startOffset: Offset,
+    valueOffset: Offset,
+    waveLength: Dp,
+    waveHeight: Dp,
+    waveSpread: Float,
+    waveShift: Dp,
+    waveThickness: Dp,
+    incremental: Boolean,
+    color: Color
+) {
+    if (waveThickness <= 0.dp) return
+    val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
+        createFlatPath(
+            startOffset,
+            valueOffset
+        )
+    } else {
+        createWavyPath(
+            startOffset,
+            valueOffset,
+            waveLength,
+            waveHeight,
+            waveSpread,
+            waveShift,
+            incremental
+        )
+    }
+    drawPath(
+        path = path,
+        color = color,
+        style = Stroke(
+            width = waveThickness.toPx(),
+            join = StrokeJoin.Round,
+            cap = StrokeCap.Round
+        )
+    )
+}
+
+private inline fun DrawScope.drawTrackInactivePart(
+    color: Color,
+    thickness: Dp,
+    startOffset: Offset,
+    endOffset: Offset
+) {
+    if (thickness <= 0.dp) return
+    drawLine(
+        strokeWidth = thickness.toPx(),
+        color = color,
+        start = startOffset,
+        end = endOffset,
+        cap = StrokeCap.Round
+    )
 }
 
 @Composable
@@ -466,7 +530,12 @@ private fun BoxScope.SliderThumb(
                 .size(thumbSize, thumbSize)
                 .indication(
                     interactionSource = interactionSource,
-                    indication = rememberRipple(bounded = false, radius = ThumbRippleRadius)
+                    indication =
+                        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+                        rippleOrFallbackImplementation(
+                            bounded = false,
+                            radius = ThumbRippleRadius
+                        )
                 )
                 .hoverable(interactionSource = interactionSource)
                 .shadow(if (enabled) elevation else 0.dp, CircleShape, clip = false)

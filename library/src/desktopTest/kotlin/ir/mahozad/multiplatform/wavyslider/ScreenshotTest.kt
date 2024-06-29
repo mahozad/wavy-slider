@@ -95,6 +95,7 @@ class ScreenshotTest {
         referenceName = "reference-3.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, waveThickness = 9.dp)
+        // FIXME: See the FIXME in drawTrackActivePart() function in material3.WavySlider to fix this
         WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, waveThickness = 9.dp)
     }
 
