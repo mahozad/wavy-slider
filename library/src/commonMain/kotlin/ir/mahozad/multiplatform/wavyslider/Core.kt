@@ -2,7 +2,9 @@ package ir.mahozad.multiplatform.wavyslider
 
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.geometry.*
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -16,6 +18,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
+import ir.mahozad.multiplatform.wavyslider.material3.SliderTokens
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.sin
@@ -27,19 +30,19 @@ enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float)
     /**
      * Always shift toward left (regardless of layout direction).
      */
-    LEFT({ 1f }),
+    LEFT({ if (it == LayoutDirection.Ltr) 1f else -1f }),
     /**
      * Always shift toward right (regardless of layout direction).
      */
-    RIGHT({ -1f }),
+    RIGHT({ if (it == LayoutDirection.Ltr) -1f else 1f }),
     /**
      * Shift toward the start (depends on layout direction).
      */
-    TAIL({ if (it == LayoutDirection.Ltr) 1f else -1f }),
+    TAIL({ 1f }),
     /**
      * Shift toward the thumb (depends on layout direction).
      */
-    HEAD({ if (it == LayoutDirection.Ltr) -1f else 1f })
+    HEAD({ -1f })
 }
 
 /**
@@ -110,8 +113,11 @@ data class WaveAnimationSpecs(
  */
 typealias WaveVelocity = Pair<Dp, WaveDirection>
 
+// This is named trackPath in the original compose-multiplatform-core code
+private val inactiveTrackPath = Path()
 internal val defaultIncremental = false
-internal val defaultTrackThickness = 4.dp
+internal val defaultMaterial2TrackThickness = 4.dp
+internal val defaultMaterial3TrackThickness = 16.dp
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
 internal val defaultWaveVelocity = 10.dp to TAIL
@@ -184,7 +190,8 @@ internal inline fun DrawScope.drawTrack(
     trackThickness: Dp,
     incremental: Boolean,
     inactiveTrackColor: Color,
-    activeTrackColor: Color
+    activeTrackColor: Color,
+    trackType: TrackType
 ) {
     drawTrackActivePart(
         startOffset = sliderStart,
@@ -195,30 +202,73 @@ internal inline fun DrawScope.drawTrack(
         waveShift = waveShift,
         waveThickness = waveThickness,
         incremental = incremental,
-        color = activeTrackColor
+        color = activeTrackColor,
+        trackType = trackType
     )
     drawTrackInactivePart(
         color = inactiveTrackColor,
         thickness = trackThickness,
         startOffset = sliderValueOffset,
         endOffset = sliderEnd,
+        trackType = trackType
     )
+}
+
+internal sealed interface TrackType {
+    data object Material2: TrackType
+    data class Material3(
+        val thumbWidth: Dp,
+        val thumbTrackGapSize: Dp,
+        val trackInsideCornerSize: Dp,
+        val drawStopIndicator: (DrawScope.(Offset) -> Unit)?
+    ): TrackType
 }
 
 private inline fun DrawScope.drawTrackInactivePart(
     color: Color,
     thickness: Dp,
     startOffset: Offset,
-    endOffset: Offset
+    endOffset: Offset,
+    trackType: TrackType
 ) {
     if (thickness <= 0.dp) return
-    drawLine(
-        strokeWidth = thickness.toPx(),
-        color = color,
-        start = startOffset,
-        end = endOffset,
-        cap = StrokeCap.Round
-    )
+    if (trackType is TrackType.Material2) {
+        drawLine(
+            strokeWidth = thickness.toPx(),
+            color = color,
+            start = startOffset,
+            end = endOffset,
+            cap = StrokeCap.Round
+        )
+    } else {
+        val (thumbWidth, thumbTrackGapSize, trackInsideCornerSize, drawStopIndicator) = trackType as TrackType.Material3
+        val cornerSize = thickness.toPx() / 2
+        val insideCornerSize = trackInsideCornerSize.toPx()
+        var endGap = if (thumbTrackGapSize > 0.dp) thumbWidth.toPx() / 2 + thumbTrackGapSize.toPx() else 0f
+        if (startOffset.x < endOffset.x - endGap - cornerSize) {
+            val start = startOffset.x + endGap
+            val end = endOffset.x
+            // Below code was actually in the drawTrackPath() function in the original CMP Slider
+            /////////////////////////////////
+            val startCorner = CornerRadius(insideCornerSize, insideCornerSize)
+            val endCorner = CornerRadius(cornerSize, cornerSize)
+            val track = RoundRect(
+                rect = Rect(
+                    offset = Offset(start, center.y - thickness.toPx() / 2),
+                    size = Size(size.width - startOffset.x, thickness.toPx())
+                ),
+                topLeft = startCorner,
+                topRight = endCorner,
+                bottomRight = endCorner,
+                bottomLeft = startCorner
+            )
+            inactiveTrackPath.addRoundRect(track)
+            drawPath(inactiveTrackPath, color)
+            inactiveTrackPath.rewind()
+            /////////////////////////////////
+            drawStopIndicator?.invoke(this, Offset(end /*- cornerSize*/, center.y))
+        }
+    }
 }
 
 private inline fun DrawScope.drawTrackActivePart(
@@ -230,34 +280,72 @@ private inline fun DrawScope.drawTrackActivePart(
     waveShift: Dp,
     waveThickness: Dp,
     incremental: Boolean,
-    color: Color
+    color: Color,
+    trackType: TrackType
 ) {
     if (waveThickness <= 0.dp) return
-    val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
-        createFlatPath(
-            startOffset,
-            valueOffset
+    if (trackType is TrackType.Material2) {
+        val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
+            createFlatPath(
+                startOffset,
+                valueOffset
+            )
+        } else {
+            createWavyPath(
+                startOffset,
+                valueOffset,
+                waveLength,
+                waveHeight,
+                waveSpread,
+                waveShift,
+                incremental
+            )
+        }
+        drawPath(
+            path = path,
+            color = color,
+            style = Stroke(
+                width = waveThickness.toPx(),
+                join = StrokeJoin.Round,
+                cap = StrokeCap.Round
+            )
         )
     } else {
-        createWavyPath(
-            startOffset,
-            valueOffset,
-            waveLength,
-            waveHeight,
-            waveSpread,
-            waveShift,
-            incremental
-        )
+        // TODO: Apply startCornerRadius and insideCornerSize when the wave is flat
+        val (thumbWidth, thumbTrackGapSize, trackInsideCornerSize, drawStopIndicator) = trackType as TrackType.Material3
+        var endGap = if (thumbTrackGapSize > 0.dp) thumbWidth.toPx() / 2 + thumbTrackGapSize.toPx() else 0f
+        val cornerSize = waveThickness.toPx() / 2
+        val activeTrackStart = 0f
+        val activeTrackEnd = valueOffset.x - endGap
+        val startCornerRadius = cornerSize
+        if (activeTrackEnd - activeTrackStart > startCornerRadius) {
+            val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
+                createFlatPath(
+                    Offset(activeTrackStart, 0f),
+                    Offset(activeTrackEnd, 0f)
+                )
+            } else {
+                createWavyPath(
+                    Offset(activeTrackStart, 0f),
+                    Offset(activeTrackEnd, 0f),
+                    waveLength,
+                    waveHeight,
+                    waveSpread,
+                    waveShift,
+                    incremental
+                )
+            }
+            drawPath(
+                path = path,
+                color = color,
+                style = Stroke(
+                    width = waveThickness.toPx(),
+                    join = StrokeJoin.Round,
+                    cap = StrokeCap.Round
+                )
+            )
+        }
     }
-    drawPath(
-        path = path,
-        color = color,
-        style = Stroke(
-            width = waveThickness.toPx(),
-            join = StrokeJoin.Round,
-            cap = StrokeCap.Round
-        )
-    )
 }
 
 private inline fun DrawScope.createFlatPath(
@@ -284,11 +372,7 @@ private inline fun DrawScope.createWavyPath(
     val startHeightFactor = if (incremental) 0f else 1f
     val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
     moveTo(startOffset.x, startY.toFloat())
-    val range = if (layoutDirection == LayoutDirection.Rtl) {
-        startOffset.x.toInt() downTo valueOffset.x.toInt()
-    } else {
-        startOffset.x.toInt()..valueOffset.x.toInt()
-    }
+    val range = startOffset.x.toInt()..valueOffset.x.toInt()
     for (x in range) {
         val heightFactor = if (incremental) (x - range.first).toFloat() / (range.last - range.first) else 1f
         val radians = waveSpread * (x - range.first + waveShiftPx) / waveLengthPx * (2 * PI)

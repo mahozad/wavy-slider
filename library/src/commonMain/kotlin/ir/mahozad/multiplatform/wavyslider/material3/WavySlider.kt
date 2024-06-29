@@ -11,18 +11,19 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.progressSemantics
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
@@ -57,11 +58,11 @@ val SliderDefaults.WaveVelocity: WaveVelocity get() = defaultWaveVelocity
 /**
  * Default wave thickness
  */
-val SliderDefaults.WaveThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.WaveThickness: Dp get() = 4.dp
 /**
  * Default track thickness
  */
-val SliderDefaults.TrackThickness: Dp get() = defaultTrackThickness
+val SliderDefaults.TrackThickness: Dp get() = defaultMaterial3TrackThickness
 /**
  * Default progression of wave height (whether gradual or not)
  */
@@ -71,6 +72,9 @@ val SliderDefaults.Incremental: Boolean get() = defaultIncremental
  */
 val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAnimationSpecs
 
+private val TrackInsideCornerSize: Dp = 2.dp
+private val TrackHeight = SliderTokens.InactiveTrackHeight
+private val ThumbTrackGapSize: Dp = SliderTokens.ActiveHandleLeadingSpace
 private val ThumbWidth = SliderTokens.HandleWidth
 private val ThumbHeight = SliderTokens.HandleHeight
 private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
@@ -98,6 +102,14 @@ private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
  * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
  * @param animationSpecs animation configurations used for various properties of the wave.
  */
+@Deprecated(
+    message = "Use the overload that takes `thumbTrackGapSize`, `trackInsideCornerSize` and `drawStopIndicator`",
+    replaceWith = ReplaceWith(
+        "Track(sliderState, modifier, colors, enabled, thumbTrackGapSize, trackInsideCornerSize, " +
+                "drawStopIndicator, waveLength, waveHeight, waveVelocity, waveThickness, trackThickness, incremental, animationSpecs)"
+    ),
+    level = DeprecationLevel.HIDDEN
+)
 @Composable
 @ExperimentalMaterial3Api
 fun SliderDefaults.Track(
@@ -105,6 +117,81 @@ fun SliderDefaults.Track(
     modifier: Modifier = Modifier,
     colors: SliderColors = colors(),
     enabled: Boolean = true,
+    /////////////////
+    /////////////////
+    /////////////////
+    waveLength: Dp = SliderDefaults.WaveLength,
+    waveHeight: Dp = SliderDefaults.WaveHeight,
+    waveVelocity: WaveVelocity = SliderDefaults.WaveVelocity,
+    waveThickness: Dp = SliderDefaults.WaveThickness,
+    trackThickness: Dp = SliderDefaults.TrackThickness,
+    incremental: Boolean = SliderDefaults.Incremental,
+    animationSpecs: WaveAnimationSpecs = SliderDefaults.WaveAnimationSpecs
+) {
+    Track(
+        sliderState,
+        modifier,
+        colors,
+        enabled,
+        thumbTrackGapSize = ThumbTrackGapSize,
+        trackInsideCornerSize = TrackInsideCornerSize,
+        drawStopIndicator = null,
+        /////////////////
+        /////////////////
+        /////////////////
+        waveLength,
+        waveHeight,
+        waveVelocity,
+        waveThickness,
+        trackThickness,
+        incremental,
+        animationSpecs
+    )
+}
+
+/**
+ * The Default track for [WavySlider].
+ *
+ * @param sliderState [SliderState] which is used to obtain the current active track.
+ * @param modifier the [Modifier] to be applied to the track.
+ * @param colors [SliderColors] that will be used to resolve the colors used for this track in
+ * different states. See [SliderDefaults.colors].
+ * @param enabled controls the enabled state of this slider. When `false`, this component will
+ * not respond to user input, and it will appear visually disabled and disabled to
+ * accessibility services.
+ * @param thumbTrackGapSize size of the gap between the thumb and the track.
+ * @param trackInsideCornerSize size of the corners towards the thumb when a gap is set.
+ * @param drawStopIndicator lambda that will be called to draw the stop indicator at the end of
+ * the track.
+ *
+ *
+ *
+ * @param waveLength the distance over which the wave's shape repeats.
+ * @param waveHeight the total height of the wave (from crest to trough i.e. amplitude * 2).
+ * The final rendered height of the wave will be [waveHeight] + [waveThickness].
+ * @param waveVelocity the horizontal movement (speed per second and direction) of the whole wave (aka phase shift).
+ * Setting speed to `0.dp` or less stops the movement.
+ * @param waveThickness the thickness of the active line (whether animated or not).
+ * @param trackThickness the thickness of the inactive line.
+ * @param incremental whether to gradually increase height from zero at start to [waveHeight] at thumb.
+ * @param animationSpecs animation configurations used for various properties of the wave.
+ */
+@Composable
+@ExperimentalMaterial3Api
+fun SliderDefaults.Track(
+    sliderState: SliderState,
+    modifier: Modifier = Modifier,
+    colors: SliderColors = colors(),
+    enabled: Boolean = true,
+    thumbTrackGapSize: Dp = ThumbTrackGapSize,
+    trackInsideCornerSize: Dp = TrackInsideCornerSize,
+    drawStopIndicator: (DrawScope.(Offset) -> Unit)? = {
+        drawStopIndicator(
+            offset = it,
+            color = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") colors.trackColor(enabled, active = true),
+            size = TrackStopIndicatorSize
+        )
+    },
     /////////////////
     /////////////////
     /////////////////
@@ -125,12 +212,14 @@ fun SliderDefaults.Track(
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)
-    Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
-        val isRtl = layoutDirection == LayoutDirection.Rtl
-        val sliderLeft = Offset(0f, center.y)
-        val sliderRight = Offset(size.width, center.y)
-        val sliderStart = if (isRtl) sliderRight else sliderLeft
-        val sliderEnd = if (isRtl) sliderLeft else sliderRight
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(trackHeight)
+            .rotate(if (LocalLayoutDirection.current == LayoutDirection.Rtl) 180f else 0f)
+    ) {
+        val sliderStart = Offset(0f, center.y)
+        val sliderEnd = Offset(size.width, center.y)
         val sliderValueFraction = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") sliderState.coercedValueAsFraction
         val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderValueFraction, center.y)
         drawTrack(
@@ -145,7 +234,13 @@ fun SliderDefaults.Track(
             sliderEnd = sliderEnd,
             incremental = incremental,
             inactiveTrackColor = inactiveTrackColor,
-            activeTrackColor = activeTrackColor
+            activeTrackColor = activeTrackColor,
+            trackType = TrackType.Material3(
+                thumbWidth = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") sliderState.thumbWidth.toDp(),
+                thumbTrackGapSize = thumbTrackGapSize,
+                trackInsideCornerSize = trackInsideCornerSize,
+                drawStopIndicator = drawStopIndicator
+            )
         )
     }
 }
@@ -201,12 +296,14 @@ fun SliderDefaults.Track(
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)
-    Canvas(modifier = modifier.fillMaxWidth().height(trackHeight)) {
-        val isRtl = layoutDirection == LayoutDirection.Rtl
-        val sliderLeft = Offset(0f, center.y)
-        val sliderRight = Offset(size.width, center.y)
-        val sliderStart = if (isRtl) sliderRight else sliderLeft
-        val sliderEnd = if (isRtl) sliderLeft else sliderRight
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(trackHeight)
+            .rotate(if (LocalLayoutDirection.current == LayoutDirection.Rtl) 180f else 0f)
+    ) {
+        val sliderStart = Offset(0f, center.y)
+        val sliderEnd = Offset(size.width, center.y)
         val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderPositions.activeRange.endInclusive, center.y)
         drawTrack(
             waveLength = waveLength,
@@ -220,7 +317,13 @@ fun SliderDefaults.Track(
             sliderEnd = sliderEnd,
             incremental = incremental,
             inactiveTrackColor = inactiveTrackColor,
-            activeTrackColor = activeTrackColor
+            activeTrackColor = activeTrackColor,
+            trackType = TrackType.Material3(
+                thumbWidth = 0.dp,
+                thumbTrackGapSize = 0.dp,
+                trackInsideCornerSize = 0.dp,
+                drawStopIndicator = null
+            )
         )
     }
 }
@@ -410,24 +513,11 @@ fun WavySlider(
         )
     }
 ) {
-    val state = remember(valueRange, onValueChangeFinished) {
+    val state = remember(valueRange) {
         SliderState(value, 0, onValueChangeFinished, valueRange)
     }
-    /*
-     TODO: Replace above with the below Compose Multiplatform 1.6.1 implementation
-      The @Suppress("INVISIBLE_SETTER") below does not work on Android because
-      the fix in https://github.com/JetBrains/compose-multiplatform/issues/4366
-      has not yet been upstreamed to Compose in AOSP.
-      ```
-      val onValueChangeFinishedState = rememberUpdatedState(onValueChangeFinished)
-      val state = remember(valueRange) {
-          SliderState(value, 0, { onValueChangeFinishedState.value?.invoke() }, valueRange)
-      }
-      @Suppress("INVISIBLE_SETTER")
-      state.onValueChangeFinished = onValueChangeFinished
-      ```
-     */
-
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+    state.onValueChangeFinished = onValueChangeFinished
     @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     state.onValueChange = onValueChange
     state.value = value
@@ -553,11 +643,7 @@ private fun WavySliderImpl(
 ) {
     @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     state.isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val press = Modifier.sliderTapModifier(
-        state,
-        interactionSource,
-        enabled
-    )
+    val press = Modifier.sliderTapModifier(state, interactionSource, enabled)
     val drag = Modifier.draggable(
         orientation = Orientation.Horizontal,
         reverseDirection = @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.isRtl,
@@ -570,34 +656,37 @@ private fun WavySliderImpl(
 
     Layout(
         content = {
-            Box(modifier = Modifier.layoutId(SliderComponents.THUMB)) { thumb(state) }
+            Box(
+                modifier = Modifier
+                    .layoutId(SliderComponents.THUMB)
+                    .wrapContentWidth()
+                    .onSizeChanged {
+                        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+                        state.thumbWidth = it.width.toFloat()
+                    }
+            ) {
+                thumb(state)
+            }
             Box(modifier = Modifier.layoutId(SliderComponents.TRACK)) { track(state) }
         },
         modifier = modifier
             .minimumInteractiveComponentSize()
-            .requiredSizeIn(
-                minWidth = SliderTokens.HandleWidth,
-                minHeight = SliderTokens.HandleHeight
-            )
+            .requiredSizeIn(minWidth = ThumbWidth, minHeight = TrackHeight)
             .sliderSemantics(state, enabled)
             .focusable(enabled, interactionSource)
             .then(press)
             .then(drag)
     ) { measurables, constraints ->
-
         val thumbPlaceable = measurables.fastFirst { it.layoutId == SliderComponents.THUMB }.measure(constraints)
-        val trackPlaceable = measurables.fastFirst { it.layoutId == SliderComponents.TRACK }.measure(
-            constraints.offset(horizontal = - thumbPlaceable.width).copy(minHeight = 0)
-        )
+        val trackPlaceable = measurables
+                .fastFirst { it.layoutId == SliderComponents.TRACK }
+                .measure(constraints.offset(horizontal = -thumbPlaceable.width).copy(minHeight = 0))
 
         val sliderWidth = thumbPlaceable.width + trackPlaceable.width
         val sliderHeight = max(trackPlaceable.height, thumbPlaceable.height)
 
         @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-        state.updateDimensions(
-            thumbPlaceable.width.toFloat(),
-            sliderWidth
-        )
+        state.updateDimensions(trackPlaceable.height.toFloat(), sliderWidth)
 
         val trackOffsetX = thumbPlaceable.width / 2
         val thumbOffsetX = ((trackPlaceable.width) * @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE") state.coercedValueAsFraction).roundToInt()
@@ -605,24 +694,15 @@ private fun WavySliderImpl(
         val thumbOffsetY = (sliderHeight - thumbPlaceable.height) / 2
 
         layout(sliderWidth, sliderHeight) {
-            trackPlaceable.placeRelative(
-                trackOffsetX,
-                trackOffsetY
-            )
-            thumbPlaceable.placeRelative(
-                thumbOffsetX,
-                thumbOffsetY
-            )
+            trackPlaceable.placeRelative(trackOffsetX, trackOffsetY)
+            thumbPlaceable.placeRelative(thumbOffsetX, thumbOffsetY)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 // No need to name it wavySliderSemantics
-private fun Modifier.sliderSemantics(
-    state: SliderState,
-    enabled: Boolean
-): Modifier {
+private fun Modifier.sliderSemantics(state: SliderState, enabled: Boolean): Modifier {
     return semantics {
         if (!enabled) disabled()
         setProgress(
@@ -635,7 +715,7 @@ private fun Modifier.sliderSemantics(
                 val resolvedValue = if (state.steps > 0) {
                     var distance: Float = newValue
                     for (i in 0..state.steps + 1) {
-                        val stepValue = androidx.compose.ui.util.lerp(
+                        val stepValue = lerp(
                             state.valueRange.start,
                             state.valueRange.endInclusive,
                             i.toFloat() / (state.steps + 1)
@@ -706,6 +786,20 @@ private enum class SliderComponents {
 
 // No need to name it WavySliderTokens
 internal object SliderTokens {
-    val HandleHeight = 20.0.dp
-    val HandleWidth = 20.0.dp
+    val ActiveHandleLeadingSpace = 6.dp
+    val InactiveTrackHeight = 16.dp
+    val HandleHeight = 20.dp
+    val HandleWidth = 20.dp
+}
+
+private fun DrawScope.drawStopIndicator(
+    offset: Offset,
+    size: Dp,
+    color: Color
+) {
+    drawCircle(
+        color = color,
+        center = offset,
+        radius = size.toPx() / 2f
+    )
 }

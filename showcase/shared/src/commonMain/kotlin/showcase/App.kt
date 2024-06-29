@@ -2,6 +2,8 @@ package showcase
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Slider as Slider2
+import androidx.compose.material3.Slider as Slider3
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,6 +19,7 @@ import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 fun App() {
     var value by remember { mutableFloatStateOf(0.67f) }
     Column {
+        Slider2(value = value, onValueChange = { value = it })
         WavySlider2(
             value = value,
             onValueChange = { value = it }
@@ -40,6 +43,7 @@ fun App() {
 
         Divider(Modifier.padding(vertical = 32.dp))
 
+        Slider3(value = value, onValueChange = { value = it })
         WavySlider3(
             value = value,
             onValueChange = { value = it }
@@ -51,7 +55,7 @@ fun App() {
             waveHeight = 24.dp,
             waveVelocity = 14.dp to RIGHT,
             waveThickness = 1.dp,
-            trackThickness = 5.dp,
+            trackThickness = 2.dp,
             incremental = true,
             colors = SliderDefaults3.colors(activeTrackColor = Color.Red)
         )

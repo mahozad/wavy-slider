@@ -495,11 +495,20 @@ class VisualTest {
     fun `Test 18`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "When direction of waveVelocity is RIGHT",
-            expected = "Should move from left to right",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveVelocity = 16.dp to RIGHT) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveVelocity = 16.dp to RIGHT) }
-        )
+            given = "When container layout direction is LTR and direction of waveVelocity is RIGHT",
+            expected = "Should move from left to right"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 16.dp to RIGHT)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange,  waveVelocity = 16.dp to RIGHT)
+                }
+            }
+        }
         assert(isPassed)
     }
 
@@ -507,11 +516,20 @@ class VisualTest {
     fun `Test 19`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "When direction of waveVelocity is LEFT",
-            expected = "Should move from right to left",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveVelocity = 16.dp to LEFT) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveVelocity = 16.dp to LEFT) }
-        )
+            given = "When container layout direction is RTL and direction of waveVelocity is RIGHT",
+            expected = "Should move from left to right"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 16.dp to RIGHT)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange,  waveVelocity = 16.dp to RIGHT)
+                }
+            }
+        }
         assert(isPassed)
     }
 
@@ -519,12 +537,20 @@ class VisualTest {
     fun `Test 20`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "When direction of waveVelocity is HEAD",
-            expected = "The wave start (tail of the slider) should be long enough all the time\n" +
-                       "(keep looking at the slider start for a few seconds and ensure the tail does not shrink)",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = 0.dp, waveVelocity = 16.dp to HEAD) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = 0.dp, waveVelocity = 16.dp to HEAD) }
-        )
+            given = "When container layout direction is LTR and direction of waveVelocity is LEFT",
+            expected = "Should move from right to left"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 16.dp to LEFT)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange,  waveVelocity = 16.dp to LEFT)
+                }
+            }
+        }
         assert(isPassed)
     }
 
@@ -532,8 +558,71 @@ class VisualTest {
     fun `Test 21`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
+            given = "When container layout direction is RTL and direction of waveVelocity is LEFT",
+            expected = "Should move from right to left"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 16.dp to LEFT)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange,  waveVelocity = 16.dp to LEFT)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 22`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When container layout direction is LTR and direction of waveVelocity is HEAD",
+            expected = "Should move from left to right"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 16.dp to HEAD)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange,  waveVelocity = 16.dp to HEAD)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 23`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When container layout direction is RTL and direction of waveVelocity is HEAD",
+            expected = "Should move from right to left"
+        ) { value, onChange ->
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 16.dp to HEAD)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange,  waveVelocity = 16.dp to HEAD)
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 24`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is LTR and direction of waveVelocity is TAIL",
-            expected = "Should animate from right to left"
+            expected = "Should move from right to left"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -550,11 +639,11 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 22`() {
+    fun `Test 25`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is RTL and direction of waveVelocity is TAIL",
-            expected = "Should animate from left to right"
+            expected = "Should move from left to right"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -563,73 +652,8 @@ class VisualTest {
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Material 3:")
-                    WavySlider3(value, onChange, waveVelocity = 16.dp to TAIL)
+                    WavySlider3(value, onChange,  waveVelocity = 16.dp to TAIL)
                 }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 23`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When container layout direction is LTR and direction of waveVelocity is HEAD",
-            expected = "Should animate from left to right"
-        ) { value, onChange ->
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value, onChange, waveVelocity = 16.dp to HEAD)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value, onChange, waveVelocity = 16.dp to HEAD)
-                }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 24`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When container layout direction is RTL and direction of waveVelocity is HEAD",
-            expected = "Should animate from right to left"
-        ) { value, onChange ->
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value, onChange, waveVelocity = 16.dp to HEAD)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value, onChange, waveVelocity = 16.dp to HEAD)
-                }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 25`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When direction of waveVelocity is toggled",
-            expected = "Should smoothly change movement direction"
-        ) { value, onChange ->
-            var waveDirection by remember { mutableStateOf(TAIL) }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Material 2:")
-                WavySlider2(value, onChange, waveVelocity = 14.dp to waveDirection)
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Material 3:")
-                WavySlider3(value, onChange, waveVelocity = 14.dp to waveDirection)
-            }
-            Button(onClick = { waveDirection = if (waveDirection == TAIL) HEAD else TAIL }) {
-                Text(text = "Toggle direction")
             }
         }
         assert(isPassed)
@@ -637,6 +661,31 @@ class VisualTest {
 
     @Test
     fun `Test 26`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When container layout is LTR and direction of waveVelocity is toggled",
+            expected = "Should smoothly change movement direction"
+        ) { value, onChange ->
+            var waveDirection by remember { mutableStateOf(TAIL) }
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 2:")
+                    WavySlider2(value, onChange, waveVelocity = 14.dp to waveDirection)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Material 3:")
+                    WavySlider3(value, onChange, waveVelocity = 14.dp to waveDirection)
+                }
+                Button(onClick = { waveDirection = if (waveDirection == TAIL) HEAD else TAIL }) {
+                    Text(text = "Toggle direction")
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 27`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is RTL and direction of waveVelocity is changed",
@@ -661,7 +710,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 27`() {
+    fun `Test 28`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to 0",
@@ -684,7 +733,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 28`() {
+    fun `Test 29`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to a very large quantity",
@@ -707,7 +756,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 29`() {
+    fun `Test 30`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to a fraction of a 1 dp",
@@ -730,7 +779,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 30`() {
+    fun `Test 31`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to a negative value",
@@ -753,7 +802,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 31`() {
+    fun `Test 32`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled",
@@ -776,7 +825,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 32`() {
+    fun `Test 33`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When a custom animationSpec is set for waveVelocity",
@@ -813,7 +862,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 33`() {
+    fun `Test 34`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When direction of waveVelocity is relative (HEAD or TAIL) and container layout direction is toggled",
@@ -845,7 +894,7 @@ class VisualTest {
 
     @Test
     @OptIn(ExperimentalMaterial3Api::class)
-    fun `Test 34`() {
+    fun `Test 35`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When a custom thumb is set",
@@ -863,7 +912,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 35`() {
+    fun `Test 36`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the width of the container of the component is changed",
@@ -886,7 +935,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 36`() {
+    fun `Test 37`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When a custom valueRange (4f..20f) is set",
@@ -907,7 +956,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 37`() {
+    fun `Test 38`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the screen density is something low",
@@ -928,7 +977,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 38`() {
+    fun `Test 39`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the screen density is something high",
@@ -950,7 +999,7 @@ class VisualTest {
 
     // See https://github.com/JetBrains/compose-multiplatform/issues/4199
     @Test
-    fun `Test 39`() {
+    fun `Test 40`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Measure FPS of the app",
@@ -978,7 +1027,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 40`() {
+    fun `Test 41`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When there are many wavy sliders",
@@ -1011,7 +1060,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 41`() {
+    fun `Test 42`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Start animation",
