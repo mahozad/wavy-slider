@@ -2,17 +2,19 @@ package showcase
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Slider as Slider2
-import androidx.compose.material3.Slider as Slider3
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SliderState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.RIGHT
+import ir.mahozad.multiplatform.wavyslider.material3.Track
+import androidx.compose.material.Slider as Slider2
 import androidx.compose.material.SliderDefaults as SliderDefaults2
+import androidx.compose.material3.Slider as Slider3
 import androidx.compose.material3.SliderDefaults as SliderDefaults3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
@@ -47,7 +49,15 @@ fun App() {
         Divider(Modifier.padding(vertical = 32.dp))
 
         Slider3(state)
-        WavySlider3(state)
+        WavySlider3(state,
+            track = {
+                SliderDefaults3.Track(
+                    sliderState = state,
+                    waveLength = 20.dp,
+                    thumbTrackGapSize = 0.dp
+                )
+            }
+        )
         WavySlider3(
             state = state,
             waveLength = 12.dp,
