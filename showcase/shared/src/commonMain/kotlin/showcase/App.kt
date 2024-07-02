@@ -20,7 +20,7 @@ import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
-    val state = remember { SliderState(0.67f) }
+    val state = remember { SliderState(value = 0.67f) }
     Column {
         Slider2(value = state.value, onValueChange = { state.value = it })
         WavySlider2(
