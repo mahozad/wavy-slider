@@ -312,11 +312,10 @@ private inline fun DrawScope.drawTrackActivePart(
         )
     } else {
         // TODO: Apply startCornerRadius and insideCornerSize when the wave is flat
-        val (thumbWidth, thumbTrackGapSize, trackInsideCornerSize, drawStopIndicator) = trackType as TrackType.Material3
+        val (thumbWidth, thumbTrackGapSize, trackInsideCornerSize, _) = trackType as TrackType.Material3
+        val startCornerRadius = waveThickness.toPx() / 2
         var endGap = if (thumbTrackGapSize > 0.dp) thumbWidth.toPx() / 2 + thumbTrackGapSize.toPx() else 0f
-        val cornerSize = waveThickness.toPx() / 2
         val endOffset = Offset(x = valueOffset.x - endGap, 0f)
-        val startCornerRadius = cornerSize
         if (endOffset.x - startOffset.x > startCornerRadius) {
             val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
                 createFlatPath(
