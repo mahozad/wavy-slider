@@ -315,19 +315,18 @@ private inline fun DrawScope.drawTrackActivePart(
         val (thumbWidth, thumbTrackGapSize, trackInsideCornerSize, drawStopIndicator) = trackType as TrackType.Material3
         var endGap = if (thumbTrackGapSize > 0.dp) thumbWidth.toPx() / 2 + thumbTrackGapSize.toPx() else 0f
         val cornerSize = waveThickness.toPx() / 2
-        val activeTrackStart = 0f
-        val activeTrackEnd = valueOffset.x - endGap
+        val endOffset = Offset(x = valueOffset.x - endGap, 0f)
         val startCornerRadius = cornerSize
-        if (activeTrackEnd - activeTrackStart > startCornerRadius) {
+        if (endOffset.x - startOffset.x > startCornerRadius) {
             val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
                 createFlatPath(
-                    Offset(activeTrackStart, 0f),
-                    Offset(activeTrackEnd, 0f)
+                    startOffset,
+                    endOffset
                 )
             } else {
                 createWavyPath(
-                    Offset(activeTrackStart, 0f),
-                    Offset(activeTrackEnd, 0f),
+                    startOffset,
+                    endOffset,
                     waveLength,
                     waveHeight,
                     waveSpread,
