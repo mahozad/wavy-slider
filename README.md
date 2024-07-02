@@ -93,7 +93,7 @@ fun MyComposable() {
 ```
 
 ## Related
-  - Android native squiggly progress: [Main branch][Android main branch implementation] ❖ [Android 14][Android 14 branch implementation] ❖ [Android 13][Android 13 branch implementation]
+  - AOSP native squiggly progress: [Main branch][Android main branch implementation] ❖ [Android 14][Android 14 branch implementation] ❖ [Android 13][Android 13 branch implementation]
   - Squiggly slider (Android-only): https://github.com/saket/squiggly-slider
   - Wave slider (Android-only): https://github.com/galaxygoldfish/waveslider
   - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
