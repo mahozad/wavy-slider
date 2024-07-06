@@ -96,7 +96,7 @@ kotlin {
 }
 
 android {
-    namespace = "ir.mahozad.multiplatform"
+    namespace = "ir.mahozad.multiplatform.wavyslider"
 
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
