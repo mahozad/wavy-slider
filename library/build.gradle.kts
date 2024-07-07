@@ -3,6 +3,7 @@ import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import java.io.File
 import java.util.*
 
 plugins {
@@ -165,22 +166,28 @@ tasks.dokkaHtml {
     }
 }
 
-val properties = Properties().apply {
-    runCatching { rootProject.file("local.properties") }
+val localProperties = Properties().apply {
+    rootProject
+        .runCatching { file("local.properties") }
         .getOrNull()
-        .takeIf { it?.exists() ?: false }
+        ?.takeIf(File::exists)
         ?.reader()
         ?.use(::load)
 }
 // For information about signing.* properties,
 // see comments on signing { ... } block below
-val environment: Map<String, String?> = System.getenv()
-extra["ossrhUsername"] = properties["ossrh.username"] as? String
-    ?: environment["OSSRH_USERNAME"] ?: ""
-extra["ossrhPassword"] = properties["ossrh.password"] as? String
-    ?: environment["OSSRH_PASSWORD"] ?: ""
-extra["githubToken"] = properties["github.token"] as? String
-    ?: environment["GITHUB_TOKEN"] ?: ""
+extra["ossrhUsername"] = localProperties["ossrh.username"] as? String
+    ?: properties["ossrh.username"] as? String // From gradle.properties in ~/.gradle/ or project root
+    ?: System.getenv("OSSRH_USERNAME")
+    ?: ""
+extra["ossrhPassword"] = localProperties["ossrh.password"] as? String
+    ?: properties["ossrh.password"] as? String // From gradle.properties in ~/.gradle/ or project root
+    ?: System.getenv("OSSRH_PASSWORD")
+    ?: ""
+extra["githubToken"] = localProperties["github.token"] as? String
+    ?: properties["github.token"] as? String // From gradle.properties in ~/.gradle/ or project root
+    ?: System.getenv("GITHUB_TOKEN")
+    ?: ""
 
 publishing {
     repositories {
