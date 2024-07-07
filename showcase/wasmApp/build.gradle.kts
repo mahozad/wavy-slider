@@ -22,7 +22,3 @@ kotlin {
         }
     }
 }
-
-compose.experimental {
-    web.application {}
-}

@@ -197,7 +197,7 @@ publishing {
         }
         maven {
             name = "MavenCentral"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
                 username = extra["ossrhUsername"]?.toString()
                 password = extra["ossrhPassword"]?.toString()
@@ -260,7 +260,7 @@ publishing {
     }
 }
 
-// TODO: Remove after https://youtrack.jetbrains.com/issue/KT-46466 is fixed
+// TODO: Remove after https://github.com/gradle/gradle/issues/26091 is fixed
 //  Thanks to KSoup repository for this code snippet
 tasks.withType(AbstractPublishToMaven::class).configureEach {
     dependsOn(tasks.withType(Sign::class))
@@ -268,7 +268,7 @@ tasks.withType(AbstractPublishToMaven::class).configureEach {
 
 /*
  * Uses signing.* properties defined in gradle.properties in ~/.gradle/ or project root
- * Can also pass from command line like below
+ * Can also pass from command line like below:
  * ./gradlew task -Psigning.secretKeyRingFile=... -Psigning.password=... -Psigning.keyId=...
  * See https://docs.gradle.org/current/userguide/signing_plugin.html
  * and https://stackoverflow.com/a/67115705
