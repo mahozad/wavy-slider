@@ -115,6 +115,6 @@ fun MyComposable() {
 [Kotlin release]: https://github.com/JetBrains/kotlin/releases/tag/v2.0.0
 [Compose Multiplatform release]: https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.7.0-alpha01
 [Library on Maven Central]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/2.0.0-alpha/
-[Android main branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
-[Android 14 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt
-[Android 13 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
+[Android main branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/media/controls/ui/drawable/SquigglyProgress.kt
+[Android 14 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
+[Android 13 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt
