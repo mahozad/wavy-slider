@@ -1,15 +1,13 @@
 package showcase
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.background
 import androidx.compose.animation.core.*
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -93,16 +91,22 @@ fun App() {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun WavyDivider() {
     WavySlider3(
-        enabled = false,
         value = 1f,
         onValueChange = {},
         thumb = {},
-        waveVelocity = 0.dp to RIGHT,
-        waveThickness = 1.dp,
-        animationSpecs = WaveAnimationSpecs(
-            waveStartSpreadAnimationSpec = snap(),
-            waveVelocityAnimationSpec = snap(),
-            waveHeightAnimationSpec = snap()
-        )
+        track = {
+            SliderDefaults.Track(
+                it,
+                enabled = false,
+                thumbTrackGapSize = 0.dp,
+                waveThickness = 1.dp,
+                waveVelocity = 0.dp to RIGHT,
+                animationSpecs = WaveAnimationSpecs(
+                    waveStartSpreadAnimationSpec = snap(),
+                    waveVelocityAnimationSpec = snap(),
+                    waveHeightAnimationSpec = snap()
+                )
+            )
+        }
     )
 }
