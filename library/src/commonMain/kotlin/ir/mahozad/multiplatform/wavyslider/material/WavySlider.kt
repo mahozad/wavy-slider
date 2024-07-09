@@ -23,6 +23,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -475,6 +476,14 @@ private inline fun DrawScope.drawTrackActivePart(
             cap = StrokeCap.Round
         )
     )
+}
+
+private inline fun DrawScope.createFlatPath(
+    startOffset: Offset,
+    valueOffset: Offset
+): Path = Path().apply {
+    moveTo(startOffset.x, center.y)
+    lineTo(valueOffset.x, center.y)
 }
 
 private inline fun DrawScope.drawTrackInactivePart(

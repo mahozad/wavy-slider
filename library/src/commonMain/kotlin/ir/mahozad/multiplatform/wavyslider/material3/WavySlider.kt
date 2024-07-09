@@ -906,8 +906,6 @@ private inline fun DrawScope.drawTrackActivePart(
     color: Color,
     thumbWidth: Dp,
     thumbTrackGapSize: Dp,
-    // FIXME: Apply startCornerRadius and insideCornerSize when the wave is flat
-    //  So, should create a rounded rect instead of a stroke like the inactive part
     trackInsideCornerSize: Dp
 ) {
     if (waveThickness <= 0.dp) return
@@ -919,30 +917,58 @@ private inline fun DrawScope.drawTrackActivePart(
     }
     val endOffset = Offset(x = valueOffset.x - endGap, 0f)
     if (endOffset.x - startOffset.x > startCornerRadius) {
-        val path = if (waveLength <= 0.dp || waveHeight == 0.dp) {
-            createFlatPath(
-                startOffset,
-                endOffset
+        if (waveLength <= 0.dp || waveHeight == 0.dp) {
+            drawPath(
+                path = createFlatPath(
+                    startOffset,
+                    endOffset,
+                    waveThickness.toPx(),
+                    startCornerRadius,
+                    trackInsideCornerSize.toPx()
+                ),
+                color = color
             )
         } else {
-            createWavyPath(
-                startOffset,
-                endOffset,
-                waveLength,
-                waveHeight,
-                waveSpread,
-                waveShift,
-                incremental
+            drawPath(
+                path = createWavyPath(
+                    startOffset, // Do not modify the offset x because it will break wave (the one in demo visual test)
+                    endOffset.copy(x = endOffset.x - trackInsideCornerSize.toPx() / 2),
+                    waveLength,
+                    waveHeight,
+                    waveSpread,
+                    waveShift,
+                    incremental
+                ),
+                color = color,
+                style = Stroke(
+                    width = waveThickness.toPx(),
+                    join = StrokeJoin.Round,
+                    cap = StrokeCap.Round
+                )
             )
         }
-        drawPath(
-            path = path,
-            color = color,
-            style = Stroke(
-                width = waveThickness.toPx(),
-                join = StrokeJoin.Round,
-                cap = StrokeCap.Round
-            )
-        )
     }
+}
+
+private inline fun DrawScope.createFlatPath(
+    startOffset: Offset,
+    valueOffset: Offset,
+    thickness: Float,
+    startCornerSize: Float,
+    insideCornerSize: Float
+): Path = Path().apply {
+    val endCorner = CornerRadius(insideCornerSize, insideCornerSize)
+    val startCorner = CornerRadius(startCornerSize, startCornerSize)
+    addRoundRect(
+        RoundRect(
+            left = startOffset.x,
+            right = valueOffset.x,
+            top = center.y - thickness / 2,
+            bottom = center.y + thickness / 2,
+            topLeftCornerRadius = startCorner,
+            topRightCornerRadius = endCorner,
+            bottomRightCornerRadius = endCorner,
+            bottomLeftCornerRadius = startCorner
+        )
+    )
 }

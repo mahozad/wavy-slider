@@ -169,14 +169,6 @@ internal inline fun animateWaveSpread(
     return spreadFactorAnimated
 }
 
-internal inline fun DrawScope.createFlatPath(
-    startOffset: Offset,
-    valueOffset: Offset
-): Path = Path().apply {
-    moveTo(startOffset.x, center.y)
-    lineTo(valueOffset.x, center.y)
-}
-
 internal inline fun DrawScope.createWavyPath(
     startOffset: Offset,
     valueOffset: Offset,
