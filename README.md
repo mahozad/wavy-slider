@@ -85,7 +85,7 @@ fun MyComposable() {
         waveHeight = 16.dp,     // Set this to 0.dp to make the Slider flat
         waveVelocity = 15.dp to HEAD, // Speed per second and its direction
         waveThickness = 4.dp,   // Defaults to 4.dp irregardless of variant
-        trackThickness = 4.dp,  // Defaults to values based on Material 2/3
+        trackThickness = 4.dp,  // Defaults to a thickness based on variant
         incremental = false,    // Whether to gradually increase waveHeight
         // animationSpecs = ... // Customize various animations of the wave
     )
