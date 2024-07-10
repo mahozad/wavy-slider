@@ -500,11 +500,11 @@ class VisualTest {
             showRegularSliders = false,
         ) { value, onChange ->
             var waveThickness by remember { mutableStateOf(4.dp) }
+            Slider3(value, onChange)
+            WavySlider3(value, onChange, waveVelocity = 10.dp to HEAD, waveThickness = waveThickness, waveHeight = 0.dp)
             Button(onClick = { waveThickness = if (waveThickness == 4.dp) 16.dp else 4.dp }) {
                 Text(text = "Toggle wave thickness")
             }
-            Slider3(value, onChange)
-            WavySlider3(value, onChange, waveVelocity = 10.dp to HEAD, waveThickness = waveThickness, waveHeight = 0.dp)
         }
         assert(isPassed)
     }

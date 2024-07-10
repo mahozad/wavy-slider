@@ -207,6 +207,15 @@ internal inline fun lerp(start: Float, stop: Float, fraction: Float) =
 internal inline fun calcFraction(a: Float, b: Float, pos: Float) =
     (if (b - a == 0f) 0f else (pos - a) / (b - a)).coerceIn(0f, 1f)
 
+
+
+
+
+
+
+
+
+
 /*
 For links to source code of the original squiggly progress in Android OS, see the main README file.
 
