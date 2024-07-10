@@ -107,6 +107,7 @@ data class WaveAnimationSpecs(
  */
 typealias WaveVelocity = Pair<Dp, WaveDirection>
 
+private val wavyPath = Path()
 internal val defaultIncremental = false
 internal val defaultWaveLength = 20.dp
 internal val defaultWaveHeight = 6.dp
@@ -177,7 +178,8 @@ internal inline fun DrawScope.createWavyPath(
     waveSpread: Float,
     waveShift: Dp,
     incremental: Boolean
-): Path = Path().apply {
+): Path = wavyPath.apply {
+    rewind()
     val waveShiftPx = waveShift.toPx()
     val waveLengthPx = waveLength.toPx()
     val waveHeightPx = waveHeight.toPx().absoluteValue
