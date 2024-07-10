@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
+import ir.mahozad.multiplatform.wavyslider.material3.Track
 import ir.mahozad.multiplatform.wavyslider.material3.WaveAnimationSpecs
 import kotlinx.coroutines.delay
 import org.junit.Test
@@ -1109,6 +1111,7 @@ class VisualTest {
     // See the README in the <PROJECT ROOT>/asset directory
     @Test
     fun `Wavy slider demo`() {
+        System.setProperty("skiko.renderApi", "OPENGL")
         application(exitProcessOnExit = false) {
             Window(
                 title = "WavySliderDemo",
@@ -1120,24 +1123,49 @@ class VisualTest {
             ) {
                 MaterialTheme3 {
                     var value by remember { mutableStateOf(0.5f) }
+                    val onValueChange: (Float) -> Unit = remember { { value = it } }
                     val isDark = true
-                    val colorsLight = SliderDefaults.colors(
+                    val colorsLightM3 = SliderDefaults.colors(
                         thumbColor = Color(0xff727d1a), // Primary
                         activeTrackColor = Color(0xff727d1a), // Primary
                         inactiveTrackColor = Color(0xffe4e3d2) // Light SurfaceVariant
                     )
-                    val colorsDark = SliderDefaults.colors(
+                    val colorsDarkM3 = SliderDefaults.colors(
                         thumbColor = Color(0xff727d1a), // Primary
                         activeTrackColor = Color(0xff727d1a), // Primary
                         inactiveTrackColor = Color(0xff47483b) // Dark SurfaceVariant
                     )
-                    val colors = if (isDark) colorsDark else colorsLight
-                    CompositionLocalProvider(LocalDensity provides Density(1.6f)) {
+                    val colorsLightM2 = androidx.compose.material.SliderDefaults.colors(
+                        thumbColor = Color(0xff727d1a), // Primary
+                        activeTrackColor = Color(0xff727d1a), // Primary
+                        inactiveTrackColor = Color(0xffe4e3d2) // Light SurfaceVariant
+                    )
+                    val colorsDarkM2 = androidx.compose.material.SliderDefaults.colors(
+                        thumbColor = Color(0xff727d1a), // Primary
+                        activeTrackColor = Color(0xff727d1a), // Primary
+                        inactiveTrackColor = Color(0xff47483b) // Dark SurfaceVariant
+                    )
+                    val colorsM2 = if (isDark) colorsDarkM2 else colorsLightM2
+                    val colorsM3 = if (isDark) colorsDarkM3 else colorsLightM3
+                    CompositionLocalProvider(LocalDensity provides Density(1.5f)) {
                         Column {
-                            WavySlider3(value, { value = it }, colors = colors)
-                            WavySlider3(value, { value = it }, colors = colors, waveLength = 30.dp, waveVelocity = 15.dp to HEAD)
-                            WavySlider3(value, { value = it }, colors = colors, waveHeight = 14.dp, waveVelocity = 20.dp to TAIL, waveThickness = 3.dp, incremental = true)
-                            WavySlider3(value, { value = it }, colors = colors, waveHeight = 0.dp)
+                            WavySlider2(value, onValueChange, colors = colorsM2, trackThickness = 2.dp)
+                            WavySlider2(
+                                value,
+                                onValueChange,
+                                colors = colorsM2,
+                                waveLength = 30.dp,
+                                waveVelocity = 15.dp to HEAD,
+                                trackThickness = 4.dp
+                            )
+                            @OptIn(ExperimentalMaterial3Api::class)
+                            WavySlider3(
+                                value,
+                                onValueChange,
+                                track = { SliderDefaults.Track(it, colors = colorsM3, waveHeight = 14.dp, waveVelocity = 20.dp to TAIL, waveThickness = 3.dp, trackThickness = 12.dp, incremental = true, thumbTrackGapSize = 8.dp) },
+                                thumb = { Box(Modifier.size(18.dp).rotate(45f).background(Color(0xff727d1a))) }
+                            )
+                            WavySlider3(value, onValueChange, colors = colorsM3, waveHeight = 0.dp)
                         }
                     }
                 }
