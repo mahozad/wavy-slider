@@ -4,6 +4,8 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.nativeKeyCode
 
+// Copied from https://github.com/JetBrains/compose-multiplatform-core/blob/jb-main/compose/material/material/src/desktopMain/kotlin/androidx/compose/material/NavigationKeyEvents.desktop.kt
+
 internal actual val KeyEvent.isDirectionUp: Boolean
     get() = key.nativeKeyCode == java.awt.event.KeyEvent.VK_UP
 

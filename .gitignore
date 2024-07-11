@@ -2,6 +2,8 @@
 .gradle
 /local.properties
 /.idea
+# https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
+/.kotlin
 .DS_Store
 build/
 /captures

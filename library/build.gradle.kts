@@ -3,12 +3,14 @@ import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import java.io.File
 import java.util.*
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.compatibility)
     alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library)
     alias(libs.plugins.dokka)
     id("maven-publish")
@@ -23,7 +25,7 @@ buildscript {
 }
 
 group = "ir.mahozad.multiplatform"
-version = "1.3.0"
+version = "2.0.0-alpha"
 
 // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
 // for the targets that Compose Multiplatform supports
@@ -95,7 +97,7 @@ kotlin {
 }
 
 android {
-    namespace = "ir.mahozad.multiplatform"
+    namespace = "ir.mahozad.multiplatform.wavyslider"
 
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -164,22 +166,28 @@ tasks.dokkaHtml {
     }
 }
 
-val properties = Properties().apply {
-    runCatching { rootProject.file("local.properties") }
+val localProperties = Properties().apply {
+    rootProject
+        .runCatching { file("local.properties") }
         .getOrNull()
-        .takeIf { it?.exists() ?: false }
+        ?.takeIf(File::exists)
         ?.reader()
         ?.use(::load)
 }
 // For information about signing.* properties,
 // see comments on signing { ... } block below
-val environment: Map<String, String?> = System.getenv()
-extra["ossrhUsername"] = properties["ossrh.username"] as? String
-    ?: environment["OSSRH_USERNAME"] ?: ""
-extra["ossrhPassword"] = properties["ossrh.password"] as? String
-    ?: environment["OSSRH_PASSWORD"] ?: ""
-extra["githubToken"] = properties["github.token"] as? String
-    ?: environment["GITHUB_TOKEN"] ?: ""
+extra["ossrhUsername"] = localProperties["ossrh.username"] as? String
+    ?: properties["ossrh.username"] as? String // From gradle.properties in ~/.gradle/ or project root
+    ?: System.getenv("OSSRH_USERNAME")
+    ?: ""
+extra["ossrhPassword"] = localProperties["ossrh.password"] as? String
+    ?: properties["ossrh.password"] as? String // From gradle.properties in ~/.gradle/ or project root
+    ?: System.getenv("OSSRH_PASSWORD")
+    ?: ""
+extra["githubToken"] = localProperties["github.token"] as? String
+    ?: properties["github.token"] as? String // From gradle.properties in ~/.gradle/ or project root
+    ?: System.getenv("GITHUB_TOKEN")
+    ?: ""
 
 publishing {
     repositories {
@@ -189,7 +197,7 @@ publishing {
         }
         maven {
             name = "MavenCentral"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
                 username = extra["ossrhUsername"]?.toString()
                 password = extra["ossrhPassword"]?.toString()
@@ -252,7 +260,7 @@ publishing {
     }
 }
 
-// TODO: Remove after https://youtrack.jetbrains.com/issue/KT-46466 is fixed
+// TODO: Remove after https://github.com/gradle/gradle/issues/26091 is fixed
 //  Thanks to KSoup repository for this code snippet
 tasks.withType(AbstractPublishToMaven::class).configureEach {
     dependsOn(tasks.withType(Sign::class))
@@ -260,7 +268,7 @@ tasks.withType(AbstractPublishToMaven::class).configureEach {
 
 /*
  * Uses signing.* properties defined in gradle.properties in ~/.gradle/ or project root
- * Can also pass from command line like below
+ * Can also pass from command line like below:
  * ./gradlew task -Psigning.secretKeyRingFile=... -Psigning.password=... -Psigning.keyId=...
  * See https://docs.gradle.org/current/userguide/signing_plugin.html
  * and https://stackoverflow.com/a/67115705

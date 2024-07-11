@@ -1,29 +1,31 @@
 package ir.mahozad.multiplatform.wavyslider
 
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
-import org.jetbrains.skiko.SkikoKey.*
+
+// Copied from https://github.com/JetBrains/compose-multiplatform-core/blob/jb-main/compose/material/material/src/jsNativeMain/kotlin/androidx/compose/material/NavigationKeyEvents.jsNative.kt
 
 internal actual val KeyEvent.isDirectionUp: Boolean
-    get() = key.keyCode == KEY_UP.platformKeyCode.toLong()
+    get() = key == Key.DirectionUp
 
 internal actual val KeyEvent.isDirectionDown: Boolean
-    get() = key.keyCode == KEY_DOWN.platformKeyCode.toLong()
+    get() = key == Key.DirectionDown
 
 internal actual val KeyEvent.isDirectionRight: Boolean
-    get() = key.keyCode == KEY_RIGHT.platformKeyCode.toLong()
+    get() = key == Key.DirectionRight
 
 internal actual val KeyEvent.isDirectionLeft: Boolean
-    get() = key.keyCode == KEY_LEFT.platformKeyCode.toLong()
+    get() = key == Key.DirectionLeft
 
 internal actual val KeyEvent.isHome: Boolean
-    get() = key.keyCode == KEY_HOME.platformKeyCode.toLong()
+    get() = key == Key.Home
 
 internal actual val KeyEvent.isMoveEnd: Boolean
-    get() = key.keyCode == KEY_END.platformKeyCode.toLong()
+    get() = key == Key.MoveEnd
 
 internal actual val KeyEvent.isPgUp: Boolean
-    get() = key.keyCode == KEY_PGUP.platformKeyCode.toLong()
+    get() = key == Key.PageUp
 
 internal actual val KeyEvent.isPgDn: Boolean
-    get() = key.keyCode == KEY_PGDOWN.platformKeyCode.toLong()
+    get() = key == Key.PageDown
