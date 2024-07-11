@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -20,14 +21,13 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
-            // api("ir.mahozad.multiplatform:wavy-slider:x.y.z")
             implementation(project(":wavy-slider"))
         }
     }
 }
 
-compose.experimental {
-    web.application {}
+compose.resources {
+    generateResClass = always
+    packageOfResClass = "ir.mahozad.wavyslider"
 }

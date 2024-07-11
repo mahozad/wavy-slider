@@ -1,8 +1,12 @@
+package website
+
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,14 +18,16 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.CanvasBasedWindow
+import androidx.compose.ui.window.ComposeViewport
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
+import ir.mahozad.wavyslider.Res
+import ir.mahozad.wavyslider.m2_logo
+import ir.mahozad.wavyslider.m3_logo
+import kotlinx.browser.document
 import org.jetbrains.compose.resources.*
-import org.jetbrains.skiko.wasm.onWasmReady
 import kotlin.math.roundToInt
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
@@ -33,16 +39,20 @@ private val material2ColorPrimary = Color(0xff591b52)
  */
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    onWasmReady {
-        CanvasBasedWindow(
-            title = "Wavy slider showcase",
-            canvasElementId = "content",
-            applyDefaultStyles = false,
-            requestResize = { IntSize(width = 900, height = 800) }
-        ) {
-            App()
-        }
+    ComposeViewport(document.querySelector("#content")!!) {
+        App()
     }
+
+    // onWasmReady {
+    //     CanvasBasedWindow(
+    //         title = "Wavy slider showcase",
+    //         canvasElementId = "content",
+    //         applyDefaultStyles = false,
+    //         requestResize = { IntSize(width = 900, height = 800) }
+    //     ) {
+    //         App()
+    //     }
+    // }
 
     // See https://github.com/JetBrains/compose-multiplatform/issues/2186
     // val body = document.getElementsByTagName("body")[0] as HTMLElement
@@ -67,7 +77,8 @@ fun Content() {
     var waveHeight by remember { mutableStateOf(7.dp) }
     var waveSpeed by remember { mutableStateOf(12.dp) }
     var waveThickness by remember { mutableStateOf(4.dp) }
-    var trackThickness by remember { mutableStateOf(4.dp) }
+    var trackThickness2 by remember { mutableStateOf(4.dp) }
+    var trackThickness3 by remember { mutableStateOf(16.dp) }
     var isEnabled by remember { mutableStateOf(true) }
     var isBackward by remember { mutableStateOf(true) }
     var isMaterial3 by remember { mutableStateOf(true) }
@@ -95,7 +106,7 @@ fun Content() {
                 waveHeight = waveHeight,
                 waveVelocity = waveSpeed to if (isBackward) TAIL else HEAD,
                 waveThickness = waveThickness,
-                trackThickness = trackThickness,
+                trackThickness = trackThickness3,
                 incremental = isIncremental
             )
         } else {
@@ -108,7 +119,7 @@ fun Content() {
                     waveHeight = waveHeight,
                     waveVelocity = waveSpeed to if (isBackward) TAIL else HEAD,
                     waveThickness = waveThickness,
-                    trackThickness = trackThickness,
+                    trackThickness = trackThickness2,
                     incremental = isIncremental
                 )
             }
@@ -161,9 +172,9 @@ fun Content() {
                     )
                     LabeledSlider(
                         label = "Track thickness:",
-                        value = trackThickness.value,
+                        value = if (isMaterial3) trackThickness3.value else trackThickness2.value,
                         valueRange = 0f..20f,
-                        onValueChange = { trackThickness = it.dp }
+                        onValueChange = { if (isMaterial3) trackThickness3 = it.dp else trackThickness2 = it.dp }
                     )
                 }
             }
@@ -175,7 +186,7 @@ fun Content() {
                 waveHeight = waveHeight,
                 waveSpeed = waveSpeed,
                 waveThickness = waveThickness,
-                trackThickness = trackThickness,
+                trackThickness = if (isMaterial3) trackThickness3 else trackThickness2,
                 isIncremental = isIncremental,
                 isBackward = isBackward,
                 modifier = Modifier
@@ -202,7 +213,7 @@ fun MaterialDesignVersion(isMaterial3: Boolean, onChange: (Boolean) -> Unit) {
             )
         ) {
             Icon(
-                painterResource(DrawableResource("m$n-logo.png")),
+                painterResource(if (n == 2) Res.drawable.m2_logo else Res.drawable.m3_logo),
                 contentDescription = "Material $n",
                 modifier = Modifier.size(34.dp),
                 tint = if (n == 3 && isMaterial3) {
@@ -448,15 +459,14 @@ fun Code(
         withStyle(SpanStyle(colorIdentifier, fontSize)) { append(")") }
     }
 
-    // FIXME: Does not work yet; see https://github.com/JetBrains/compose-multiplatform/issues/4103
     // Makes it possible for user to select the code (for copy/paste)
-    // SelectionContainer {
+    SelectionContainer {
         Text(
             text = code,
             fontFamily = FontFamily.Monospace,
             modifier = modifier
         )
-    // }
+    }
 }
 
 @OptIn(InternalResourceApi::class)
