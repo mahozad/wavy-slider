@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.multiplatform)
@@ -5,19 +8,25 @@ plugins {
 }
 
 kotlin {
-    js(compiler = IR) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         moduleName = "app"
         browser {
             commonWebpackConfig {
                 outputFileName = "app.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static = (static ?: mutableListOf()).apply {
+                        // Serves source files to be able to debug inside browser
+                        add(project.projectDir.path)
+                    }
+                }
             }
         }
         nodejs()
         binaries.executable()
     }
     sourceSets {
-        jsMain.dependencies {
-            implementation(compose.html.core)
+        wasmJsMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)

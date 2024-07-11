@@ -28,6 +28,9 @@ import ir.mahozad.wavyslider.m2_logo
 import ir.mahozad.wavyslider.m3_logo
 import kotlinx.browser.document
 import org.jetbrains.compose.resources.*
+import kotlin.js.JsAny
+import kotlin.js.JsNumber
+import kotlin.js.JsReference
 import kotlin.math.roundToInt
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
@@ -93,8 +96,8 @@ fun Content() {
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 90.dp),
-        verticalArrangement = Arrangement.spacedBy(60.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 60.dp),
+        verticalArrangement = Arrangement.spacedBy(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (isMaterial3) {
@@ -144,8 +147,8 @@ fun Content() {
                     MaterialDesignVersion(isMaterial3) { isMaterial3 = it }
                     Spacer(Modifier.height(0.dp))
                     Toggle(isEnabled, "Enabled:") { isEnabled = it }
+                    Toggle(!isBackward, "Reversed animation:") { isBackward = !it }
                     Toggle(isIncremental, "Incremental wave height:") { isIncremental = it }
-                    Toggle(!isBackward, "Reverse animation:") { isBackward = !it }
                     LabeledSlider(
                         label = "Wave length:",
                         value = waveLength.value,
@@ -328,8 +331,7 @@ fun Code(
     isBackward: Boolean,
     modifier: Modifier
 ) {
-    // https://stackoverflow.com/q/42791492
-    val valueRounded = remember(value) { value.asDynamic().toFixed(2) }
+    val valueRounded = remember(value) { roundTo2Decimals(value) }
 
     val fontSize = remember { 14.sp }
     val lineHeight = remember { 25.sp }
@@ -468,6 +470,17 @@ fun Code(
         )
     }
 }
+
+/**
+ * Calls the standard JavaScript `Number.toFixed` function using the [js] helper.
+ *
+ * The [js] call will be compiled to a JS arrow function that takes the specified parameters.
+ * For example, here, the `js("number.toFixed(2)")` will be compiled to `(number) => number.toFixed(2)`.
+ *
+ * See [this SO post](https://stackoverflow.com/q/42791492)
+ * and [this Kotlin guide](https://kotlinlang.org/docs/wasm-js-interop.html)
+ */
+fun roundTo2Decimals(number: Float): JsNumber = js("number.toFixed(2)")
 
 @OptIn(InternalResourceApi::class)
 suspend fun loadResource(path: String): ByteArray {
