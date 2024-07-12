@@ -2,7 +2,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.io.File
 import java.util.*
 
@@ -30,6 +30,9 @@ version = "2.0.0-alpha"
 // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
 // for the targets that Compose Multiplatform supports
 kotlin {
+    // Publishes source files; for javadoc/kdoc/dokka see the publications block
+    withSourcesJar(publish = true)
+
     androidTarget { publishLibraryVariants("release") }
     // Windows, Linux, macOS (with Java runtime)
     jvm(name = "desktop")
@@ -213,6 +216,7 @@ publishing {
         }
     }
     publications.withType<MavenPublication> {
+        // Publishes javadoc/kdoc/dokka; for sources see the kotlin block
         artifact(javadocJar) // Required a workaround. See below
         pom {
             url = "https://mahozad.ir/${project.name}"
