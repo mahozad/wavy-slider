@@ -1,4 +1,6 @@
-rootProject.name = "wavy-slider"
+rootProject.name = "wavy-slider-project"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":library")
 project(":library").name = "wavy-slider"

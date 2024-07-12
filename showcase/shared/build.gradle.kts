@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -47,7 +47,7 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             // api("ir.mahozad.multiplatform:wavy-slider:x.y.z")
-            api(project(":wavy-slider"))
+            api(projects.wavySlider)
         }
         androidMain.dependencies {
             api(libs.androidx.activity.compose)

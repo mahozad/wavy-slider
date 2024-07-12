@@ -14,7 +14,7 @@ kotlin {
         jsMain.dependencies {
             implementation(compose.html.core)
             implementation(compose.runtime)
-            implementation(project(":showcase:shared"))
+            implementation(projects.showcase.shared)
         }
     }
 }

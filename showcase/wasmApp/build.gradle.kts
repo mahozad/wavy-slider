@@ -17,7 +17,7 @@ kotlin {
         val wasmJsMain by getting {
             dependencies {
                 implementation(compose.runtime)
-                implementation(project(":showcase:shared"))
+                implementation(projects.showcase.shared)
             }
         }
     }

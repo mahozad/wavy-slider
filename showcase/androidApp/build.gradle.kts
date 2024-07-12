@@ -9,7 +9,7 @@ kotlin {
     androidTarget()
     sourceSets {
         androidMain.dependencies {
-            implementation(project(":showcase:shared"))
+            implementation(projects.showcase.shared)
         }
     }
 }
