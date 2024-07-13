@@ -26,20 +26,39 @@ body {
 
 main {
     display: grid;
-    height: 100vh;
+    min-height: 100vh;
     align-items: center;
     justify-content: center;
-    background-color: #fcfaed;
+    background-color: #FCFAEDCC;
+
+    & > * {
+        grid-column: 1;
+        grid-row: 1;
+    }
 }
 
-main > * {
-    grid-column: 1;
-    grid-row: 1;
+@media (width >= 1300px) {
+    #content {
+        width: 900px;
+        height: 720px;
+        margin-block-start: 0;
+    }
 }
 
-#content {
-    width: 900px;
-    height: 720px;
+@media (width < 1300px) {
+    #content {
+        width: 500px;
+        height: 1265px;
+        margin-block-start: 64px;
+    }
+}
+
+@media (width < 600px) {
+    #content {
+        width: 324px;
+        height: 1265px;
+        margin-block-start: 64px;
+    }
 }
 
 #loading {

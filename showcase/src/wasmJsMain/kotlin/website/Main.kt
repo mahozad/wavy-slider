@@ -6,9 +6,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -28,9 +28,8 @@ import ir.mahozad.wavyslider.m2_logo
 import ir.mahozad.wavyslider.m3_logo
 import kotlinx.browser.document
 import org.jetbrains.compose.resources.*
-import kotlin.js.JsAny
 import kotlin.js.JsNumber
-import kotlin.js.JsReference
+import kotlin.js.js
 import kotlin.math.roundToInt
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
@@ -73,12 +72,13 @@ fun App() {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Content() {
     var value by remember { mutableFloatStateOf(0.5f) }
-    var waveLength by remember { mutableStateOf(20.dp) }
-    var waveHeight by remember { mutableStateOf(7.dp) }
-    var waveSpeed by remember { mutableStateOf(12.dp) }
+    var waveLength by remember { mutableStateOf(24.dp) }
+    var waveHeight by remember { mutableStateOf(8.dp) }
+    var waveSpeed by remember { mutableStateOf(20.dp) }
     var waveThickness by remember { mutableStateOf(4.dp) }
     var trackThickness2 by remember { mutableStateOf(4.dp) }
     var trackThickness3 by remember { mutableStateOf(16.dp) }
@@ -96,7 +96,7 @@ fun Content() {
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = 60.dp),
+        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 60.dp),
         verticalArrangement = Arrangement.spacedBy(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -127,16 +127,17 @@ fun Content() {
                 )
             }
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterHorizontally),
-            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(48.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Top),
+            modifier = Modifier.padding(top = 8.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(7.dp),
                 modifier = Modifier
                     .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                     .padding(16.dp)
-                    .width(360.dp)
+                    .width(320.dp)
             ) {
                 CompositionLocalProvider(
                     LocalTextStyle provides LocalTextStyle.current.copy(
@@ -195,8 +196,8 @@ fun Content() {
                 modifier = Modifier
                     .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                     .padding(16.dp)
-                    .width(360.dp)
-                    .fillMaxHeight()
+                    .width(320.dp)
+                    .height(484.dp)
             )
         }
     }
@@ -369,13 +370,13 @@ fun Code(
 
     val code = buildAnnotatedString {
         pushStyle(ParagraphStyle(lineHeight = lineHeight))
-        withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) {
+        withStyle(SpanStyle(colorKeyword, 12.sp)) { append("import ") }
+        withStyle(SpanStyle(colorIdentifier, 12.sp)) {
             append("...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider")
         }
         appendLine()
-        withStyle(SpanStyle(colorKeyword, fontSize)) { append("import ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) {
+        withStyle(SpanStyle(colorKeyword, 12.sp)) { append("import ") }
+        withStyle(SpanStyle(colorIdentifier, 12.sp)) {
             append("...wavyslider.WaveDirection.*")
         }
         appendLine()
@@ -480,7 +481,7 @@ fun Code(
  * See [this SO post](https://stackoverflow.com/q/42791492)
  * and [this Kotlin guide](https://kotlinlang.org/docs/wasm-js-interop.html)
  */
-fun roundTo2Decimals(number: Float): JsNumber = js("number.toFixed(2)")
+fun roundTo2Decimals(@Suppress("unused") number: Float): JsNumber = js("number.toFixed(2)")
 
 @OptIn(InternalResourceApi::class)
 suspend fun loadResource(path: String): ByteArray {
