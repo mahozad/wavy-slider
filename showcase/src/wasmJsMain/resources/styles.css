@@ -64,7 +64,20 @@ main {
 #loading {
     display: flex;
     justify-content: center;
+    gap: 6px;
     font-size: 24px;
+
+    img {
+        width: 24px;
+        height: 24px;
+        animation: spin 2s ease infinite;
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(180deg);
+    }
 }
 
 canvas {
