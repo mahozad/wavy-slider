@@ -8,6 +8,7 @@ To produce the [demo Animated PNGs](demo-light.png) did as follows:
 3. Executed *FFmpeg v5.1-gpl* `./ffmpeg.exe -f gdigrab -framerate 30 -i title="WavySliderDemo" -plays 0 out.apng`  
    If the entire result is black, use `System.setProperty("skiko.renderApi", "OPENGL")` before the call to `application(...`  
    See https://trac.ffmpeg.org/ticket/7718
+   and https://github.com/JetBrains/compose-multiplatform/issues/4931
 4. Trimmed the duration using `./ffmpeg.exe -ss 5s -to 7s -i out.apng -plays 0 out-trimmed.apng`
 5. Changed the extension of the result from `apng` to `png`
 6. Optimized using online tools (for example, https://tinypng.com)
