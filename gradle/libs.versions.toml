@@ -1,10 +1,10 @@
 [versions]
-gradle = "8.8"
+gradle = "8.10.2"
 java = "17"
 kotlin = "2.0.21"
 kotlin-compatibility = "0.14.0"
 compose-multiplatform = "1.7.0-rc01"
-agp = "8.3.0" # Android Gradle plugin
+agp = "8.5.2" # Android Gradle plugin
 android-minSdk = "21"
 android-compileSdk = "34"
 android-targetSdk = "34"
