@@ -64,10 +64,6 @@ kotlin {
         }
     }
 
-    // Native targets:
-    // macosX64()
-    // macosArm64()
-
     sourceSets {
         commonMain.dependencies {
             api(compose.foundation)
@@ -78,8 +74,6 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-        val androidMain by getting {}
-        val androidUnitTest by getting {}
         val desktopMain by getting {}
         val desktopTest by getting {
             dependencies {
@@ -88,14 +82,13 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
             }
         }
-        val jsMain by getting {}
-        val jsTest by getting {}
-        val iosX64Main by getting {}
-        val iosArm64Main by getting {}
-        val iosSimulatorArm64Main by getting {}
-        // See above
-        // val macosArm64Main by getting {}
-        // val macosX64Main by getting {}
+        androidMain {}
+        androidUnitTest {}
+        jsMain {}
+        jsTest {}
+        iosX64Main {}
+        iosArm64Main {}
+        iosSimulatorArm64Main {}
     }
 }
 
