@@ -3,6 +3,7 @@ package ir.mahozad.multiplatform.wavyslider
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.EaseOutBounce
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -11,6 +12,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -1017,9 +1020,68 @@ class VisualTest {
         assert(isPassed)
     }
 
-    // See https://github.com/JetBrains/compose-multiplatform/issues/4199
+    /**
+     * The start and end offset of wave for Material 3 variant are adjusted (± waveThickness.toPx() / 2)
+     * to account for the round cap of the path (cap = StrokeCap.Round) which fixes the excess length of
+     * the tips of the wave and also more importantly, prevents a sudden change in position of path tip
+     * at the moment the wave completely flattens and becomes a line (when toggling the waveHeight to zero).
+     *
+     * The above adjustment, in turn, results in a glitch visible on some fractional screen densities (like 1.25)
+     * which caused the start of the wave to constantly become a little longer and shorter.
+     * Here is the description of the reason:
+     * To draw the wave, the x is progressed and the y is calculated based on it.
+     * In a half a wavelength, the y should only change from increasing to decreasing or vice versa
+     * at most once (at the peek or at the trough) but when printing
+     * `lineTo(x.toFloat(), y.toFloat())` pairs, it was found that the y sometimes changed slope sign
+     * more than once and this probably messes with drawing.
+     *
+     * Calling roundToInt().toFloat() on the result of the above adjustment seems to have fixed the problem.
+     * Also, another less visually-perfect workaround would be to set the path join to StrokeJoin.Bevel for the wavyPath.
+     */
     @Test
     fun `Test 41`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = "When the screen density is some fractional value",
+            expected = """
+                Should have no glitch at the start tip of the wave. 
+                Also, when toggling the height, at the moment the wave completely flattens,
+                there should be almost no abrupt change in where the line starts (almost invisible).
+            """
+        ) { value, onChange ->
+            var density by remember { mutableStateOf(1.20f) }
+            var waveHeight by remember { mutableStateOf(10.dp) }
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                CompositionLocalProvider(LocalDensity provides Density(density)) {
+                    WavySlider3(
+                        value = 0.03f,
+                        onValueChange = {},
+                        waveLength = 24.dp,
+                        waveHeight = waveHeight,
+                        waveVelocity = 10.dp to HEAD,
+                        animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(
+                            waveStartSpreadAnimationSpec = snap()
+                        )
+                    )
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Button(onClick = { waveHeight = if (waveHeight == 0.dp) 10.dp else 0.dp }) { Text("Toggle height") }
+                        Text("Height: $waveHeight")
+                    }
+                    Column(modifier = Modifier.weight(4f)) {
+                        Slider(value = density, onValueChange = { density = it }, valueRange = 1.20f..1.50f, steps = 9)
+                        Text("Density: $density")
+                    }
+                }
+            }
+        }
+        assert(isPassed)
+    }
+
+    // See https://github.com/JetBrains/compose-multiplatform/issues/4199
+    @Test
+    fun `Test 42`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Measure FPS of the app",
@@ -1047,7 +1109,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 42`() {
+    fun `Test 43`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When there are many wavy sliders",
@@ -1080,7 +1142,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 43`() {
+    fun `Test 44`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Start animation",
