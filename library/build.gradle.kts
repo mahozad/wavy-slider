@@ -25,7 +25,7 @@ buildscript {
 }
 
 group = "ir.mahozad.multiplatform"
-version = "2.0.0-alpha"
+version = "2.0.0-beta"
 
 // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
 // for the targets that Compose Multiplatform supports
