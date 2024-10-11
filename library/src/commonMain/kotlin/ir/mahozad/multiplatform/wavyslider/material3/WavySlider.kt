@@ -931,8 +931,9 @@ private inline fun DrawScope.drawTrackActivePart(
         } else {
             drawPath(
                 path = createWavyPath(
-                    startOffset, // Do not modify the offset x because it will break wave (the one in demo visual test)
-                    endOffset.copy(x = endOffset.x - trackInsideCornerSize.toPx() / 2),
+                    // See the visual test #41 and its KDoc for more information.
+                    startOffset.copy(x = (startOffset.x + waveThickness.toPx() / 2).roundToInt().toFloat()),
+                    endOffset.copy(x = endOffset.x - waveThickness.toPx() / 2),
                     waveLength,
                     waveHeight,
                     waveSpread,

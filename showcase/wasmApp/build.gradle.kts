@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -17,7 +17,7 @@ kotlin {
         val wasmJsMain by getting {
             dependencies {
                 implementation(compose.runtime)
-                implementation(project(":showcase:shared"))
+                implementation(projects.showcase.shared)
             }
         }
     }

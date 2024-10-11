@@ -1,6 +1,11 @@
-rootProject.name = "wavy-slider"
+rootProject.name = "wavy-slider-project"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":library")
+// We want the project name to be "wavy-slider" but its directory/folder name to be "library".
+// If the project name were not set here, it would be published with its directory/folder name ("library")
+// (suffixed with proper platform type added by Kotlin Multiplatform).
 project(":library").name = "wavy-slider"
 include(":showcase")
 // :showcase:iosApp is managed by Xcode and its build system

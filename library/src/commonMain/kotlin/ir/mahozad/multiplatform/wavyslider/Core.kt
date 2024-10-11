@@ -2,7 +2,6 @@ package ir.mahozad.multiplatform.wavyslider
 
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.geometry.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -20,23 +19,23 @@ import kotlin.math.sin
 /**
  * The horizontal movement (shift) of the whole wave.
  */
-enum class WaveDirection(internal inline val factor: (LayoutDirection) -> Float) {
+enum class WaveDirection(internal val factor: (LayoutDirection) -> Float) {
     /**
      * Always shift toward left (regardless of layout direction).
      */
-    LEFT({ if (it == LayoutDirection.Ltr) 1f else -1f }),
+    LEFT(factor = { if (it == LayoutDirection.Ltr) 1f else -1f }),
     /**
      * Always shift toward right (regardless of layout direction).
      */
-    RIGHT({ if (it == LayoutDirection.Ltr) -1f else 1f }),
+    RIGHT(factor = { if (it == LayoutDirection.Ltr) -1f else 1f }),
     /**
      * Shift toward the start (depends on layout direction).
      */
-    TAIL({ 1f }),
+    TAIL(factor = { 1f }),
     /**
      * Shift toward the thumb (depends on layout direction).
      */
-    HEAD({ -1f })
+    HEAD(factor = { -1f })
 }
 
 /**
@@ -183,7 +182,7 @@ internal inline fun DrawScope.createWavyPath(
     val waveShiftPx = waveShift.toPx()
     val waveLengthPx = waveLength.toPx()
     val waveHeightPx = waveHeight.toPx().absoluteValue
-    val startRadians = waveSpread * (waveShiftPx) / waveLengthPx * (2 * PI)
+    val startRadians = waveSpread * waveShiftPx / waveLengthPx * (2 * PI)
     val startHeightFactor = if (incremental) 0f else 1f
     val startY = (sin(startRadians) * startHeightFactor * waveHeightPx + size.height) / 2
     moveTo(startOffset.x, startY.toFloat())
