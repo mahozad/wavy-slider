@@ -216,7 +216,7 @@ fun SliderDefaults.Track(
     // See https://stackoverflow.com/q/62500464/8583692
     val inactiveTrackColor = @Suppress("INVISIBLE_REFERENCE") colors.trackColor(enabled, active = false)
     val activeTrackColor = @Suppress("INVISIBLE_REFERENCE") colors.trackColor(enabled, active = true)
-    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
+    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveAppearanceAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)
@@ -299,7 +299,7 @@ fun SliderDefaults.Track(
     // and https://youtrack.jetbrains.com/issue/KT-60304
     val inactiveTrackColor = @Suppress("INVISIBLE_REFERENCE") colors.trackColor(enabled, active = false)
     val activeTrackColor = @Suppress("INVISIBLE_REFERENCE") colors.trackColor(enabled, active = true)
-    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
+    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveAppearanceAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbSize.height)

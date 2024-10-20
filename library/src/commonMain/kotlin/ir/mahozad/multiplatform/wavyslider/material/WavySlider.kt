@@ -406,7 +406,7 @@ private fun Track(
 ) {
     val activeTrackColor by colors.trackColor(enabled, active = true)
     val inactiveTrackColor by colors.trackColor(enabled, active = false)
-    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveStartSpreadAnimationSpec)
+    val waveSpreadAnimated by animateWaveSpread(animationSpecs.waveAppearanceAnimationSpec)
     val waveHeightAnimated by animateWaveHeight(waveHeight, animationSpecs.waveHeightAnimationSpec)
     val waveShiftAnimated by animateWaveShift(waveVelocity, animationSpecs.waveVelocityAnimationSpec)
     val trackHeight = max(waveThickness + waveHeight.value.absoluteValue.dp, ThumbRadius * 2)

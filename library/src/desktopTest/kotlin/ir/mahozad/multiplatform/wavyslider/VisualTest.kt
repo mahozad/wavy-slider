@@ -1060,7 +1060,7 @@ class VisualTest {
                         waveHeight = waveHeight,
                         waveVelocity = 10.dp to HEAD,
                         animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(
-                            waveStartSpreadAnimationSpec = snap()
+                            waveAppearanceAnimationSpec = snap()
                         )
                     )
                 }

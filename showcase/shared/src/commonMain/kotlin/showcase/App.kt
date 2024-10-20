@@ -102,7 +102,7 @@ private fun WavyDivider() {
                 waveThickness = 1.dp,
                 waveVelocity = 0.dp to RIGHT,
                 animationSpecs = WaveAnimationSpecs(
-                    waveStartSpreadAnimationSpec = snap(),
+                    waveAppearanceAnimationSpec = snap(),
                     waveVelocityAnimationSpec = snap(),
                     waveHeightAnimationSpec = snap()
                 )
