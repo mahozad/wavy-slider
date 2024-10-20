@@ -8,7 +8,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme as MaterialTheme3
+import androidx.compose.material.MaterialTheme as MaterialTheme2
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -67,7 +68,7 @@ fun main() {
 
 @Composable
 fun App() {
-    MaterialTheme(colorScheme = lightScheme) {
+    MaterialTheme3(colorScheme = lightScheme) {
         Content()
     }
 }
@@ -76,7 +77,7 @@ fun App() {
 @Composable
 fun Content() {
     var value by remember { mutableFloatStateOf(0.5f) }
-    var waveLength by remember { mutableStateOf(24.dp) }
+    var waveLength by remember { mutableStateOf(30.dp) }
     var waveHeight by remember { mutableStateOf(8.dp) }
     var waveSpeed by remember { mutableStateOf(20.dp) }
     var waveThickness by remember { mutableStateOf(4.dp) }
@@ -113,7 +114,7 @@ fun Content() {
                 incremental = isIncremental
             )
         } else {
-            androidx.compose.material.MaterialTheme(lightColors(primary = material2ColorPrimary)) {
+            MaterialTheme2(lightColors(primary = material2ColorPrimary)) {
                 WavySlider2(
                     enabled = isEnabled,
                     value = value,
@@ -135,7 +136,7 @@ fun Content() {
             Column(
                 verticalArrangement = Arrangement.spacedBy(7.dp),
                 modifier = Modifier
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                    .border(1.dp, MaterialTheme3.colorScheme.outline, RoundedCornerShape(8.dp))
                     .padding(16.dp)
                     .width(320.dp)
             ) {
@@ -194,7 +195,7 @@ fun Content() {
                 isIncremental = isIncremental,
                 isBackward = isBackward,
                 modifier = Modifier
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                    .border(1.dp, MaterialTheme3.colorScheme.outline, RoundedCornerShape(8.dp))
                     .padding(16.dp)
                     .width(320.dp)
                     .height(484.dp)
@@ -221,7 +222,7 @@ fun MaterialDesignVersion(isMaterial3: Boolean, onChange: (Boolean) -> Unit) {
                 contentDescription = "Material $n",
                 modifier = Modifier.size(34.dp),
                 tint = if (n == 3 && isMaterial3) {
-                    MaterialTheme.colorScheme.primary
+                    MaterialTheme3.colorScheme.primary
                 } else if (n == 3 && !isMaterial3) {
                     LocalContentColor.current
                 } else if (n == 2 && isMaterial3) {
