@@ -1,7 +1,4 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
-import org.jetbrains.dokka.base.DokkaBase
-import org.jetbrains.dokka.base.DokkaBaseConfiguration
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.io.File
 import java.util.*
@@ -15,13 +12,6 @@ plugins {
     alias(libs.plugins.dokka)
     id("maven-publish")
     id("signing")
-}
-
-buildscript {
-    dependencies {
-        val dokkaVersion = libs.versions.dokka.get()
-        classpath("org.jetbrains.dokka:dokka-base:$dokkaVersion")
-    }
 }
 
 group = "ir.mahozad.multiplatform"
@@ -124,41 +114,42 @@ tasks.withType<PublishToMavenRepository> {
     }
 }
 
+// Custom javadoc that contains Dokka HTML instead of traditional Java HTML
 val javadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.dokkaHtml)
-    from(tasks.dokkaHtml.flatMap(DokkaTask::outputDirectory))
+    dependsOn(tasks.dokkaGenerate)
+    from(tasks.dokkaGeneratePublicationHtml.flatMap { it.outputDirectory })
     archiveClassifier = "javadoc"
 }
 
-tasks.dokkaHtml {
-    // outputDirectory = layout.buildDirectory.get().resolve("dokka")
-    offlineMode = false
+dokka {
     moduleName = "Wavy Slider"
-
-    // See the buildscript block above and also
-    // https://github.com/Kotlin/dokka/issues/2406
-    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-        customAssets = listOf(file("../asset/logo-icon.svg"))
-        customStyleSheets = listOf(file("../asset/logo-styles.css"))
-        separateInheritedMembers = true
+    // TODO: Remove this after https://github.com/Kotlin/dokka/issues/3885 is resolved
+    dokkaGeneratorIsolation = ClassLoaderIsolation()
+    dokkaSourceSets.configureEach {
+        reportUndocumented = true
+        enableJdkDocumentationLink = true
+        enableAndroidDocumentationLink = true
+        enableKotlinStdLibDocumentationLink = true
+        jdkVersion = libs.versions.java.get().toInt()
+        // sourceLink {
+        //     // Unix based directory relative path to the root of the project (where you execute gradle respectively)
+        //     localDirectory = file("src/commonMain/kotlin/")
+        //     // URL showing where the source code can be accessed through the web browser
+        //     remoteUrl = uri("https://github.com/mahozad/${project.name}/blob/main/${project.name}/src/main/kotlin")
+        //     // Suffix which is used to append the line number to the URL. Use #L for GitHub
+        //     remoteLineSuffix = "#L"
+        // }
     }
 
-    dokkaSourceSets {
-        configureEach {
-            reportUndocumented = true
-            noAndroidSdkLink = false
-            noStdlibLink = false
-            noJdkLink = false
-            jdkVersion = libs.versions.java.get().toInt()
-            // sourceLink {
-            //     // Unix based directory relative path to the root of the project (where you execute gradle respectively).
-            //     // localDirectory.set(file("src/main/kotlin"))
-            //     // URL showing where the source code can be accessed through the web browser
-            //     // remoteUrl = uri("https://github.com/mahozad/${project.name}/blob/main/${project.name}/src/main/kotlin").toURL()
-            //     // Suffix which is used to append the line number to the URL. Use #L for GitHub
-            //     remoteLineSuffix = "#L"
-            // }
-        }
+    dokkaPublications.html {
+        outputDirectory = layout.buildDirectory.get().dir("dokka")
+    }
+
+    pluginsConfiguration.html {
+        customAssets.from("../asset/logo-icon.svg")
+        customStyleSheets.from("../asset/logo-styles.css")
+        separateInheritedMembers = true
+        footerMessage = "© Wavy slider"
     }
 }
 
@@ -210,7 +201,7 @@ publishing {
     }
     publications.withType<MavenPublication> {
         // Publishes javadoc/kdoc/dokka; for sources see the kotlin block
-        artifact(javadocJar) // Required a workaround. See below
+        artifact(javadocJar) // Required a workaround. See the below TODO
         pom {
             url = "https://mahozad.ir/${project.name}"
             name = project.name
