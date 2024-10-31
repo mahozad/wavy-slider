@@ -43,7 +43,7 @@ enum class WaveDirection(internal val factor: (LayoutDirection) -> Float) {
  *
  * @param waveHeightAnimationSpec used for **changes** in wave height.
  * @param waveVelocityAnimationSpec used for **changes** in wave velocity (whether in speed or direction).
- * @param waveStartSpreadAnimationSpec Used for wave expansion at the start of the composition.
+ * @param waveAppearanceAnimationSpec Used for wave spread/expansion at the start of the composition.
  */
 /*
  * This class enables clients of library to specify custom animation specs for changes in certain properties.
@@ -62,9 +62,9 @@ data class WaveAnimationSpecs(
      */
     val waveVelocityAnimationSpec: AnimationSpec<Dp>,
     /**
-     * Used for wave expansion at the start of the composition.
+     * Used for wave spread/expansion at the start of the composition.
      */
-    val waveStartSpreadAnimationSpec: AnimationSpec<Float>,
+    val waveAppearanceAnimationSpec: AnimationSpec<Float>,
 )
 
 /**
@@ -114,7 +114,7 @@ internal val defaultWaveVelocity = 10.dp to TAIL
 internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
     waveHeightAnimationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
     waveVelocityAnimationSpec = tween(durationMillis = 2000, easing = LinearOutSlowInEasing),
-    waveStartSpreadAnimationSpec = tween(durationMillis = 6000, easing = EaseOutQuad)
+    waveAppearanceAnimationSpec = tween(durationMillis = 6000, easing = EaseOutQuad)
 )
 
 // Copied from https://github.com/JetBrains/compose-multiplatform-core/blob/jb-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/NavigationKeyEvents.kt

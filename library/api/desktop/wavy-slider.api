@@ -7,8 +7,8 @@ public final class ir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs {
 	public final fun copy (Landroidx/compose/animation/core/AnimationSpec;Landroidx/compose/animation/core/AnimationSpec;Landroidx/compose/animation/core/AnimationSpec;)Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;
 	public static synthetic fun copy$default (Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;Landroidx/compose/animation/core/AnimationSpec;Landroidx/compose/animation/core/AnimationSpec;Landroidx/compose/animation/core/AnimationSpec;ILjava/lang/Object;)Lir/mahozad/multiplatform/wavyslider/WaveAnimationSpecs;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getWaveAppearanceAnimationSpec ()Landroidx/compose/animation/core/AnimationSpec;
 	public final fun getWaveHeightAnimationSpec ()Landroidx/compose/animation/core/AnimationSpec;
-	public final fun getWaveStartSpreadAnimationSpec ()Landroidx/compose/animation/core/AnimationSpec;
 	public final fun getWaveVelocityAnimationSpec ()Landroidx/compose/animation/core/AnimationSpec;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
