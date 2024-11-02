@@ -26,7 +26,7 @@ Supported target platforms are Android, iOS, Desktop (JVM), and JavaScript (Kotl
 For a live, interactive Web demo go to https://mahozad.ir/wavy-slider.  
 For real-world apps in various platforms using the library, see the [showcase](showcase) directory.
 
-## Getting started
+## Usage
 
 ```kotlin
 implementation("ir.mahozad.multiplatform:wavy-slider:2.0.0")
