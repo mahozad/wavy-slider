@@ -100,6 +100,9 @@ android {
     }
 }
 
+// TODO: Remove this check and restriction when the new feature in Kotlin 2.1.0
+//  is promoted to stable in a future version of Kotlin and that Kotlin version
+//  is used in the project: https://kotlinlang.org/docs/whatsnew21.html#ability-to-publish-kotlin-libraries-from-any-host
 tasks.withType<PublishToMavenRepository> {
     val isMac = getCurrentOperatingSystem().isMacOsX
     onlyIf {
