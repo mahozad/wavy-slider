@@ -64,13 +64,24 @@ main {
 #loading {
     display: flex;
     justify-content: center;
-    gap: 6px;
-    font-size: 24px;
+    font-size: 2vw;
+    /* For mobile/small screens: */
+    position: fixed;
+    gap: 0.6vw;
+    right: 50%;
+    top: 45%;
+    transform: translate(50%, 0%);
+
+    @media (width < 800px) {
+        font-size: 4vw;
+    }
 
     img {
-        width: 24px;
-        height: 24px;
+        height: 2vw;
         animation: spin 2s ease infinite;
+        @media (width < 800px) {
+            height: 4vw;
+        }
     }
 }
 
