@@ -37,8 +37,6 @@ import androidx.compose.material3.MaterialTheme as MaterialTheme3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
-private val material2ColorPrimary = Color(0xff591b52)
-
 /**
  * To generate the website, see the README in the website branch.
  */
@@ -116,7 +114,7 @@ fun Content() {
                 incremental = isIncremental
             )
         } else {
-            MaterialTheme2(lightColors(primary = material2ColorPrimary)) {
+            MaterialTheme2(lightColors(primary = primaryLight)) {
                 WavySlider2(
                     enabled = isEnabled,
                     value = value,
