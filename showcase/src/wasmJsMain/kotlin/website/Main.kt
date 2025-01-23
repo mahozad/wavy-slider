@@ -1,23 +1,22 @@
 package website
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme as MaterialTheme3
-import androidx.compose.material.MaterialTheme as MaterialTheme2
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,10 +27,13 @@ import ir.mahozad.wavyslider.Res
 import ir.mahozad.wavyslider.m2_logo
 import ir.mahozad.wavyslider.m3_logo
 import kotlinx.browser.document
-import org.jetbrains.compose.resources.*
-import kotlin.js.JsNumber
-import kotlin.js.js
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.InternalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.readResourceBytes
 import kotlin.math.roundToInt
+import androidx.compose.material.MaterialTheme as MaterialTheme2
+import androidx.compose.material3.MaterialTheme as MaterialTheme3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
@@ -206,42 +208,37 @@ fun Content() {
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun MaterialDesignVersion(isMaterial3: Boolean, onChange: (Boolean) -> Unit) {
-    @Composable
-    fun Version(n: Int) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { onChange(n == 3) }
-            )
+fun MaterialDesignVersion(
+    isMaterial3Selected: Boolean,
+    onChange: (isMaterial3Selected: Boolean) -> Unit
+) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().height(34.dp)) {
+        SegmentedButton(
+            selected = isMaterial3Selected,
+            onClick = { onChange(true) },
+            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
         ) {
-            Icon(
-                painterResource(if (n == 2) Res.drawable.m2_logo else Res.drawable.m3_logo),
-                contentDescription = "Material $n",
-                modifier = Modifier.size(34.dp),
-                tint = if (n == 3 && isMaterial3) {
-                    MaterialTheme3.colorScheme.primary
-                } else if (n == 3 && !isMaterial3) {
-                    LocalContentColor.current
-                } else if (n == 2 && isMaterial3) {
-                    LocalContentColor.current
-                } else {
-                    material2ColorPrimary
-                }
-            )
-            Spacer(Modifier.width(8.dp))
-            Text("Material $n")
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Icon(
+                    painterResource(Res.drawable.m3_logo),
+                    contentDescription = "Material 3"
+                )
+                Text("Material 3")
+            }
         }
-    }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Version(3)
-        Version(2)
+        SegmentedButton(
+            selected = !isMaterial3Selected,
+            onClick = { onChange(false) },
+            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Icon(
+                    painterResource(Res.drawable.m2_logo),
+                    contentDescription = "Material 2"
+                )
+                Text("Material 2")
+            }
+        }
     }
 }
 
