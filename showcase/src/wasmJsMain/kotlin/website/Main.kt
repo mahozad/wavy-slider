@@ -252,11 +252,12 @@ fun LabeledSlider(
     onValueChange: (Float) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.width(164.dp))
+        Text(label, modifier = Modifier.weight(1f))
         Slider(
             value = value,
             onValueChange = onValueChange,
-            valueRange = valueRange
+            valueRange = valueRange,
+            modifier = Modifier.weight(1f)
         )
     }
 }
