@@ -23,13 +23,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.ComposeViewport
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
-import ir.mahozad.wavyslider.Res
-import ir.mahozad.wavyslider.m2_logo
-import ir.mahozad.wavyslider.m3_logo
 import kotlinx.browser.document
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.InternalResourceApi
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.readResourceBytes
 import kotlin.math.roundToInt
 import androidx.compose.material.MaterialTheme as MaterialTheme2
@@ -216,26 +212,14 @@ fun MaterialDesignVersion(
             onClick = { onChange(true) },
             shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                Icon(
-                    painterResource(Res.drawable.m3_logo),
-                    contentDescription = "Material 3"
-                )
-                Text("Material 3")
-            }
+            Text("Material 3")
         }
         SegmentedButton(
             selected = !isMaterial3Selected,
             onClick = { onChange(false) },
             shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                Icon(
-                    painterResource(Res.drawable.m2_logo),
-                    contentDescription = "Material 2"
-                )
-                Text("Material 2")
-            }
+            Text("Material 2")
         }
     }
 }
