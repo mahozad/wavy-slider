@@ -92,6 +92,10 @@ fun Content() {
         )
     }
 
+    // FIXME: Fix the layout not being scrollable (except outside the canvas) in mobile/touchscreen devices
+    //  See https://github.com/JetBrains/compose-multiplatform/issues/1555
+    //  and https://github.com/JetBrains/compose-multiplatform/issues/4672
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 60.dp),
         verticalArrangement = Arrangement.spacedBy(30.dp),
