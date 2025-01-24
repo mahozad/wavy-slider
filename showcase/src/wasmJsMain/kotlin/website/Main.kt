@@ -216,14 +216,14 @@ fun MaterialDesignVersion(
             onClick = { onChange(true) },
             shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
         ) {
-            Text("Material 3")
+            Text("Material 3", modifier = Modifier.offset(y = (-2).dp))
         }
         SegmentedButton(
             selected = !isMaterial3Selected,
             onClick = { onChange(false) },
             shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
         ) {
-            Text("Material 2")
+            Text("Material 2", modifier = Modifier.offset(y = (-2).dp))
         }
     }
 }
