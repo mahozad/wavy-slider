@@ -127,6 +127,12 @@ internal expect val KeyEvent.isMoveEnd: Boolean
 internal expect val KeyEvent.isPgUp: Boolean
 internal expect val KeyEvent.isPgDn: Boolean
 
+/**
+ * As a sidenote, speed of a wave follows the equation
+ * speed (m/s) = frequency (1/s) × wavelength (m)
+ * v = f × λ
+ * Also, frequency is the inverse of period (time it takes for one wavelength to pass).
+ */
 @Composable
 internal inline fun animateWaveShift(
     waveVelocity: WaveVelocity,
