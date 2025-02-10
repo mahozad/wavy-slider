@@ -88,6 +88,7 @@ fun MyComposable() {
         trackThickness = 4.dp,  // Defaults to a thickness based on variant
         incremental = false,    // Whether to gradually increase waveHeight
         // animationSpecs = ... // Customize various animations of the wave
+        // Other options that are available in standard Material 2/3 Slider
     )
 }
 ```
