@@ -42,10 +42,9 @@ If you target a subset of the library supported platforms, add the library to yo
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:2.0.0")
+            implementation("ir.mahozad.multiplatform:wavy-slider:2.0.0")
             // ...
         }
-// ...
 ```
 
 If you have targets that are not supported by the library,
@@ -55,12 +54,12 @@ add the library separately to each supported target:
 kotlin {
     val desktopMain /* OR jvmMain */ by getting {
         dependencies {
-            implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:2.0.0")
+            implementation("ir.mahozad.multiplatform:wavy-slider:2.0.0")
             // ...
         }
     }
     androidMain.dependencies {
-        implementation/* OR api */("ir.mahozad.multiplatform:wavy-slider:2.0.0")
+        implementation("ir.mahozad.multiplatform:wavy-slider:2.0.0")
         // ...
     }
     // Other targets...
