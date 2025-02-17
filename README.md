@@ -72,13 +72,14 @@ Using the WavySlider is much like using the Material Slider
 (you can even make it a regular flat Slider):
 
 ```kotlin
-import ir.mahozad.multiplatform.wavyslider.material/*OR material3*/.WavySlider
+import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
+import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
 
 @Composable
 fun MyComposable() {
     var fraction by remember { mutableStateOf(0.5f) }
-    WavySlider(
+    WavySlider3( // OR WavySlider2( see the imports above that use "as ..."
         value = fraction,
         onValueChange = { fraction = it },
         waveLength = 16.dp,     // Set this to 0.dp to make the Slider flat
