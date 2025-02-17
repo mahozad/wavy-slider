@@ -14,12 +14,12 @@
 
 # Wavy slider
 
-Animated [Material](https://material.io) wavy slider and progress/seek bar similar to the one used in [**Android 13** media controls](https://www.xda-developers.com/android-13-beta-1-media-controls-animation/).  
+Animated wavy [Material Slider][Material Slider] and progress/seek bar similar to the one used in [**Android 13** media controls][Android 13 media controls].  
 It has curly, wobbly, squiggly, wiggly, jiggly, wriggly, dancing movements.
 Some users call it the **sperm**.
 
-The library can be used in [Jetpack Compose](https://developer.android.com/jetpack/compose) and [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) projects like
-a regular Material [Slider](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#Slider(kotlin.Float,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.ranges.ClosedFloatingPointRange,kotlin.Int,kotlin.Function0,androidx.compose.material3.SliderColors,androidx.compose.foundation.interaction.MutableInteractionSource)).  
+The library can be used in [Jetpack Compose][Jetpack Compose] and [Compose Multiplatform][Compose Multiplatform] projects like
+a regular Material Slider.  
 Supported target platforms are Android, iOS, Desktop (JVM), and JavaScript (Kotlin/JS and Kotlin/Wasm).
 
 ## Demo
@@ -118,6 +118,10 @@ fun MyComposable() {
 [Kotlin release]: https://github.com/JetBrains/kotlin/releases/tag/v2.0.21
 [Compose Multiplatform release]: https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.7.0
 [Library on Maven Central]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/2.0.0/
+[Material Slider]: https://m3.material.io/components/sliders/overview
+[Android 13 media controls]: https://www.xda-developers.com/android-13-beta-1-media-controls-animation/
+[Jetpack Compose]: https://developer.android.com/jetpack/compose
+[Compose Multiplatform]: https://github.com/JetBrains/compose-multiplatform
 [Android main branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/media/controls/ui/drawable/SquigglyProgress.kt
 [Android 14 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
 [Android 13 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt
