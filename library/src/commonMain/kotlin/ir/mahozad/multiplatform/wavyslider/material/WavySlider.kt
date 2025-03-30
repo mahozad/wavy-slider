@@ -1,4 +1,4 @@
-// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.7.0/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.0-beta01/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
 
 @file:Suppress("UnusedReceiverParameter")
 
@@ -539,12 +539,7 @@ private fun BoxScope.SliderThumb(
                 .size(thumbSize, thumbSize)
                 .indication(
                     interactionSource = interactionSource,
-                    indication =
-                        @Suppress("INVISIBLE_REFERENCE")
-                        rippleOrFallbackImplementation(
-                            bounded = false,
-                            radius = ThumbRippleRadius
-                        )
+                    indication = ripple(bounded = false, radius = ThumbRippleRadius)
                 )
                 .hoverable(interactionSource = interactionSource)
                 .shadow(if (enabled) elevation else 0.dp, CircleShape, clip = false)
