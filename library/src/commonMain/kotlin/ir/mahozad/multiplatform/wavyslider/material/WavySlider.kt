@@ -28,9 +28,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -270,46 +268,46 @@ private fun Modifier.slideOnKeyEvents(
                 // But it is not possible to adjust the value continuously when using keyboard buttons -
                 // the delta has to be discrete. In this case, 1% of the valueRange seems to make sense.
                 val delta = rangeLength / 100
-                when {
-                    it.isDirectionUp -> {
+                when(it.key) {
+                    Key.DirectionUp -> {
                         onValueChangeState.value((value + delta).coerceIn(valueRange))
                         true
                     }
 
-                    it.isDirectionDown -> {
+                    Key.DirectionDown -> {
                         onValueChangeState.value((value - delta).coerceIn(valueRange))
                         true
                     }
 
-                    it.isDirectionRight -> {
+                    Key.DirectionRight -> {
                         val sign = if (isRtl) -1 else 1
                         onValueChangeState.value((value + sign * delta).coerceIn(valueRange))
                         true
                     }
 
-                    it.isDirectionLeft -> {
+                    Key.DirectionLeft -> {
                         val sign = if (isRtl) -1 else 1
                         onValueChangeState.value((value - sign * delta).coerceIn(valueRange))
                         true
                     }
 
-                    it.isHome -> {
+                    Key.MoveHome -> {
                         onValueChangeState.value(valueRange.start)
                         true
                     }
 
-                    it.isMoveEnd -> {
+                    Key.MoveEnd -> {
                         onValueChangeState.value(valueRange.endInclusive)
                         true
                     }
 
-                    it.isPgUp -> {
+                    Key.PageUp -> {
                         val page = 10
                         onValueChangeState.value((value - page * delta).coerceIn(valueRange))
                         true
                     }
 
-                    it.isPgDn -> {
+                    Key.PageDown -> {
                         val page = 10
                         onValueChangeState.value((value + page * delta).coerceIn(valueRange))
                         true
@@ -320,13 +318,19 @@ private fun Modifier.slideOnKeyEvents(
             }
 
             KeyEventType.KeyUp -> {
-                if (it.isDirectionDown || it.isDirectionUp || it.isDirectionRight
-                    || it.isDirectionLeft || it.isHome || it.isMoveEnd || it.isPgUp || it.isPgDn
-                ) {
-                    onValueChangeFinishedState.value?.invoke()
-                    true
-                } else {
-                    false
+                when (it.key) {
+                    Key.DirectionUp,
+                    Key.DirectionDown,
+                    Key.DirectionRight,
+                    Key.DirectionLeft,
+                    Key.MoveHome,
+                    Key.MoveEnd,
+                    Key.PageUp,
+                    Key.PageDown -> {
+                        onValueChangeFinishedState.value?.invoke()
+                        true
+                    }
+                    else -> false
                 }
             }
 
