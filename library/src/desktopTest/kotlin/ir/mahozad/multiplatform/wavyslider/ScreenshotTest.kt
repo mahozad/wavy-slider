@@ -14,11 +14,12 @@ import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 import org.junit.Test
-import kotlin.io.path.*
+import kotlin.io.path.createTempDirectory
+import kotlin.io.path.div
+import kotlin.io.path.writeBytes
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
-@OptIn(ExperimentalTestApi::class)
 class ScreenshotTest {
 
 //    @get:Rule
@@ -125,7 +126,7 @@ class ScreenshotTest {
         WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, trackThickness = 18.dp)
     }
 
-    @OptIn(InternalComposeUiApi::class)
+    @OptIn(InternalComposeUiApi::class, ExperimentalTestApi::class)
     private fun runScreenshotTest(
         windowSize: IntSize,
         referenceName: String,

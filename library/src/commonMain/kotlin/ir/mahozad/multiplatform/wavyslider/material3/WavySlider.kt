@@ -1,4 +1,10 @@
-// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.7.0/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
+/*
+ *
+ *
+ * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.0/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
+ *
+ *
+ */
 
 @file:Suppress("UnusedReceiverParameter")
 
@@ -9,16 +15,17 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.progressSemantics
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.*
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap

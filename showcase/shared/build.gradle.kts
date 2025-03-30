@@ -44,7 +44,6 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             // api("ir.mahozad.multiplatform:wavy-slider:x.y.z")
             api(projects.wavySlider)

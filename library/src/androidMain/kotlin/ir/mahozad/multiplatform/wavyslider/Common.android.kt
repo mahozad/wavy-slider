@@ -1,13 +1,6 @@
 package ir.mahozad.multiplatform.wavyslider
 
-import android.view.KeyEvent.KEYCODE_MOVE_END
-import android.view.KeyEvent.KEYCODE_MOVE_HOME
-import android.view.KeyEvent.KEYCODE_PAGE_UP
-import android.view.KeyEvent.KEYCODE_PAGE_DOWN
-import android.view.KeyEvent.KEYCODE_DPAD_UP
-import android.view.KeyEvent.KEYCODE_DPAD_DOWN
-import android.view.KeyEvent.KEYCODE_DPAD_LEFT
-import android.view.KeyEvent.KEYCODE_DPAD_RIGHT
+import android.view.KeyEvent.*
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.nativeKeyCode

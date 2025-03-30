@@ -1,10 +1,6 @@
 package ir.mahozad.multiplatform.wavyslider
 
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.EaseOutBounce
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,7 +9,6 @@ import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -25,7 +20,10 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
-import androidx.compose.ui.window.*
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
 import ir.mahozad.multiplatform.wavyslider.material3.Track
 import ir.mahozad.multiplatform.wavyslider.material3.WaveAnimationSpecs
