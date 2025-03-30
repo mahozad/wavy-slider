@@ -1,4 +1,10 @@
-// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.7.0/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
+/*
+ *
+ *
+ * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/45b317bb36aa1ac63c4222bd8ee16fce140335e6/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
+ *
+ *
+ */
 
 @file:Suppress("UnusedReceiverParameter")
 
@@ -25,6 +31,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
@@ -680,6 +691,16 @@ private fun WavySliderImpl(
             .requiredSizeIn(minWidth = ThumbWidth, minHeight = TrackHeight)
             .sliderSemantics(state, enabled)
             .focusable(enabled, interactionSource)
+            .slideOnKeyEvents(
+                enabled,
+                state.valueRange,
+                state.value,
+                @Suppress("INVISIBLE_REFERENCE")
+                state.isRtl,
+                @Suppress("INVISIBLE_REFERENCE")
+                state.onValueChange,
+                state.onValueChangeFinished
+            )
             .then(press)
             .then(drag)
     ) { measurables, constraints ->
@@ -702,6 +723,85 @@ private fun WavySliderImpl(
         layout(sliderWidth, sliderHeight) {
             trackPlaceable.placeRelative(trackOffsetX, trackOffsetY)
             thumbPlaceable.placeRelative(thumbOffsetX, thumbOffsetY)
+        }
+    }
+}
+
+private fun Modifier.slideOnKeyEvents(
+    enabled: Boolean,
+    valueRange: ClosedFloatingPointRange<Float>,
+    value: Float,
+    isRtl: Boolean,
+    onValueChangeState: ((Float) -> Unit)?,
+    onValueChangeFinishedState: (() -> Unit)?
+): Modifier {
+    return this.onKeyEvent {
+        if (!enabled) return@onKeyEvent false
+        if (onValueChangeState == null) return@onKeyEvent false
+        when (it.type) {
+            KeyEventType.KeyDown -> {
+                val rangeLength = abs(valueRange.endInclusive - valueRange.start)
+                // A user is not limited by a step length (delta) when using touch or mouse.
+                // But it is not possible to adjust the value continuously when using keyboard buttons -
+                // the delta has to be discrete. In this case, 1% of the valueRange seems to make sense.
+                val delta = rangeLength / 100
+                when (it.key) {
+                    Key.DirectionUp -> {
+                        onValueChangeState((value + delta).coerceIn(valueRange))
+                        true
+                    }
+                    Key.DirectionDown -> {
+                        onValueChangeState((value - delta).coerceIn(valueRange))
+                        true
+                    }
+                    Key.DirectionRight -> {
+                        val sign = if (isRtl) -1 else 1
+                        onValueChangeState((value + sign * delta).coerceIn(valueRange))
+                        true
+                    }
+                    Key.DirectionLeft -> {
+                        val sign = if (isRtl) -1 else 1
+                        onValueChangeState((value - sign * delta).coerceIn(valueRange))
+                        true
+                    }
+                    Key.MoveHome -> {
+                        onValueChangeState(valueRange.start)
+                        true
+                    }
+                    Key.MoveEnd -> {
+                        onValueChangeState(valueRange.endInclusive)
+                        true
+                    }
+                    Key.PageUp -> {
+                        val page = 10
+                        onValueChangeState((value - page * delta).coerceIn(valueRange))
+                        true
+                    }
+                    Key.PageDown -> {
+                        val page = 10
+                        onValueChangeState((value + page * delta).coerceIn(valueRange))
+                        true
+                    }
+                    else -> false
+                }
+            }
+            KeyEventType.KeyUp -> {
+                when (it.key) {
+                    Key.DirectionUp,
+                    Key.DirectionDown,
+                    Key.DirectionRight,
+                    Key.DirectionLeft,
+                    Key.MoveHome,
+                    Key.MoveEnd,
+                    Key.PageUp,
+                    Key.PageDown -> {
+                        onValueChangeFinishedState?.invoke()
+                        true
+                    }
+                    else -> false
+                }
+            }
+            else -> false
         }
     }
 }

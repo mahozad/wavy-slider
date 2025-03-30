@@ -1,4 +1,10 @@
-// Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.0-beta01/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+/*
+ *
+ *
+ * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.0-beta01/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+ *
+ *
+ */
 
 @file:Suppress("UnusedReceiverParameter")
 
@@ -249,7 +255,6 @@ fun WavySlider(
     }
 }
 
-// TODO from compose-multiplatform-core: Edge case - losing focus on slider while key is pressed will end up with onValueChangeFinished not being invoked
 private fun Modifier.slideOnKeyEvents(
     enabled: Boolean,
     valueRange: ClosedFloatingPointRange<Float>,
