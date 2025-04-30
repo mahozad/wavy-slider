@@ -1,6 +1,4 @@
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import java.io.File
 import java.util.*
 
 plugins {
@@ -97,23 +95,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
         targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
-    }
-}
-
-// TODO: Remove this check and restriction when the new feature in Kotlin 2.1.0
-//  is promoted to stable in a future version of Kotlin and that Kotlin version
-//  is used in the project: https://kotlinlang.org/docs/whatsnew21.html#ability-to-publish-kotlin-libraries-from-any-host
-tasks.withType<PublishToMavenRepository> {
-    val isMac = getCurrentOperatingSystem().isMacOsX
-    onlyIf {
-        isMac.also {
-            if (!isMac) logger.error(
-                """
-                    Publishing the library requires macOS to be able to generate iOS artifacts.
-                    Run the task on a mac or use the project GitHub workflows for publication and release.
-                """
-            )
-        }
     }
 }
 
