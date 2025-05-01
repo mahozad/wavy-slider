@@ -97,48 +97,70 @@ class VisualTest {
             ) {
                 MaterialTheme3 {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(16.dp)
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxHeight().padding(16.dp)
                     ) {
-                        var value by remember { mutableStateOf(0.5f) }
-                        if (showRegularSliders) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Slider 2:", modifier = Modifier.width(110.dp))
-                                Slider2(value, { value = it })
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp),) {
+                            var value by remember { mutableStateOf(0.5f) }
+                            if (showRegularSliders) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Slider 2:", modifier = Modifier.width(110.dp))
+                                    Slider2(value, { value = it })
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Slider 3:", modifier = Modifier.width(110.dp))
+                                    Slider3(value, { value = it })
+                                }
                             }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Slider 3:", modifier = Modifier.width(110.dp))
-                                Slider3(value, { value = it })
+                            if (content == null) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Wavy slider 2:", modifier = Modifier.width(110.dp))
+                                    wavySlider2?.invoke(this@Column, value) { value = it }
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Wavy slider 3:", modifier = Modifier.width(110.dp))
+                                    wavySlider3?.invoke(this@Column, value) { value = it }
+                                }
+                            } else {
+                                content(value) { value = it }
                             }
                         }
-                        if (content == null) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Wavy slider 2:", modifier = Modifier.width(110.dp))
-                                wavySlider2?.invoke(this@Column, value) { value = it }
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(
+                                text = given,
+                                color = Color(0xFF4d4000),
+                                modifier = Modifier
+                                    .background(Color(0xFFfffcf0))
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                            expected?.let {
+                                Text(
+                                    text = it,
+                                    color = Color(0xFF00204d),
+                                    modifier = Modifier
+                                        .background(Color(0xFFf0f6ff))
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                                )
                             }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Wavy slider 3:", modifier = Modifier.width(110.dp))
-                                wavySlider3?.invoke(this@Column, value) { value = it }
-                            }
-                        } else {
-                            content(value) { value = it }
-                        }
-                        Text(text = given)
-                        expected?.let { Text(text = it) }
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            OutlinedButton(
-                                onClick = { passed = false; exitApplication() },
-                                border = BorderStroke(Dp.Hairline, red),
-                                colors = ButtonDefaults.buttonColors(containerColor = red.copy(alpha = 0.05f))
-                            ) {
-                                Text(text = "Fail", color = red)
-                            }
-                            OutlinedButton(
-                                onClick = { passed = true; exitApplication() },
-                                border = BorderStroke(Dp.Hairline, green),
-                                colors = ButtonDefaults.buttonColors(containerColor = green.copy(alpha = 0.05f))
-                            ) {
-                                Text(text = "Pass", color = green)
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                OutlinedButton(
+                                    onClick = { passed = false; exitApplication() },
+                                    border = BorderStroke(1.dp, red),
+                                    colors = ButtonDefaults.buttonColors(containerColor = red.copy(alpha = 0.08f)),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(text = "FAIL", color = red)
+                                }
+                                OutlinedButton(
+                                    onClick = { passed = true; exitApplication() },
+                                    border = BorderStroke(1.dp, green),
+                                    colors = ButtonDefaults.buttonColors(containerColor = green.copy(alpha = 0.08f)),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(text = "PASS", color = green)
+                                }
                             }
                         }
                     }
@@ -1047,7 +1069,7 @@ class VisualTest {
                 Should have no glitch at the start tip of the wave. 
                 Also, when toggling the height, at the moment the wave completely flattens,
                 there should be almost no abrupt change in where the line starts (almost invisible).
-            """
+            """.trimIndent()
         ) { value, onChange ->
             var density by remember { mutableStateOf(1.20f) }
             var waveHeight by remember { mutableStateOf(10.dp) }
