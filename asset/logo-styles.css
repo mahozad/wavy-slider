@@ -1,15 +1,14 @@
-.library-name a {
+.library-name--link {
     position: relative;
-    margin-left: 55px;
+    margin-inline-start: 55px;
 }
 
-.library-name a::before {
+.library-name--link::before {
     content: '';
     background: url("../images/logo-icon.svg") center no-repeat;
     background-size: contain;
     position: absolute;
     width: 36px;
     height: 36px;
-    top: -6px;
-    left: -46px;
+    inset-inline-start: -46px;
 }
