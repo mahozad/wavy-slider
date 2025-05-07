@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "ir.mahozad.multiplatform"
-version = "2.0.0"
+version = "2.1.0-rc"
 
 // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
 // for the targets that Compose Multiplatform supports
