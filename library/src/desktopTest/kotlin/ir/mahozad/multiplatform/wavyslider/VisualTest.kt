@@ -3,7 +3,6 @@ package ir.mahozad.multiplatform.wavyslider
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
@@ -238,36 +237,6 @@ class VisualTest {
     fun `Test 5`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
-            given = "When waveHeight is more than thumb height",
-            expected = "Should take into account the height of wave in component overall height\n" +
-                       "Also, the component overall height should be exactly equal to the wave height",
-            wavySlider2 = { value, onChange ->
-                WavySlider2(value, onChange, waveHeight = 57.dp, modifier = Modifier.border(1.dp, Color.Gray))
-            },
-            wavySlider3 = { value, onChange ->
-                WavySlider3(value, onChange, waveHeight = 57.dp, modifier = Modifier.border(1.dp, Color.Gray))
-            }
-        )
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 6`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When waveHeight is negative",
-            expected = "Should have the same behaviour as if the size was positive\n" +
-                       "Except that the phase is shifted",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveHeight = (-57).dp, modifier = Modifier.border(1.dp, Color.Gray)) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveHeight = (-57).dp, modifier = Modifier.border(1.dp, Color.Gray)) }
-        )
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 7`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
             given = "When waveHeight is toggled",
             expected = "Should not have wave horizontal shift restart (should smoothly continue its movement)\n" +
                        "Also, should have its wave height change with its default animation spec"
@@ -289,7 +258,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 8`() {
+    fun `Test 6`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When waveHeight is toggled between 0 and a positive value",
@@ -314,7 +283,7 @@ class VisualTest {
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Test
-    fun `Test 9`() {
+    fun `Test 7`() {
         val spec1 = tween<Dp>(durationMillis = 1300, easing = EaseOutBounce)
         val spec2 = tween<Dp>(durationMillis = 150, easing = LinearEasing)
         val isPassed = testApp(
@@ -370,40 +339,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 10`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When container layout direction is LTR and incremental is true",
-            expected = "Should have proper gradual height (from the thumb with most height to the tail with least height",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, incremental = true) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, incremental = true) }
-        )
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 11`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When container layout direction is RTL and incremental is true",
-            expected = "Should have proper gradual height (from the thumb with most height to the tail with least height"
-        ) { value, onChange ->
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value, onChange, incremental = true)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value, onChange, incremental = true)
-                }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 12`() {
+    fun `Test 8`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When incremental is toggled",
@@ -424,31 +360,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 13`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When waveLength is a large value",
-            expected = "Should have proper wave length",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, waveLength = 128.dp, waveVelocity = 100.dp to TAIL) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, waveLength = 128.dp, waveVelocity = 100.dp to TAIL) }
-        )
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 14`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When waveLength is larger than slider total length",
-            expected = "The wave should be displayed properly",
-            wavySlider2 = { value, onChange -> WavySlider2(value, onChange, modifier = Modifier.width(400.dp), waveHeight = 24.dp, waveLength = 500.dp, waveVelocity = 500.dp to TAIL) },
-            wavySlider3 = { value, onChange -> WavySlider3(value, onChange, modifier = Modifier.width(400.dp), waveHeight = 24.dp, waveLength = 500.dp, waveVelocity = 500.dp to TAIL) }
-        )
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 15`() {
+    fun `Test 9`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When waveLength is toggled",
@@ -471,7 +383,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 16`() {
+    fun `Test 10`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When waveThickness is toggled",
@@ -494,7 +406,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 17`() {
+    fun `Test 11`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When waveThickness is toggled between 0 and a positive value",
@@ -517,25 +429,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 18`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When waveThickness is set to the default value of Material 3 Slider",
-            expected = "The wave should be like that of the Material 3 Slider",
-            showRegularSliders = false,
-        ) { value, onChange ->
-            var waveThickness by remember { mutableStateOf(4.dp) }
-            Slider3(value, onChange)
-            WavySlider3(value, onChange, waveVelocity = 10.dp to HEAD, waveThickness = waveThickness, waveHeight = 0.dp)
-            Button(onClick = { waveThickness = if (waveThickness == 4.dp) 16.dp else 4.dp }) {
-                Text(text = "Toggle wave thickness")
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 19`() {
+    fun `Test 12`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is LTR and direction of waveVelocity is RIGHT",
@@ -556,7 +450,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 20`() {
+    fun `Test 13`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is RTL and direction of waveVelocity is RIGHT",
@@ -577,7 +471,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 21`() {
+    fun `Test 14`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is LTR and direction of waveVelocity is LEFT",
@@ -598,7 +492,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 22`() {
+    fun `Test 15`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is RTL and direction of waveVelocity is LEFT",
@@ -619,7 +513,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 23`() {
+    fun `Test 16`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is LTR and direction of waveVelocity is HEAD",
@@ -640,7 +534,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 24`() {
+    fun `Test 17`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is RTL and direction of waveVelocity is HEAD",
@@ -661,7 +555,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 25`() {
+    fun `Test 18`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is LTR and direction of waveVelocity is TAIL",
@@ -682,7 +576,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 26`() {
+    fun `Test 19`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout direction is RTL and direction of waveVelocity is TAIL",
@@ -703,7 +597,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 27`() {
+    fun `Test 20`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is LTR and direction of waveVelocity is toggled",
@@ -728,7 +622,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 28`() {
+    fun `Test 21`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is RTL and direction of waveVelocity is changed",
@@ -753,7 +647,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 29`() {
+    fun `Test 22`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to 0",
@@ -776,7 +670,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 30`() {
+    fun `Test 23`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to a very large quantity",
@@ -799,7 +693,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 31`() {
+    fun `Test 24`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to a fraction of a 1 dp",
@@ -822,7 +716,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 32`() {
+    fun `Test 25`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled to a negative value",
@@ -845,7 +739,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 33`() {
+    fun `Test 26`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When speed of waveVelocity is toggled",
@@ -868,7 +762,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 34`() {
+    fun `Test 27`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When a custom animationSpec is set for waveVelocity",
@@ -905,7 +799,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 35`() {
+    fun `Test 28`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When direction of waveVelocity is relative (HEAD or TAIL) and container layout direction is toggled",
@@ -936,26 +830,7 @@ class VisualTest {
     }
 
     @Test
-    @OptIn(ExperimentalMaterial3Api::class)
-    fun `Test 36`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When a custom thumb is set",
-            expected = "The custom thumb should be displayed and its height be taken into account in overall component height"
-        ) { value, onChange ->
-            val thumb: @Composable (SliderState) -> Unit = @Composable {
-                Box(Modifier.width(6.dp).height(128.dp).background(Color.Red))
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Material 3:")
-                WavySlider3(value, onChange, thumb = thumb, modifier = Modifier.border(1.dp, Color.Gray))
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 37`() {
+    fun `Test 29`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the width of the container of the component is changed",
@@ -978,7 +853,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 38`() {
+    fun `Test 30`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When a custom valueRange (4f..20f) is set",
@@ -994,48 +869,6 @@ class VisualTest {
                 WavySlider3(value, { value = it }, valueRange = 4f..20f)
             }
             Text(text = "Value: $value")
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 39`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When the screen density is something low",
-            expected = "Should have everything scaled proportionally"
-        ) { value, onChange ->
-            CompositionLocalProvider(LocalDensity provides Density(0.43f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value, onChange)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value, onChange)
-                }
-            }
-        }
-        assert(isPassed)
-    }
-
-    @Test
-    fun `Test 40`() {
-        val isPassed = testApp(
-            name = object {}.javaClass.enclosingMethod.name,
-            given = "When the screen density is something high",
-            expected = "Should have everything scaled proportionally"
-        ) { value, onChange ->
-            CompositionLocalProvider(LocalDensity provides Density(2.43f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 2:")
-                    WavySlider2(value, onChange)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Material 3:")
-                    WavySlider3(value, onChange)
-                }
-            }
         }
         assert(isPassed)
     }
@@ -1059,7 +892,7 @@ class VisualTest {
      * Also, another less visually-perfect workaround would be to set the path join to StrokeJoin.Bevel for the wavyPath.
      */
     @Test
-    fun `Test 41`() {
+    fun `Test 31`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the screen density is some fractional value",
@@ -1101,7 +934,7 @@ class VisualTest {
 
     // See https://github.com/JetBrains/compose-multiplatform/issues/4199
     @Test
-    fun `Test 42`() {
+    fun `Test 32`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Measure FPS of the app",
@@ -1129,7 +962,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 43`() {
+    fun `Test 33`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When there are many wavy sliders",
@@ -1162,7 +995,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 44`() {
+    fun `Test 34`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Start animation",
