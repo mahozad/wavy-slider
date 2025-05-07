@@ -11,6 +11,7 @@ android-targetSdk = "35"
 androidx-activityCompose = "1.10.1"
 androidx-core-ktx = "1.16.0"
 androidx-appcompat = "1.7.0"
+maven-publish = "0.31.0"
 dokka = "2.0.0"
 
 [libraries]
@@ -27,3 +28,4 @@ kotlin-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-valida
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

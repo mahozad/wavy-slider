@@ -16,9 +16,10 @@ jobs:
       SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       SIGNING_KEY_CONTENT_BASE64: ${{ secrets.SIGNING_KEY_CONTENT_BASE64 }}
-      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-      OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
+      CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
+      GH_USERNAME: ${{ secrets.GH_USERNAME }}
+      GH_PASSWORD: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub Actions
     permissions:
       contents: read
       packages: write
@@ -47,6 +48,8 @@ jobs:
           -Psigning.secretKeyRingFile="../private-key.gpg"
           -Psigning.password="$SIGNING_PASSWORD"
           -Psigning.keyId="$SIGNING_KEY_ID"
+          -PGitHubPackagesUsername="$GH_USERNAME"
+          -PGitHubPackagesPassword="$GH_PASSWORD"
           --stacktrace
       - name: Release to Maven Central
         if: always() && steps.release-local.outcome == 'success'
@@ -55,6 +58,8 @@ jobs:
           -Psigning.secretKeyRingFile="../private-key.gpg"
           -Psigning.password="$SIGNING_PASSWORD"
           -Psigning.keyId="$SIGNING_KEY_ID"
+          -PmavenCentralUsername="$CENTRAL_PORTAL_USERNAME"
+          -PmavenCentralPassword="$CENTRAL_PORTAL_PASSWORD"
           --stacktrace
       - name: Store the publication at the bottom of the workflow summary page
         uses: actions/upload-artifact@v4
