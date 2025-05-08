@@ -1,7 +1,5 @@
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import java.io.File
-import java.util.*
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -10,12 +8,16 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library)
     alias(libs.plugins.dokka)
-    id("maven-publish")
+    // TODO: Migrate back to the Gradle id("maven-publish") plugin when
+    //  the maven-publish plugin starts to support publishing to Central Portal:
+    //  https://central.sonatype.org/publish/publish-portal-gradle/
+    //  See https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html
+    alias(libs.plugins.maven.publish)
     id("signing")
 }
 
 group = "ir.mahozad.multiplatform"
-version = "2.0.0"
+version = "2.1.0-rc"
 
 // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
 // for the targets that Compose Multiplatform supports
@@ -100,27 +102,6 @@ android {
     }
 }
 
-tasks.withType<PublishToMavenRepository> {
-    val isMac = getCurrentOperatingSystem().isMacOsX
-    onlyIf {
-        isMac.also {
-            if (!isMac) logger.error(
-                """
-                    Publishing the library requires macOS to be able to generate iOS artifacts.
-                    Run the task on a mac or use the project GitHub workflows for publication and release.
-                """
-            )
-        }
-    }
-}
-
-// Custom javadoc that contains Dokka HTML instead of traditional Java HTML
-val javadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.dokkaGenerate)
-    from(tasks.dokkaGeneratePublicationHtml.flatMap { it.outputDirectory })
-    archiveClassifier = "javadoc"
-}
-
 dokka {
     moduleName = "Wavy Slider"
     // TODO: Remove this after https://github.com/Kotlin/dokka/issues/3885 is resolved
@@ -153,29 +134,6 @@ dokka {
     }
 }
 
-val localProperties = Properties().apply {
-    rootProject
-        .runCatching { file("local.properties") }
-        .getOrNull()
-        ?.takeIf(File::exists)
-        ?.reader()
-        ?.use(::load)
-}
-// For information about signing.* properties,
-// see comments on signing { ... } block below
-extra["ossrhUsername"] = localProperties["ossrh.username"] as? String
-    ?: properties["ossrh.username"] as? String // From gradle.properties in ~/.gradle/ or project root
-    ?: System.getenv("OSSRH_USERNAME")
-    ?: ""
-extra["ossrhPassword"] = localProperties["ossrh.password"] as? String
-    ?: properties["ossrh.password"] as? String // From gradle.properties in ~/.gradle/ or project root
-    ?: System.getenv("OSSRH_PASSWORD")
-    ?: ""
-extra["githubToken"] = localProperties["github.token"] as? String
-    ?: properties["github.token"] as? String // From gradle.properties in ~/.gradle/ or project root
-    ?: System.getenv("GITHUB_TOKEN")
-    ?: ""
-
 publishing {
     repositories {
         maven {
@@ -183,75 +141,76 @@ publishing {
             url = uri("file://${layout.buildDirectory.get()}/local-repository")
         }
         maven {
-            name = "MavenCentral"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = extra["ossrhUsername"]?.toString()
-                password = extra["ossrhPassword"]?.toString()
-            }
-        }
-        maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/mahozad/${project.name}")
-            credentials {
-                username = "mahozad"
-                password = extra["githubToken"]?.toString()
-            }
+            // username and password/token should be specified as `GitHubPackagesUsername` and `GitHubPackagesPassword`
+            // in gradle.properties in ~/.gradle/ or project root or from CLI like ./gradlew task -PexampleProperty=...
+            // or with environment variables as `ORG_GRADLE_PROJECT_GitHubPackagesUsername` and `ORG_GRADLE_PROJECT_GitHubPackagesPassword`
+            credentials(credentialsType = PasswordCredentials::class)
         }
     }
-    publications.withType<MavenPublication> {
-        // Publishes javadoc/kdoc/dokka; for sources see the kotlin block
-        artifact(javadocJar) // Required a workaround. See the below TODO
-        pom {
-            url = "https://mahozad.ir/${project.name}"
-            name = project.name
-            description = """
-                Animated Material wavy slider and progress bar similar to the one introduced in Android 13 media player.  
-                It has curly, wobbly, squiggly, wiggly, jiggly, wriggly, dancing movements.
-                Some users call it the sperm. Visit the project on GitHub to learn more.
-            """.trimIndent()
-            inceptionYear = "2023"
-            licenses {
-                license {
-                    name = "Apache-2.0 License"
-                    url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                }
-            }
-            developers {
-                developer {
-                    id = "mahozad"
-                    name = "Mahdi Hosseinzadeh"
-                    url = "https://mahozad.ir/"
-                    email = ""
-                    roles = listOf("Lead Developer")
-                    timezone = "GMT+4:30"
-                }
-            }
-            contributors {
-                // contributor {}
-            }
-            scm {
-                tag = "HEAD"
-                url = "https://github.com/mahozad/${project.name}"
-                connection = "scm:git:github.com/mahozad/${project.name}.git"
-                developerConnection = "scm:git:ssh://github.com/mahozad/${project.name}.git"
-            }
-            issueManagement {
-                system = "GitHub"
-                url = "https://github.com/mahozad/${project.name}/issues"
-            }
-            ciManagement {
-                system = "GitHub Actions"
-                url = "https://github.com/mahozad/${project.name}/actions"
-            }
-        }
-    }
+    // Maven Central Portal is defined below
 }
 
-// TODO: Remove after https://github.com/gradle/gradle/issues/26091 is fixed
-//  Thanks to KSoup repository for this code snippet
-tasks.withType(AbstractPublishToMaven::class).configureEach {
-    dependsOn(tasks.withType(Sign::class))
+mavenPublishing {
+    // GitHub and other Maven repos are defined above
+    // Should set Gradle mavenCentralUsername and mavenCentralPassword properties
+    publishToMavenCentral(
+        host = SonatypeHost.CENTRAL_PORTAL,
+        automaticRelease = false
+    )
+
+    signAllPublications()
+
+    coordinates(
+        groupId = project.group.toString(),
+        artifactId = project.name,
+        version = project.version.toString()
+    )
+
+    pom {
+        url = "https://mahozad.ir/${project.name}"
+        name = project.name
+        description = """
+            Animated Material wavy slider and progress bar similar to the one introduced in Android 13 media player.  
+            It has curly, wobbly, squiggly, wiggly, jiggly, wriggly, dancing movements.
+            Some users call it the sperm. Visit the project on GitHub to learn more.
+        """.trimIndent()
+        inceptionYear = "2023"
+        licenses {
+            license {
+                name = "Apache-2.0 License"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "mahozad"
+                name = "Mahdi Hosseinzadeh"
+                url = "https://mahozad.ir/"
+                email = ""
+                roles = listOf("Lead Developer")
+                timezone = "GMT+4:30"
+            }
+        }
+        contributors {
+            // contributor {}
+        }
+        scm {
+            tag = "HEAD"
+            url = "https://github.com/mahozad/${project.name}"
+            connection = "scm:git:github.com/mahozad/${project.name}.git"
+            developerConnection = "scm:git:ssh://github.com/mahozad/${project.name}.git"
+        }
+        issueManagement {
+            system = "GitHub"
+            url = "https://github.com/mahozad/${project.name}/issues"
+        }
+        ciManagement {
+            system = "GitHub Actions"
+            url = "https://github.com/mahozad/${project.name}/actions"
+        }
+    }
 }
 
 /*
