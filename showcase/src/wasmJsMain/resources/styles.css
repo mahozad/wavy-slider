@@ -1,3 +1,8 @@
+* {
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
 body {
     position: relative;
     margin: 0;
@@ -16,11 +21,11 @@ body {
         display: flex;
         flex-flow: column;
         align-items: start;
-        font-size: 3vh;
+        font-size: 20px;
     }
 
     svg {
-        width: 5vh;
+        width: 40px;
     }
 }
 
@@ -37,50 +42,59 @@ main {
     }
 }
 
+#content {
+    height: 99vh;
+}
+
 @media (width >= 1300px) {
     #content {
         width: 900px;
-        height: 720px;
         margin-block-start: 0;
     }
 }
 
 @media (width < 1300px) {
+    #github {
+        inset-inline-start: 50%;
+        transform: translate(-50%, 0);
+        #repo-link {
+            font-size: 18px;
+        }
+    }
     #content {
         width: 500px;
-        height: 1265px;
-        margin-block-start: 64px;
+        height: 85vh;
+        margin-block-start: 48px;
     }
 }
 
 @media (width < 600px) {
     #content {
-        width: 324px;
-        height: 1265px;
-        margin-block-start: 64px;
+        width: 94vw;
+        margin-block-start: 24px;
     }
 }
 
 #loading {
     display: flex;
     justify-content: center;
-    font-size: 2vw;
+    font-size: 30px;
     /* For mobile/small screens: */
     position: fixed;
-    gap: 0.6vw;
+    gap: 8px;
     right: 50%;
     top: 45%;
     transform: translate(50%, 0%);
 
     @media (width < 800px) {
-        font-size: 4vw;
+        font-size: 20px;
     }
 
     img {
-        height: 2vw;
+        height: 30px;
         animation: spin 2s ease infinite;
         @media (width < 800px) {
-            height: 4vw;
+            height: 24px;
         }
     }
 }

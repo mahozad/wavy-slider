@@ -2,8 +2,10 @@ package website
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -92,14 +94,15 @@ fun Content() {
         )
     }
 
-    // FIXME: Fix the layout not being scrollable (except outside the canvas) in mobile/touchscreen devices
-    //  See https://github.com/JetBrains/compose-multiplatform/issues/1555
-    //  and https://github.com/JetBrains/compose-multiplatform/issues/4672
-
+    val verticalScrollState = rememberScrollState(initial = 0)
     Column(
-        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 60.dp),
-        verticalArrangement = Arrangement.spacedBy(30.dp),
+        verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .verticalScroll(verticalScrollState)
+            .padding(start = 8.dp, end = 8.dp, top = 60.dp, bottom = 58.dp)
     ) {
         if (isMaterial3) {
             WavySlider3(
