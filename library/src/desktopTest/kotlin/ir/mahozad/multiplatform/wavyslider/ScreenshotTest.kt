@@ -30,29 +30,11 @@ import kotlin.io.path.writeBytes
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
+/**
+ * As stated in https://developer.android.com/jetpack/compose/animation/customize#:~:text=animations%20using%20infiniteRepeatable%20are%20not%20run
+ * the test rule does not run infiniteRepeatable animations
+ */
 class ScreenshotTest {
-
-//    @get:Rule
-//    val composeTestRule = createComposeRule()
-//
-//    @Test
-//    fun readAndCompareScreenshots() {
-//        composeTestRule.mainClock.autoAdvance = false // Pauses animations
-//        composeTestRule.setContent {
-//            Column(Modifier.width(400.dp)) {
-//                WavySlider2(value = 0.5f, onValueChange = { }, waveHeight = 0.dp)
-//                WavySlider3(value = 0.5f, onValueChange = { }, waveHeight = 0.dp)
-//            }
-//        }
-//        val node = composeTestRule.onRoot()
-//        val screenshot = Image.makeFromBitmap(node.captureToImage().asSkiaBitmap())
-//        val actualPath = Path("screenshot.png")
-//        val actualData = screenshot.encodeToData(EncodedImageFormat.PNG)
-//            ?: error("Could not encode image as png")
-//        actualPath.writeBytes(actualData.bytes)
-//        val reference = ClassLoader.getSystemResource("reference-1.png")
-//        assert(actualData.bytes.contentEquals(reference.readBytes()))
-//    }
 
     @Test
     fun `When waveHeight is 0, should be exactly like a regular Slider`() = runScreenshotTest(

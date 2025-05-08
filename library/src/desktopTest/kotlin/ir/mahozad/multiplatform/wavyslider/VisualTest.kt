@@ -37,38 +37,6 @@ import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
 class VisualTest {
 
-    // As stated in https://developer.android.com/jetpack/compose/animation/customize#:~:text=animations%20using%20infiniteRepeatable%20are%20not%20run
-    // the test rule does not run infiniteRepeatable animations
-
-    // @get:Rule
-    // val rule = createComposeRule()
-
-    // @Test
-    // fun test() {
-    //     var waveHeight by mutableStateOf(48.dp)
-    //     rule.mainClock.autoAdvance = false // Pauses animations
-    //     rule.setContent {
-    //         WavySlider(0.5f, {}, waveHeight = waveHeight)
-    //     }
-
-    //     waveHeight = 0.dp
-    //     rule.mainClock.advanceTimeByFrame()
-    //     rule.mainClock.advanceTimeBy(517L)
-
-    //     // val image = rule.onRoot().captureToImage()
-    //     // ImageIO.write(image.toAwtImage(), "PNG", Path("output.png").outputStream())
-
-    //     val referencePath = Path("output.png")
-    //     val screenshot = Image.makeFromBitmap(rule.onRoot().captureToImage().asSkiaBitmap())
-    //     val actualPath = Path("output1.png")
-    //     val actualData = screenshot.encodeToData(EncodedImageFormat.PNG) ?: error("Could not encode image as png")
-    //     actualPath.writeBytes(actualData.bytes)
-
-    //     assert(actualPath.readBytes().contentEquals(referencePath.readBytes())) {
-    //         "The screenshot '$actualPath' does not match the reference '$referencePath'"
-    //     }
-    // }
-
     private fun testApp(
         name: String,
         given: String,

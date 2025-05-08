@@ -70,7 +70,7 @@ kotlin {
         val desktopTest by getting {
             dependencies {
                 implementation(compose.desktop.uiTestJUnit4)
-                // Needed because of build errors; remove if tests run
+                // Needed because of build errors; TODO: remove if tests run
                 implementation(compose.desktop.windows_x64)
             }
         }
@@ -148,8 +148,8 @@ publishing {
             // or with environment variables as `ORG_GRADLE_PROJECT_GitHubPackagesUsername` and `ORG_GRADLE_PROJECT_GitHubPackagesPassword`
             credentials(credentialsType = PasswordCredentials::class)
         }
+        // Maven Central Portal is defined below
     }
-    // Maven Central Portal is defined below
 }
 
 mavenPublishing {
