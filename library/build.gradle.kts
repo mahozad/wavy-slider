@@ -172,9 +172,9 @@ mavenPublishing {
         url = "https://mahozad.ir/${project.name}"
         name = project.name
         description = """
-            Animated Material wavy slider and progress bar similar to the one introduced in Android 13 media player.  
+            Animated wavy Material Slider and progress/seek bar similar to the one used in Android 13 media controls.  
             It has curly, wobbly, squiggly, wiggly, jiggly, wriggly, dancing movements.
-            Some users call it the sperm. Visit the project on GitHub to learn more.
+            Some users call it the sperm. Visit the project on GitHub at https://github.com/mahozad/wavy-slider to learn more.
         """.trimIndent()
         inceptionYear = "2023"
         licenses {
