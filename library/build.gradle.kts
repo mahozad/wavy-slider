@@ -8,10 +8,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library)
     alias(libs.plugins.dokka)
-    // TODO: Migrate back to the Gradle id("maven-publish") plugin when
-    //  the maven-publish plugin starts to support publishing to Central Portal:
-    //  https://central.sonatype.org/publish/publish-portal-gradle/
-    //  See https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html
     alias(libs.plugins.maven.publish)
     id("signing")
 }
@@ -22,30 +18,20 @@ version = "2.1.0-rc"
 // See https://central.sonatype.com/namespace/org.jetbrains.compose.material
 // for the targets that Compose Multiplatform supports
 kotlin {
-    // Publishes source files; for javadoc/kdoc/dokka see the publications block
-    withSourcesJar(publish = true)
-
     androidTarget { publishLibraryVariants("release") }
-    // Windows, Linux, macOS (with Java runtime)
-    jvm(name = "desktop")
-    // Kotlin/JS drawing to a canvas
-    js(compiler = IR) {
+    jvm(name = "desktop") // Windows, Linux, macOS (with Java runtime)
+    js(compiler = IR) { // Kotlin/JS drawing to a canvas
         nodejs()
         browser()
         binaries.executable()
     }
-    // Kotlin/Wasm drawing to a canvas
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
+    wasmJs { // Kotlin/Wasm drawing to a canvas
         nodejs()
         browser()
         binaries.executable()
     }
-    // Building and publishing for iOS target requires a machine running macOS;
-    // otherwise, the .klib will not be produced and the compiler warns about that.
-    // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
     listOf(
-        // By declaring these targets, the iosMain source set will be created automatically
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
@@ -63,10 +49,7 @@ kotlin {
             api(compose.material)
             api(compose.runtime)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
-        val desktopMain by getting {}
+        @Suppress("unused")
         val desktopTest by getting {
             dependencies {
                 implementation(compose.desktop.uiTestJUnit4)
@@ -74,28 +57,15 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
             }
         }
-        androidMain {}
-        androidUnitTest {}
-        jsMain {}
-        jsTest {}
-        iosX64Main {}
-        iosArm64Main {}
-        iosSimulatorArm64Main {}
     }
 }
 
 android {
     namespace = "ir.mahozad.multiplatform.wavyslider"
-
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
-
-    buildFeatures {
-        buildConfig = false
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
         targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
