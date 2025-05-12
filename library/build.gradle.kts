@@ -82,14 +82,13 @@ dokka {
         enableAndroidDocumentationLink = true
         enableKotlinStdLibDocumentationLink = true
         jdkVersion = libs.versions.java.get().toInt()
-        // sourceLink {
-        //     // Unix based directory relative path to the root of the project (where you execute gradle respectively)
-        //     localDirectory = file("src/commonMain/kotlin/")
-        //     // URL showing where the source code can be accessed through the web browser
-        //     remoteUrl = uri("https://github.com/mahozad/${project.name}/blob/main/${project.name}/src/main/kotlin")
-        //     // Suffix which is used to append the line number to the URL. Use #L for GitHub
-        //     remoteLineSuffix = "#L"
-        // }
+        sourceLink {
+            localDirectory = projectDir.resolve("src")
+            // URL showing where the source code can be accessed through the web browser
+            remoteUrl = uri("https://github.com/mahozad/${project.name}/tree/v$version/library/src")
+            // Is used to append the line number to the URL
+            remoteLineSuffix = "#L"
+        }
     }
 
     dokkaPublications.html {
