@@ -1,11 +1,14 @@
 * {
     box-sizing: border-box;
     white-space: nowrap;
+    margin: 0;
 }
 
-body {
-    position: relative;
-    margin: 0;
+main {
+    display: grid;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f3faef;
 }
 
 #github {
@@ -17,83 +20,62 @@ body {
     align-items: center;
     gap: 8px;
 
-    #repo-link {
-        display: flex;
-        flex-flow: column;
-        align-items: start;
+    @media (width < 1300px) {
+        width: 100%;
+        justify-content: center;
+        inset-inline-start: 0;
+        inset-block-start: 0;
+        margin-block-start: 16px;
+    }
+
+    img {
+        width: 36px;
+    }
+
+    a {
         font-size: 20px;
-    }
-
-    svg {
-        width: 40px;
-    }
-}
-
-main {
-    display: grid;
-    min-height: 100vh;
-    align-items: center;
-    justify-content: center;
-    background-color: #FCFAEDCC;
-
-    & > * {
-        grid-column: 1;
-        grid-row: 1;
     }
 }
 
 #content {
-    height: 99vh;
-}
+    width: 900px;
+    height: 100vh;
+    /* because of the bottom exceeding just a little bit */
+    overflow-y: hidden;
 
-@media (width >= 1300px) {
-    #content {
-        width: 900px;
-        margin-block-start: 0;
-    }
-}
-
-@media (width < 1300px) {
-    #github {
-        inset-inline-start: 50%;
-        transform: translate(-50%, 0);
-        #repo-link {
-            font-size: 18px;
-        }
-    }
-    #content {
+    @media (width < 1300px) {
         width: 500px;
-        height: 85vh;
-        margin-block-start: 48px;
+        height: calc(98vh - 54px);
+        margin-block-start: 54px;
     }
-}
 
-@media (width < 600px) {
-    #content {
+    @media (width < 600px) {
         width: 94vw;
-        margin-block-start: 24px;
     }
 }
 
 #loading {
     display: flex;
-    justify-content: center;
-    font-size: 30px;
-    /* For mobile/small screens: */
     position: fixed;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 30px;
     gap: 8px;
-    right: 50%;
-    top: 45%;
-    transform: translate(50%, 0%);
+    inset-block-start: 45%;
 
-    @media (width < 800px) {
+    @media (width < 400px) {
         font-size: 20px;
+    }
+
+    @media (height < 400px) {
+        inset-block-start: 50%;
     }
 
     img {
         height: 30px;
         animation: spin 2s ease infinite;
-        @media (width < 800px) {
+        @media (width < 400px) {
             height: 24px;
         }
     }
