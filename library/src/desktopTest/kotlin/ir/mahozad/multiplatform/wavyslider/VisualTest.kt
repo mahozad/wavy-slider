@@ -401,7 +401,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is LTR and direction of waveVelocity is RIGHT",
-            expected = "Should shift from left to right"
+            expected = "Should shift to right"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -422,7 +422,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is RTL and direction of waveVelocity is RIGHT",
-            expected = "Should shift from left to right"
+            expected = "Should shift to right"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -443,7 +443,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is LTR and direction of waveVelocity is LEFT",
-            expected = "Should shift from right to left"
+            expected = "Should shift to left"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -464,7 +464,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is RTL and direction of waveVelocity is LEFT",
-            expected = "Should shift from right to left"
+            expected = "Should shift to left"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -485,7 +485,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is LTR and direction of waveVelocity is HEAD",
-            expected = "Should shift from left to right"
+            expected = "Should shift to right"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -506,7 +506,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is RTL and direction of waveVelocity is HEAD",
-            expected = "Should shift from right to left"
+            expected = "Should shift to left"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -527,7 +527,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is LTR and direction of waveVelocity is TAIL",
-            expected = "Should shift from right to left"
+            expected = "Should shift to left"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -548,7 +548,7 @@ class VisualTest {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When container layout is RTL and direction of waveVelocity is TAIL",
-            expected = "Should shift from left to right"
+            expected = "Should shift to right"
         ) { value, onChange ->
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

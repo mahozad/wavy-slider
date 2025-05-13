@@ -30,10 +30,6 @@ import kotlin.io.path.writeBytes
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
-/**
- * As stated in https://developer.android.com/jetpack/compose/animation/customize#:~:text=animations%20using%20infiniteRepeatable%20are%20not%20run
- * the test rule does not run infiniteRepeatable animations
- */
 class ScreenshotTest {
 
     @Test
@@ -230,23 +226,21 @@ class ScreenshotTest {
         windowSize: IntSize,
         referenceName: String,
         content: @Composable ColumnScope.() -> Unit
-    ) {
-        runDesktopComposeUiTest(windowSize.width, windowSize.height) {
-            val tempDirectory = createTempDirectory()
-            scene.density = Density(density = 1f, fontScale = 1f)
-            mainClock.autoAdvance = false
-            setContent { Column(content = content) }
-            mainClock.advanceTimeBy(milliseconds = 10_000)
-            val screenshot = Image.makeFromBitmap(captureToImage().asSkiaBitmap())
-            val screenshotData = screenshot
-                .encodeToData(EncodedImageFormat.PNG)
-                ?: error("Could not encode image as png")
-            val screenshotPath = tempDirectory / "screenshot.png"
-            screenshotPath.writeBytes(screenshotData.bytes)
-            val reference = ClassLoader.getSystemResource(referenceName)
-            assert(screenshotData.bytes.contentEquals(reference.readBytes())) {
-                "The screenshot '$screenshotPath' does not match the reference '$reference'"
-            }
+    ) = runDesktopComposeUiTest(windowSize.width, windowSize.height) {
+        val tempDirectory = createTempDirectory()
+        scene.density = Density(density = 1f, fontScale = 1f)
+        mainClock.autoAdvance = false
+        setContent { Column(content = content) }
+        mainClock.advanceTimeBy(milliseconds = 10_000)
+        val screenshot = Image.makeFromBitmap(captureToImage().asSkiaBitmap())
+        val screenshotData = screenshot
+            .encodeToData(EncodedImageFormat.PNG)
+            ?: error("Could not encode image as png")
+        val screenshotPath = tempDirectory / "screenshot.png"
+        screenshotPath.writeBytes(screenshotData.bytes)
+        val reference = ClassLoader.getSystemResource(referenceName)
+        assert(screenshotData.bytes contentEquals reference.readBytes()) {
+            "The screenshot '$screenshotPath' does not match the reference '$reference'"
         }
     }
 }
