@@ -95,6 +95,10 @@ fun Content() {
     }
 
     val verticalScrollState = rememberScrollState(initial = 0)
+    // VerticalScrollbar(
+    //     modifier = Modifier.fillMaxHeight(),
+    //     adapter = rememberScrollbarAdapter(verticalScrollState)
+    // )
     Column(
         verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
