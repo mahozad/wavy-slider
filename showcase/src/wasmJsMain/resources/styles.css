@@ -4,11 +4,32 @@
     margin: 0;
 }
 
+html {
+    --background-color: #f3faef;
+    --primary-color: #5B631E;
+    --text-color: #000;
+}
+
+html[data-theme="dark"] {
+    --background-color: #050a03;
+    --primary-color: #C3CD7B;
+    --text-color: #fff;
+}
+
 main {
     display: grid;
     justify-content: center;
     height: 100vh;
-    background-color: #f3faef;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+theme-switch {
+    --theme-switch-icon-color: var(--primary-color);
+    position: absolute;
+    inset-inline-end: 16px;
+    inset-block-start: 16px;
+    width: 32px;
 }
 
 #github {
@@ -28,11 +49,13 @@ main {
         margin-block-start: 16px;
     }
 
-    img {
+    svg {
         width: 36px;
+        fill: var(--text-color);
     }
 
     a {
+        color: var(--primary-color);
         font-size: 20px;
     }
 }

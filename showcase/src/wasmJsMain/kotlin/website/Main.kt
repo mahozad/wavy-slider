@@ -1,11 +1,13 @@
 package website
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -29,11 +32,25 @@ import kotlinx.browser.document
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.readResourceBytes
+import org.w3c.dom.events.Event
+import org.w3c.dom.get
 import kotlin.math.roundToInt
 import androidx.compose.material.MaterialTheme as MaterialTheme2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
+
+@Suppress("unused")
+external object EventDetail : JsAny {
+    val originId: String
+    val oldState: String
+    val newState: String
+}
+
+// See https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
+external class CustomEvent: Event {
+    val detail: EventDetail
+}
 
 /**
  * To generate the website, see the README in the website branch.
@@ -66,9 +83,30 @@ fun main() {
 
 @Composable
 fun App() {
-    MaterialTheme3(colorScheme = lightScheme) {
-        Content()
+    val isSystemThemeDark = isSystemInDarkTheme()
+    val isPageThemeDark = isPageThemeDark()
+    var isDark by remember { mutableStateOf(isPageThemeDark) }
+    document.addEventListener("themeToggle") { event ->
+        val themeToggleEvent = event as? CustomEvent ?: return@addEventListener
+        isDark = when (themeToggleEvent.detail.newState) {
+            "light" -> false
+            "dark" -> true
+            else -> isSystemThemeDark
+        }
     }
+    MaterialTheme3(colorScheme = if (isDark) darkScheme else lightScheme) {
+        Surface(color = if(isCurrentThemeDark()) MaterialTheme3.colorScheme.surface else Color.White) {
+            Content()
+        }
+    }
+}
+
+fun isPageThemeDark(): Boolean =
+    document.documentElement?.attributes?.get("data-theme")?.value == "dark"
+
+@Composable
+fun isCurrentThemeDark(): Boolean {
+    return MaterialTheme3.colorScheme.background.luminance() <= 0.5
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -121,7 +159,7 @@ fun Content() {
                 incremental = isIncremental
             )
         } else {
-            MaterialTheme2(lightColors(primary = primaryLight)) {
+            MaterialTheme2(if (isCurrentThemeDark()) darkColors(primary = primaryDark) else lightColors(primary = primaryLight)) {
                 WavySlider2(
                     enabled = isEnabled,
                     value = value,
@@ -270,44 +308,42 @@ fun LabeledSlider(
 }
 
 /**
- * Could also use implementation("dev.snipme:highlights:0.7.1"):
+ * Could also use implementation("dev.snipme:highlights:1.0.0"):
  *
  * ```kotlin
- * val h = Highlights
+ * val valueRounded = remember(value) { roundTo2Decimals(value) }
+ * val lineHeight = remember { 25.sp }
+ * val fontSize = remember { 14.sp }
+ * val rawCode = /* language=kotlin */ """..."""
+ * val highlights = Highlights
  *     .Builder()
- *     .code(c)
- *     .theme(SyntaxThemes.notepad(true))
+ *     .code(rawCode)
+ *     .theme(SyntaxThemes.pastel(darkMode = isCurrentThemeDark()))
  *     .language(SyntaxLanguage.KOTLIN)
- *     .emphasis(PhraseLocation(13, 25)) // ExampleClass
  *     .build()
- * Text(
- *     modifier = modifier,
- *     text = buildAnnotatedString {
- *         withStyle(SpanStyle(fontSize = 13.sp)) {
- *             append(h.getCode())
- *         }
- *         h
- *             .getHighlights()
- *             .filterIsInstance<ColorHighlight>()
- *             .forEach {
- *                 addStyle(
- *                     SpanStyle(fontSize = 13.sp, color = Color(it.rgb).copy(alpha = 1f)),
- *                     start = it.location.start,
- *                     end = it.location.end,
- *                 )
- *             }
- *         h
- *             .getHighlights()
- *             .filterIsInstance<BoldHighlight>()
- *             .forEach {
- *                 addStyle(
- *                     SpanStyle(fontWeight = FontWeight.Bold),
- *                     start = it.location.start,
- *                     end = it.location.end,
- *                 )
- *             }
+ * val highlightedCode = buildAnnotatedString {
+ *     pushStyle(ParagraphStyle(lineHeight = lineHeight))
+ *     withStyle(SpanStyle(fontSize = fontSize)) {
+ *         append(highlights.getCode())
  *     }
- * )
+ *     highlights
+ *         .getHighlights()
+ *         .filterIsInstance<ColorHighlight>()
+ *         .forEach {
+ *             addStyle(
+ *                 SpanStyle(fontSize = fontSize, color = Color(it.rgb).copy(alpha = 1f)),
+ *                 start = it.location.start,
+ *                 end = it.location.end,
+ *             )
+ *         }
+ * }
+ * SelectionContainer {
+ *     Text(
+ *         text = highlightedCode,
+ *         modifier = modifier,
+ *         fontFamily = FontFamily.Monospace
+ *     )
+ * }
  * ```
  */
 @Composable
@@ -324,21 +360,49 @@ fun Code(
     isBackward: Boolean,
     modifier: Modifier
 ) {
+    data class CodeColors(
+        val keyword: Color,
+        val number: Color,
+        val member: Color,
+        val function: Color,
+        val argument: Color,
+        val semantic1: Color,
+        val semantic2: Color,
+        val identifier: Color,
+    )
+
+    val colorOnSurface = MaterialTheme3.colorScheme.onSurface
     val valueRounded = remember(value) { roundTo2Decimals(value) }
-
-    val fontSize = remember { 14.sp }
     val lineHeight = remember { 25.sp }
-    val colorKeyword = remember { Color(0xff0033B3) }
-    val colorNumber = remember { Color(0xff1750EB) }
-    val colorMember = remember { Color(0xff871094) }
-    val colorFunction = remember { Color(0xff00627A) }
-    val colorArgument = remember { Color(0xff4A86E8) }
-    val colorIdentifier = remember { Color(0xff000000) }
-    val colorSemantic1 = remember { Color(0xff9B3B6A) }
-    val colorSemantic2 = remember { Color(0xff005910) }
+    val fontSize = remember { 14.sp }
+    val lightColors = remember(colorOnSurface) {
+        CodeColors(
+            keyword = Color(0xFF_0033b3),
+            number = Color(0xFF_1750eb),
+            member = Color(0xFF_871094),
+            function = Color(0xFF_00627a),
+            argument = Color(0xFF_4a86e8),
+            semantic1 = Color(0xFF_9b3b6a),
+            semantic2 = Color(0xFF_005910),
+            identifier = colorOnSurface,
+        )
+    }
+    // Adopted from IntelliJ IDEA 2025.1 Dark theme default Kotlin color schemes
+    val darkColors = remember(colorOnSurface) {
+        CodeColors(
+            keyword = Color(0xFF_cf8e6d),
+            number = Color(0xFF_2aacb8),
+            member = Color(0xFF_c77dbb),
+            function = Color(0xFF_57aaf7),
+            argument = Color(0xFF_56c1d6),
+            semantic1 = Color(0xFF_529d52),
+            semantic2 = Color(0xFF_be7070),
+            identifier = colorOnSurface,
+        )
+    }
+    val codeTheme = if (isCurrentThemeDark()) darkColors else lightColors
 
-    // Equivalent to the following
-    """
+    /* Equivalent to the following code */ /* language=kotlin */ """
         import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
         import ...wavyslider.WaveDirection.*
 
@@ -362,98 +426,97 @@ fun Code(
 
     val code = buildAnnotatedString {
         pushStyle(ParagraphStyle(lineHeight = lineHeight))
-        withStyle(SpanStyle(colorKeyword, 12.sp)) { append("import ") }
-        withStyle(SpanStyle(colorIdentifier, 12.sp)) {
+        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("import ") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) {
             append("...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider")
         }
         appendLine()
-        withStyle(SpanStyle(colorKeyword, 12.sp)) { append("import ") }
-        withStyle(SpanStyle(colorIdentifier, 12.sp)) {
+        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("import ") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) {
             append("...wavyslider.WaveDirection.*")
         }
         appendLine()
         appendLine()
-        withStyle(SpanStyle(colorKeyword, fontSize)) { append("var ") }
-        withStyle(SpanStyle(colorSemantic1, fontSize)) { append("value ") }
-        withStyle(SpanStyle(colorKeyword, fontSize)) { append("by ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("remember {") }
+        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("var ") }
+        withStyle(SpanStyle(codeTheme.semantic1, fontSize)) { append("value ") }
+        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("by ") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("remember {") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    mutableFloatStateOf(") }
-        withStyle(SpanStyle(colorNumber, fontSize)) { append("${valueRounded}f") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(")") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    mutableFloatStateOf(") }
+        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${valueRounded}f") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(")") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("}") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("}") }
         appendLine()
         appendLine()
-        withStyle(SpanStyle(colorFunction, fontSize)) { append("WavySlider") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("(") }
+        withStyle(SpanStyle(codeTheme.function, fontSize)) { append("WavySlider") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("(") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    value ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorSemantic1, fontSize)) { append("value,") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    value ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.semantic1, fontSize)) { append("value,") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    onValueChange ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("{") }
-        withStyle(SpanStyle(colorSemantic1, fontSize)) { append(" value ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorSemantic2, fontSize)) { append("it ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("},") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    onValueChange ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("{") }
+        withStyle(SpanStyle(codeTheme.semantic1, fontSize)) { append(" value ") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.semantic2, fontSize)) { append("it ") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("},") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    enabled ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorKeyword, fontSize)) { append("$isEnabled") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    enabled ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("$isEnabled") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveLength ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorNumber, fontSize)) { append("${waveLength.value.roundToInt()}") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append("dp") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveLength ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveLength.value.roundToInt()}") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
+        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveHeight ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorNumber, fontSize)) { append("${waveHeight.value.roundToInt()}") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append("dp") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveHeight ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveHeight.value.roundToInt()}") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
+        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveVelocity ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorNumber, fontSize)) { append("${waveSpeed.value.roundToInt()}") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append("dp ") }
-        withStyle(SpanStyle(colorFunction, fontSize)) { append("to ") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append(if (isBackward) "TAIL" else "HEAD") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveVelocity ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveSpeed.value.roundToInt()}") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
+        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp ") }
+        withStyle(SpanStyle(codeTheme.function, fontSize)) { append("to ") }
+        withStyle(SpanStyle(codeTheme.member, fontSize)) { append(if (isBackward) "TAIL" else "HEAD") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    waveThickness ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorNumber, fontSize)) { append("${waveThickness.value.roundToInt()}") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append("dp") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveThickness ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveThickness.value.roundToInt()}") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
+        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    trackThickness ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorNumber, fontSize)) { append("${trackThickness.value.roundToInt()}") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(colorMember, fontSize)) { append("dp") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    trackThickness ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${trackThickness.value.roundToInt()}") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
+        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    incremental ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorKeyword, fontSize)) { append("$isIncremental") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    incremental ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("$isIncremental") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("    animationSpecs ") }
-        withStyle(SpanStyle(colorArgument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append("...") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    animationSpecs ") }
+        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("...") }
         appendLine()
-        withStyle(SpanStyle(colorIdentifier, fontSize)) { append(")") }
+        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(")") }
     }
-
     // Makes it possible for user to select the code (for copy/paste)
     SelectionContainer {
         Text(
