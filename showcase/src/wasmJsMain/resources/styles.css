@@ -32,6 +32,30 @@ theme-switch {
     width: 32px;
 }
 
+#flip-direction {
+    fill: var(--primary-color);
+    position: absolute;
+    inset-inline-end: 72px;
+    inset-block-start: 16px;
+    width: 32px;
+    cursor: pointer;
+    transition: transform 300ms ease;
+
+    /* This is needed because sometimes the inner paths receive click events and do not bubble up the event to the svg */
+    * {
+        pointer-events: none;
+    }
+
+    &.toggled {
+        transform: scaleX(-1);
+    }
+
+    @media (width < 1300px) {
+        inset-inline-end: auto;
+        inset-inline-start: 16px;
+    }
+}
+
 #github {
     position: absolute;
     inset-inline-start: 16px;

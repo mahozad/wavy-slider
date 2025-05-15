@@ -16,6 +16,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.ComposeViewport
@@ -32,6 +34,7 @@ import kotlinx.browser.document
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.readResourceBytes
+import org.w3c.dom.Element
 import org.w3c.dom.events.Event
 import org.w3c.dom.get
 import kotlin.math.roundToInt
@@ -94,9 +97,14 @@ fun App() {
             else -> isSystemThemeDark
         }
     }
+    var layoutDirection by remember { mutableStateOf(LayoutDirection.Ltr) }
+    document.querySelector("#flip-direction")?.addEventListener("click") { event ->
+        (event.target as? Element)?.classList?.toggle("toggled")
+        layoutDirection = if (layoutDirection == LayoutDirection.Ltr) LayoutDirection.Rtl else LayoutDirection.Ltr
+    }
     MaterialTheme3(colorScheme = if (isDark) darkScheme else lightScheme) {
-        Surface(color = if(isCurrentThemeDark()) MaterialTheme3.colorScheme.surface else Color.White) {
-            Content()
+        Surface(color = if (isCurrentThemeDark()) MaterialTheme3.colorScheme.surface else Color.White) {
+            Content(layoutDirection)
         }
     }
 }
@@ -111,7 +119,7 @@ fun isCurrentThemeDark(): Boolean {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Content() {
+fun Content(layoutDirection: LayoutDirection) {
     var value by remember { mutableFloatStateOf(0.5f) }
     var waveLength by remember { mutableStateOf(30.dp) }
     var waveHeight by remember { mutableStateOf(8.dp) }
@@ -146,21 +154,9 @@ fun Content() {
             .verticalScroll(verticalScrollState)
             .padding(start = 8.dp, end = 8.dp, top = 60.dp, bottom = 58.dp)
     ) {
-        if (isMaterial3) {
-            WavySlider3(
-                enabled = isEnabled,
-                value = value,
-                onValueChange = { value = it },
-                waveLength = waveLength,
-                waveHeight = waveHeight,
-                waveVelocity = waveSpeed to if (isBackward) TAIL else HEAD,
-                waveThickness = waveThickness,
-                trackThickness = trackThickness3,
-                incremental = isIncremental
-            )
-        } else {
-            MaterialTheme2(if (isCurrentThemeDark()) darkColors(primary = primaryDark) else lightColors(primary = primaryLight)) {
-                WavySlider2(
+        CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+            if (isMaterial3) {
+                WavySlider3(
                     enabled = isEnabled,
                     value = value,
                     onValueChange = { value = it },
@@ -168,9 +164,23 @@ fun Content() {
                     waveHeight = waveHeight,
                     waveVelocity = waveSpeed to if (isBackward) TAIL else HEAD,
                     waveThickness = waveThickness,
-                    trackThickness = trackThickness2,
+                    trackThickness = trackThickness3,
                     incremental = isIncremental
                 )
+            } else {
+                MaterialTheme2(if (isCurrentThemeDark()) darkColors(primary = primaryDark) else lightColors(primary = primaryLight)) {
+                    WavySlider2(
+                        enabled = isEnabled,
+                        value = value,
+                        onValueChange = { value = it },
+                        waveLength = waveLength,
+                        waveHeight = waveHeight,
+                        waveVelocity = waveSpeed to if (isBackward) TAIL else HEAD,
+                        waveThickness = waveThickness,
+                        trackThickness = trackThickness2,
+                        incremental = isIncremental
+                    )
+                }
             }
         }
         FlowRow(

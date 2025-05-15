@@ -21,7 +21,13 @@
     </svg>
     <a target="_blank" href="https://github.com/mahozad/wavy-slider">GitHub repository</a>
 </div>
-<theme-switch></theme-switch>
+<div>
+    <theme-switch></theme-switch>
+    <!-- Should use inline svg to be able to change its colors in CSS -->
+    <svg id="flip-direction" class="toggled" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+        <path d="M360-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h160v80H200v560h160v80Zm80 80v-880h80v880h-80Zm160-80v-80h80v80h-80Zm0-640v-80h80v80h-80Zm160 640v-80h80q0 33-23.5 56.5T760-120Zm0-160v-80h80v80h-80Zm0-160v-80h80v80h-80Zm0-160v-80h80v80h-80Zm0-160v-80q33 0 56.5 23.5T840-760h-80Z"/>
+    </svg>
+</div>
 <main>
     <div id="loading">
         <img src="logo.svg" alt="Logo">
