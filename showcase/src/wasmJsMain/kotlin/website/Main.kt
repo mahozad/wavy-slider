@@ -1,12 +1,12 @@
 package website
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Colors
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.material3.*
@@ -15,13 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -30,12 +27,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.ComposeViewport
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
+import ir.mahozad.wavyslider.Res
+import ir.mahozad.wavyslider.RobotoSlab_Regular
 import kotlinx.browser.document
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.InternalResourceApi
-import org.jetbrains.compose.resources.readResourceBytes
+import org.jetbrains.compose.resources.Font
 import org.w3c.dom.Element
-import org.w3c.dom.events.Event
 import org.w3c.dom.get
 import kotlin.math.roundToInt
 import androidx.compose.material.MaterialTheme as MaterialTheme2
@@ -43,81 +39,32 @@ import androidx.compose.material3.MaterialTheme as MaterialTheme3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
-@Suppress("unused")
-external object EventDetail : JsAny {
-    val originId: String
-    val oldState: String
-    val newState: String
-}
-
-// See https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
-external class CustomEvent: Event {
-    val detail: EventDetail
-}
-
 /**
  * To generate the website, see the README in the website branch.
  */
-@OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    ComposeViewport(document.querySelector("#content")!!) {
+    @OptIn(ExperimentalComposeUiApi::class)
+    ComposeViewport(viewportContainerId = "app") {
         App()
     }
-
-    // onWasmReady {
-    //     CanvasBasedWindow(
-    //         title = "Wavy slider showcase",
-    //         canvasElementId = "content",
-    //         applyDefaultStyles = false,
-    //         requestResize = { IntSize(width = 900, height = 800) }
-    //     ) {
-    //         App()
-    //     }
-    // }
-
-    // See https://github.com/JetBrains/compose-multiplatform/issues/2186
-    // val body = document.getElementsByTagName("body")[0] as HTMLElement
-    // renderComposable(rootElementId = "root") {
-    //     MaterialTheme {
-    //         WavySlider(0.67f, true, {})
-    //     }
-    // }
 }
 
 @Composable
 fun App() {
-    val isSystemThemeDark = isSystemInDarkTheme()
-    val isPageThemeDark = isPageThemeDark()
-    var isDark by remember { mutableStateOf(isPageThemeDark) }
-    document.addEventListener("themeToggle") { event ->
-        val themeToggleEvent = event as? CustomEvent ?: return@addEventListener
-        isDark = when (themeToggleEvent.detail.newState) {
-            "light" -> false
-            "dark" -> true
-            else -> isSystemThemeDark
-        }
-    }
+    var colorScheme by remember { mutableStateOf(getM3ColorScheme()) }
     var layoutDirection by remember { mutableStateOf(LayoutDirection.Ltr) }
-    document.querySelector("#flip-direction")?.addEventListener("click") { event ->
-        (event.target as? Element)?.classList?.toggle("toggled")
+    document.addEventListener("themeToggle") { colorScheme = getM3ColorScheme() }
+    document.getElementById("flip-button")?.addEventListener("click") {
+        (it.target as? Element)?.classList?.toggle("flipped")
         layoutDirection = if (layoutDirection == LayoutDirection.Ltr) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
-    MaterialTheme3(colorScheme = if (isDark) darkScheme else lightScheme) {
-        Surface(color = if (isCurrentThemeDark()) MaterialTheme3.colorScheme.surface else Color.White) {
+    MaterialTheme3(colorScheme) {
+        Surface {
             Content(layoutDirection)
         }
     }
 }
 
-fun isPageThemeDark(): Boolean =
-    document.documentElement?.attributes?.get("data-theme")?.value == "dark"
-
-@Composable
-fun isCurrentThemeDark(): Boolean {
-    return MaterialTheme3.colorScheme.background.luminance() <= 0.5
-}
-
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Content(layoutDirection: LayoutDirection) {
     var value by remember { mutableFloatStateOf(0.5f) }
@@ -131,15 +78,7 @@ fun Content(layoutDirection: LayoutDirection) {
     var isBackward by remember { mutableStateOf(true) }
     var isMaterial3 by remember { mutableStateOf(true) }
     var isIncremental by remember { mutableStateOf(false) }
-    var fontRobotoSlab by remember { mutableStateOf<FontFamily?>(null) }
-
-    LaunchedEffect(Unit) {
-        val fontData = loadResource("RobotoSlab-Regular.ttf")
-        fontRobotoSlab = FontFamily(
-            Font(identity = "RobotoSlab", data = fontData)
-        )
-    }
-
+    val fontRobotoSlab = FontFamily(Font(Res.font.RobotoSlab_Regular))
     val verticalScrollState = rememberScrollState(initial = 0)
     // VerticalScrollbar(
     //     modifier = Modifier.fillMaxHeight(),
@@ -168,7 +107,7 @@ fun Content(layoutDirection: LayoutDirection) {
                     incremental = isIncremental
                 )
             } else {
-                MaterialTheme2(if (isCurrentThemeDark()) darkColors(primary = primaryDark) else lightColors(primary = primaryLight)) {
+                MaterialTheme2(colors = getM2Colors()) {
                     WavySlider2(
                         enabled = isEnabled,
                         value = value,
@@ -259,7 +198,6 @@ fun Content(layoutDirection: LayoutDirection) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun MaterialDesignVersion(
     isMaterial3Selected: Boolean,
@@ -383,8 +321,6 @@ fun Code(
 
     val colorOnSurface = MaterialTheme3.colorScheme.onSurface
     val valueRounded = remember(value) { roundTo2Decimals(value) }
-    val lineHeight = remember { 25.sp }
-    val fontSize = remember { 14.sp }
     val lightColors = remember(colorOnSurface) {
         CodeColors(
             keyword = Color(0xFF_0033b3),
@@ -410,7 +346,7 @@ fun Code(
             identifier = colorOnSurface,
         )
     }
-    val codeTheme = if (isCurrentThemeDark()) darkColors else lightColors
+    val codeTheme = if (isThemeDark()) darkColors else lightColors
 
     /* Equivalent to the following code */ /* language=kotlin */ """
         import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
@@ -435,103 +371,105 @@ fun Code(
     """.trimIndent()
 
     val code = buildAnnotatedString {
-        pushStyle(ParagraphStyle(lineHeight = lineHeight))
-        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("import ") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) {
+        withStyle(SpanStyle(color = codeTheme.keyword)) { append("import ") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) {
             append("...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider")
         }
         appendLine()
-        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("import ") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) {
+        withStyle(SpanStyle(color = codeTheme.keyword)) { append("import ") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) {
             append("...wavyslider.WaveDirection.*")
         }
         appendLine()
         appendLine()
-        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("var ") }
-        withStyle(SpanStyle(codeTheme.semantic1, fontSize)) { append("value ") }
-        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("by ") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("remember {") }
+        withStyle(SpanStyle(color = codeTheme.keyword)) { append("var ") }
+        withStyle(SpanStyle(color = codeTheme.semantic1)) { append("value ") }
+        withStyle(SpanStyle(color = codeTheme.keyword)) { append("by ") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("remember {") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    mutableFloatStateOf(") }
-        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${valueRounded}f") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(")") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    mutableFloatStateOf(") }
+        withStyle(SpanStyle(color = codeTheme.number)) { append("${valueRounded}f") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(")") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("}") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("}") }
         appendLine()
         appendLine()
-        withStyle(SpanStyle(codeTheme.function, fontSize)) { append("WavySlider") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("(") }
+        withStyle(SpanStyle(color = codeTheme.function)) { append("WavySlider") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("(") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    value ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.semantic1, fontSize)) { append("value,") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    value ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.semantic1)) { append("value,") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    onValueChange ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("{") }
-        withStyle(SpanStyle(codeTheme.semantic1, fontSize)) { append(" value ") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.semantic2, fontSize)) { append("it ") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("},") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    onValueChange ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("{") }
+        withStyle(SpanStyle(color = codeTheme.semantic1)) { append(" value ") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.semantic2)) { append("it ") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("},") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    enabled ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("$isEnabled") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    enabled ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.keyword)) { append("$isEnabled") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveLength ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveLength.value.roundToInt()}") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    waveLength ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.number)) { append("${waveLength.value.roundToInt()}") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(".") }
+        withStyle(SpanStyle(color = codeTheme.member)) { append("dp") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveHeight ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveHeight.value.roundToInt()}") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    waveHeight ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.number)) { append("${waveHeight.value.roundToInt()}") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(".") }
+        withStyle(SpanStyle(color = codeTheme.member)) { append("dp") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveVelocity ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveSpeed.value.roundToInt()}") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp ") }
-        withStyle(SpanStyle(codeTheme.function, fontSize)) { append("to ") }
-        withStyle(SpanStyle(codeTheme.member, fontSize)) { append(if (isBackward) "TAIL" else "HEAD") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    waveVelocity ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.number)) { append("${waveSpeed.value.roundToInt()}") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(".") }
+        withStyle(SpanStyle(color = codeTheme.member)) { append("dp ") }
+        withStyle(SpanStyle(color = codeTheme.function)) { append("to ") }
+        withStyle(SpanStyle(color = codeTheme.member)) { append(if (isBackward) "TAIL" else "HEAD") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    waveThickness ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${waveThickness.value.roundToInt()}") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    waveThickness ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.number)) { append("${waveThickness.value.roundToInt()}") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(".") }
+        withStyle(SpanStyle(color = codeTheme.member)) { append("dp") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    trackThickness ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.number, fontSize)) { append("${trackThickness.value.roundToInt()}") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(".") }
-        withStyle(SpanStyle(codeTheme.member, fontSize)) { append("dp") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    trackThickness ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.number)) { append("${trackThickness.value.roundToInt()}") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(".") }
+        withStyle(SpanStyle(color = codeTheme.member)) { append("dp") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    incremental ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.keyword, fontSize)) { append("$isIncremental") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(",") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    incremental ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.keyword)) { append("$isIncremental") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(",") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("    animationSpecs ") }
-        withStyle(SpanStyle(codeTheme.argument, fontSize)) { append("= ") }
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append("...") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("    animationSpecs ") }
+        withStyle(SpanStyle(color = codeTheme.argument)) { append("= ") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append("...") }
         appendLine()
-        withStyle(SpanStyle(codeTheme.identifier, fontSize)) { append(")") }
+        withStyle(SpanStyle(color = codeTheme.identifier)) { append(")") }
     }
     // Makes it possible for user to select the code (for copy/paste)
     SelectionContainer {
         Text(
             text = code,
+            fontSize = 14.sp,
             fontFamily = FontFamily.Monospace,
+            lineHeight = 25.sp,
+            letterSpacing = 1.sp,
             modifier = modifier
         )
     }
@@ -544,11 +482,16 @@ fun Code(
  * For example, here, the `js("number.toFixed(2)")` will be compiled to `(number) => number.toFixed(2)`.
  *
  * See [this SO post](https://stackoverflow.com/q/42791492)
- * and [this Kotlin guide](https://kotlinlang.org/docs/wasm-js-interop.html)
+ * and [this Kotlin guide](https://kotlinlang.org/docs/wasm-js-interop.html).
  */
-fun roundTo2Decimals(@Suppress("unused") number: Float): JsNumber = js("number.toFixed(2)")
+fun roundTo2Decimals(@Suppress("unused") number: Float): JsNumber =
+    js("number.toFixed(2)")
 
-@OptIn(InternalResourceApi::class)
-suspend fun loadResource(path: String): ByteArray {
-    return readResourceBytes(path)
-}
+fun getM3ColorScheme(): ColorScheme =
+    if (isThemeDark()) darkScheme else lightScheme
+
+fun getM2Colors(): Colors =
+    if (isThemeDark()) darkColors(primaryDark) else lightColors(primaryLight)
+
+fun isThemeDark(): Boolean =
+    document.documentElement?.attributes?.get("data-theme")?.value == "dark"

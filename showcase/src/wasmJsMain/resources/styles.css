@@ -32,7 +32,7 @@ theme-switch {
     width: 32px;
 }
 
-#flip-direction {
+#flip-button {
     fill: var(--primary-color);
     position: absolute;
     inset-inline-end: 72px;
@@ -46,7 +46,7 @@ theme-switch {
         pointer-events: none;
     }
 
-    &.toggled {
+    &.flipped {
         transform: scaleX(-1);
     }
 
@@ -84,7 +84,7 @@ theme-switch {
     }
 }
 
-#content {
+#app {
     width: 900px;
     height: 100vh;
     /* because of the bottom exceeding just a little bit */
