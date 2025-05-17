@@ -371,13 +371,13 @@ fun Code(
     """.trimIndent()
 
     val code = buildAnnotatedString {
-        withStyle(SpanStyle(color = codeTheme.keyword)) { append("import ") }
-        withStyle(SpanStyle(color = codeTheme.identifier)) {
+        withStyle(SpanStyle(color = codeTheme.keyword, fontSize = 13.sp)) { append("import ") }
+        withStyle(SpanStyle(color = codeTheme.identifier, fontSize = 13.sp)) {
             append("...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider")
         }
         appendLine()
-        withStyle(SpanStyle(color = codeTheme.keyword)) { append("import ") }
-        withStyle(SpanStyle(color = codeTheme.identifier)) {
+        withStyle(SpanStyle(color = codeTheme.keyword, fontSize = 13.sp)) { append("import ") }
+        withStyle(SpanStyle(color = codeTheme.identifier, fontSize = 13.sp)) {
             append("...wavyslider.WaveDirection.*")
         }
         appendLine()
