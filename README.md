@@ -93,6 +93,57 @@ fun MyComposable() {
 }
 ```
 
+## FAQ
+<details><summary>How to create a wavy <i>divider</i> that is still and fixed and not animated?</summary>
+
+```kotlin
+WavySlider3(
+    value = 1f,
+    onValueChange = {},
+    thumb = {},
+    track = {
+        SliderDefaults.Track(
+            it,
+            enabled = false,
+            thumbTrackGapSize = 0.dp,
+            waveThickness = 1.dp,
+            waveVelocity = 0.dp to RIGHT,
+            animationSpecs = WaveAnimationSpecs(
+                waveAppearanceAnimationSpec = snap(),
+                waveVelocityAnimationSpec = snap(),
+                waveHeightAnimationSpec = snap()
+            )
+        )
+    }
+)
+```
+</details>
+
+<details><summary>How to flatten the wave on click/drag or make the slider wavy only on click/drag?</summary>
+
+See https://github.com/mahozad/wavy-slider/issues/8#issuecomment-1903921917.
+</details>
+
+<details><summary>How to disable the initial/starting/appearance (aka composition) animation of the wave?</summary>
+
+Use the Compose `snap()` animation spec (make sure to import the proper M2/M3 `SliderDefaults` object):
+```kotlin
+animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(waveAppearanceAnimationSpec = snap())
+```
+</details>
+
+<details><summary>How to get or use the default value of properties like waveHeight, waveLength, or waveVelocity?</summary>
+
+Use the properties available in `SliderDefaults` (make sure to import the proper M2/M3 `SliderDefaults` object).
+</details>
+
+<details><summary>How is the wavy slider component used in its website showcase (i.e. in an HTML/CSS/JavaScript page)?</summary>
+
+Compose Multiplatform and its underlying Kotlin Multiplatform, support compiling Kotlin code to JavaScript (Kotlin/JS)
+or WASM (Kotlin/Wasm). The project showcase website is in fact also made with Compose Multiplatform framework with
+the help of a little bit of regular HTML and CSS code.
+</details>
+
 ## Related
   - AOSP native squiggly progress: [Main branch][Android main branch implementation] ❖ [Android 14][Android 14 branch implementation] ❖ [Android 13][Android 13 branch implementation]
   - LinearWavyProgressIndicator (available since [Material 3 v1.4.0-alpha01][Material 3 v1.4.0-alpha01])
