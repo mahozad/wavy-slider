@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.dokka)
     alias(libs.plugins.maven.publish)
-    id("signing")
 }
 
 group = "ir.mahozad.multiplatform"
@@ -123,12 +122,13 @@ publishing {
 
 mavenPublishing {
     // GitHub and other Maven repos are defined above
-    // Should set Gradle mavenCentralUsername and mavenCentralPassword properties
+    // Should set Gradle mavenCentralUsername and mavenCentralPassword gradle properties
     publishToMavenCentral(
         host = SonatypeHost.CENTRAL_PORTAL,
         automaticRelease = false
     )
 
+    // For information about signing.* properties, see the gradle.properties file
     signAllPublications()
 
     coordinates(
@@ -180,15 +180,4 @@ mavenPublishing {
             url = "https://github.com/mahozad/${project.name}/actions"
         }
     }
-}
-
-/*
- * Uses signing.* properties defined in gradle.properties in ~/.gradle/ or project root
- * Can also pass from command line like below:
- * ./gradlew task -Psigning.secretKeyRingFile=... -Psigning.password=... -Psigning.keyId=...
- * See https://docs.gradle.org/current/userguide/signing_plugin.html
- * and https://stackoverflow.com/a/67115705
- */
-signing {
-    sign(publishing.publications)
 }

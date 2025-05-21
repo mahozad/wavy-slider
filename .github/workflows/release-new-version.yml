@@ -11,8 +11,7 @@ jobs:
     # Should be macOS to be able to create iOS variants as well
     runs-on: macos-latest
     env:
-      # For information about signing.* properties,
-      # see comments on signing { ... } block in the library build file
+      # For information about signing.* properties, see the gradle.properties file
       SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       SIGNING_KEY_CONTENT_BASE64: ${{ secrets.SIGNING_KEY_CONTENT_BASE64 }}
