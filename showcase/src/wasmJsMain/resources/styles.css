@@ -2,6 +2,7 @@
     box-sizing: border-box;
     white-space: nowrap;
     margin: 0;
+    transition: color, background-color 350ms ease;
 }
 
 html {

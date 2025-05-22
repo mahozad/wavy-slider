@@ -64,3 +64,41 @@ val scrimDark = Color(0xFF000000)
 val inverseSurfaceDark = Color(0xFFE5E3D6)
 val inverseOnSurfaceDark = Color(0xFF313128)
 val inversePrimaryDark = Color(0xFF5B631E)
+
+data class CodeColors(
+    val keyword: Color,
+    val number: Color,
+    val member: Color,
+    val function: Color,
+    val argument: Color,
+    val identifier: Color,
+    val semantic1: Color,
+    val semantic2: Color
+)
+
+val codeColorsLight: (colorOnSurface: Color) -> CodeColors = {
+    CodeColors(
+        keyword = Color(0xFF_0033b3),
+        number = Color(0xFF_1750eb),
+        member = Color(0xFF_871094),
+        function = Color(0xFF_00627a),
+        argument = Color(0xFF_4a86e8),
+        semantic1 = Color(0xFF_9b3b6a),
+        semantic2 = Color(0xFF_005910),
+        identifier = it
+    )
+}
+
+// Adopted from IntelliJ IDEA 2025.1 Dark theme default Kotlin color schemes
+val codeColorsDark: (colorOnSurface: Color) -> CodeColors = {
+    CodeColors(
+        keyword = Color(0xFF_cf8e6d),
+        number = Color(0xFF_2aacb8),
+        member = Color(0xFF_c77dbb),
+        function = Color(0xFF_57aaf7),
+        argument = Color(0xFF_56c1d6),
+        semantic1 = Color(0xFF_529d52),
+        semantic2 = Color(0xFF_be7070),
+        identifier = it
+    )
+}

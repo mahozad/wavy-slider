@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -58,7 +57,7 @@ fun App() {
         (it.target as? Element)?.classList?.toggle("flipped")
         layoutDirection = if (layoutDirection == LayoutDirection.Ltr) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
-    MaterialTheme3(colorScheme) {
+    MaterialTheme3(animateColorScheme(colorScheme)) {
         Surface {
             Content(layoutDirection)
         }
@@ -308,45 +307,9 @@ fun Code(
     isBackward: Boolean,
     modifier: Modifier
 ) {
-    data class CodeColors(
-        val keyword: Color,
-        val number: Color,
-        val member: Color,
-        val function: Color,
-        val argument: Color,
-        val semantic1: Color,
-        val semantic2: Color,
-        val identifier: Color,
-    )
-
     val colorOnSurface = MaterialTheme3.colorScheme.onSurface
     val valueRounded = remember(value) { roundTo2Decimals(value) }
-    val lightColors = remember(colorOnSurface) {
-        CodeColors(
-            keyword = Color(0xFF_0033b3),
-            number = Color(0xFF_1750eb),
-            member = Color(0xFF_871094),
-            function = Color(0xFF_00627a),
-            argument = Color(0xFF_4a86e8),
-            semantic1 = Color(0xFF_9b3b6a),
-            semantic2 = Color(0xFF_005910),
-            identifier = colorOnSurface,
-        )
-    }
-    // Adopted from IntelliJ IDEA 2025.1 Dark theme default Kotlin color schemes
-    val darkColors = remember(colorOnSurface) {
-        CodeColors(
-            keyword = Color(0xFF_cf8e6d),
-            number = Color(0xFF_2aacb8),
-            member = Color(0xFF_c77dbb),
-            function = Color(0xFF_57aaf7),
-            argument = Color(0xFF_56c1d6),
-            semantic1 = Color(0xFF_529d52),
-            semantic2 = Color(0xFF_be7070),
-            identifier = colorOnSurface,
-        )
-    }
-    val codeTheme = if (isThemeDark()) darkColors else lightColors
+    val codeTheme = if (isThemeDark()) codeColorsDark(colorOnSurface) else codeColorsLight(colorOnSurface)
 
     /* Equivalent to the following code */ /* language=kotlin */ """
         import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
