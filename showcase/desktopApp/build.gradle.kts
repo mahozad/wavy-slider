@@ -7,11 +7,14 @@ plugins {
 }
 
 kotlin {
-    jvm()
+    jvm(name = "desktop")
     sourceSets {
-        jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(projects.showcase.shared)
+        @Suppress("unused")
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(projects.showcase.shared)
+            }
         }
     }
 }
