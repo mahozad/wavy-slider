@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.dokka)
     alias(libs.plugins.maven.publish)
+    alias(libs.plugins.dokka)
 }
 
 group = "ir.mahozad.multiplatform"
@@ -17,27 +17,12 @@ version = "2.1.0-rc"
 kotlin {
     androidTarget { publishLibraryVariants("release") }
     jvm(name = "desktop") // Windows, Linux, macOS (with Java runtime)
-    js(compiler = IR) { // Kotlin/JS drawing to a canvas
-        nodejs()
-        browser()
-        binaries.executable()
-    }
+    js(IR) { browser() }  // Kotlin/JS drawing to a canvas
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs { // Kotlin/Wasm drawing to a canvas
-        nodejs()
-        browser()
-        binaries.executable()
-    }
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "library"
-            isStatic = true
-        }
-    }
+    wasmJs { browser() }  // Kotlin/Wasm drawing to a canvas
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {

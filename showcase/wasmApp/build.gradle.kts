@@ -10,10 +10,10 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
-        nodejs()
         binaries.executable()
     }
     sourceSets {
+        @Suppress("unused")
         val wasmJsMain by getting {
             dependencies {
                 implementation(compose.runtime)

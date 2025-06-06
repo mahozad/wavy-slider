@@ -5,9 +5,8 @@ plugins {
 }
 
 kotlin {
-    js(compiler = IR) {
+    js(IR) {
         browser()
-        nodejs()
         binaries.executable()
     }
     sourceSets {

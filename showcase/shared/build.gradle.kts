@@ -9,19 +9,11 @@ plugins {
 }
 
 kotlin {
-    jvm(name = "desktop")
-    js(compiler = IR) {
-        browser()
-        nodejs()
-        binaries.executable()
-    }
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-        nodejs()
-        binaries.executable()
-    }
     androidTarget()
+    jvm(name = "desktop")
+    js(IR) { browser() }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs { browser() }
     // Remember to uncomment kotlin("native.cocoapods") above as well
     // iosX64()
     // iosArm64()
@@ -45,7 +37,6 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.components.resources)
-            // api("ir.mahozad.multiplatform:wavy-slider:x.y.z")
             api(projects.wavySlider)
         }
         androidMain.dependencies {
@@ -53,16 +44,12 @@ kotlin {
             api(libs.androidx.appcompat)
             api(libs.androidx.core.ktx)
         }
+        @Suppress("unused")
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
             }
         }
-        val jsMain by getting
-        // See above
-        // val iosX64Main by getting
-        // val iosArm64Main by getting
-        // val iosSimulatorArm64Main by getting
     }
 }
 
