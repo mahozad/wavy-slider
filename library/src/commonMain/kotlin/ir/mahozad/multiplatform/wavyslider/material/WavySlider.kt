@@ -1,7 +1,7 @@
 /*
  *
  *
- * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.0/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+ * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.2/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
  *
  *
  */
