@@ -1,7 +1,7 @@
 [versions]
 gradle = "8.14.2"
 java = "17"
-kotlin = "2.2.0-Beta2"
+kotlin = "2.2.0"
 kotlin-compatibility = "0.17.0"
 compose-multiplatform = "1.8.0"
 agp = "8.9.3" # Android Gradle plugin
