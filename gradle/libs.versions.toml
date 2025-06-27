@@ -4,10 +4,10 @@ java = "17"
 kotlin = "2.2.0"
 kotlin-compatibility = "0.18.0"
 compose-multiplatform = "1.8.2"
-agp = "8.9.3" # Android Gradle plugin
+android-gradlePlugin = "8.9.3" # AGP
 android-minSdk = "21"
-android-compileSdk = "35"
 android-targetSdk = "35"
+android-compileSdk = "35"
 androidx-activityCompose = "1.10.1"
 androidx-core-ktx = "1.16.0"
 androidx-appcompat = "1.7.1"
@@ -24,7 +24,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlin-compatibility" }
-android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+android-application = { id = "com.android.application", version.ref = "android-gradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "android-gradlePlugin" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
