@@ -5,7 +5,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -116,16 +115,6 @@ internal val defaultWaveAnimationSpecs = WaveAnimationSpecs(
     waveVelocityAnimationSpec = tween(durationMillis = 2000, easing = LinearOutSlowInEasing),
     waveAppearanceAnimationSpec = tween(durationMillis = 6000, easing = EaseOutQuad)
 )
-
-// Copied from https://github.com/JetBrains/compose-multiplatform-core/blob/jb-main/compose/material/material/src/commonMain/kotlin/androidx/compose/material/NavigationKeyEvents.kt
-internal expect val KeyEvent.isDirectionUp: Boolean
-internal expect val KeyEvent.isDirectionDown: Boolean
-internal expect val KeyEvent.isDirectionRight: Boolean
-internal expect val KeyEvent.isDirectionLeft: Boolean
-internal expect val KeyEvent.isHome: Boolean
-internal expect val KeyEvent.isMoveEnd: Boolean
-internal expect val KeyEvent.isPgUp: Boolean
-internal expect val KeyEvent.isPgDn: Boolean
 
 /**
  * As a sidenote, speed of a wave follows the equation

@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -7,54 +6,22 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.dokka)
-    // TODO: Migrate back to the Gradle id("maven-publish") plugin when
-    //  the maven-publish plugin starts to support publishing to Central Portal:
-    //  https://central.sonatype.org/publish/publish-portal-gradle/
-    //  See https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html
     alias(libs.plugins.maven.publish)
-    id("signing")
+    alias(libs.plugins.dokka)
 }
 
 group = "ir.mahozad.multiplatform"
-version = "2.1.0-rc"
+version = "2.1.0"
 
-// See https://central.sonatype.com/namespace/org.jetbrains.compose.material
-// for the targets that Compose Multiplatform supports
 kotlin {
-    // Publishes source files; for javadoc/kdoc/dokka see the publications block
-    withSourcesJar(publish = true)
-
     androidTarget { publishLibraryVariants("release") }
-    // Windows, Linux, macOS (with Java runtime)
-    jvm(name = "desktop")
-    // Kotlin/JS drawing to a canvas
-    js(compiler = IR) {
-        nodejs()
-        browser()
-        binaries.executable()
-    }
-    // Kotlin/Wasm drawing to a canvas
+    jvm(name = "desktop") // Windows, Linux, macOS (with Java runtime)
+    js(IR) { browser() }  // Kotlin/JS drawing to a canvas
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        nodejs()
-        browser()
-        binaries.executable()
-    }
-    // Building and publishing for iOS target requires a machine running macOS;
-    // otherwise, the .klib will not be produced and the compiler warns about that.
-    // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#ios-framework
-    listOf(
-        // By declaring these targets, the iosMain source set will be created automatically
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "library"
-            isStatic = true
-        }
-    }
+    wasmJs { browser() }  // Kotlin/Wasm drawing to a canvas
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
@@ -63,39 +30,23 @@ kotlin {
             api(compose.material)
             api(compose.runtime)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
-        val desktopMain by getting {}
+        @Suppress("unused")
         val desktopTest by getting {
             dependencies {
                 implementation(compose.desktop.uiTestJUnit4)
-                // Needed because of build errors; remove if tests run
+                // Needed because of build errors; TODO: remove if tests run
                 implementation(compose.desktop.windows_x64)
             }
         }
-        androidMain {}
-        androidUnitTest {}
-        jsMain {}
-        jsTest {}
-        iosX64Main {}
-        iosArm64Main {}
-        iosSimulatorArm64Main {}
     }
 }
 
 android {
     namespace = "ir.mahozad.multiplatform.wavyslider"
-
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
-
-    buildFeatures {
-        buildConfig = false
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
         targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
@@ -112,14 +63,13 @@ dokka {
         enableAndroidDocumentationLink = true
         enableKotlinStdLibDocumentationLink = true
         jdkVersion = libs.versions.java.get().toInt()
-        // sourceLink {
-        //     // Unix based directory relative path to the root of the project (where you execute gradle respectively)
-        //     localDirectory = file("src/commonMain/kotlin/")
-        //     // URL showing where the source code can be accessed through the web browser
-        //     remoteUrl = uri("https://github.com/mahozad/${project.name}/blob/main/${project.name}/src/main/kotlin")
-        //     // Suffix which is used to append the line number to the URL. Use #L for GitHub
-        //     remoteLineSuffix = "#L"
-        // }
+        sourceLink {
+            localDirectory = projectDir.resolve("src")
+            // URL showing where the source code can be accessed through the web browser
+            remoteUrl = uri("https://github.com/mahozad/${project.name}/tree/v$version/library/src")
+            // Is used to append the line number to the URL
+            remoteLineSuffix = "#L"
+        }
     }
 
     dokkaPublications.html {
@@ -148,18 +98,16 @@ publishing {
             // or with environment variables as `ORG_GRADLE_PROJECT_GitHubPackagesUsername` and `ORG_GRADLE_PROJECT_GitHubPackagesPassword`
             credentials(credentialsType = PasswordCredentials::class)
         }
+        // Maven Central Portal is defined below
     }
-    // Maven Central Portal is defined below
 }
 
 mavenPublishing {
     // GitHub and other Maven repos are defined above
-    // Should set Gradle mavenCentralUsername and mavenCentralPassword properties
-    publishToMavenCentral(
-        host = SonatypeHost.CENTRAL_PORTAL,
-        automaticRelease = false
-    )
+    // Should set Gradle mavenCentralUsername and mavenCentralPassword gradle properties
+    publishToMavenCentral(automaticRelease = false)
 
+    // For information about signing.* properties, see the gradle.properties file
     signAllPublications()
 
     coordinates(
@@ -172,15 +120,15 @@ mavenPublishing {
         url = "https://mahozad.ir/${project.name}"
         name = project.name
         description = """
-            Animated Material wavy slider and progress bar similar to the one introduced in Android 13 media player.  
+            Animated wavy Material Slider and progress/seek bar similar to the one used in Android 13 media controls.  
             It has curly, wobbly, squiggly, wiggly, jiggly, wriggly, dancing movements.
-            Some users call it the sperm. Visit the project on GitHub to learn more.
+            Some users call it the sperm. Visit the project on GitHub at https://github.com/mahozad/wavy-slider to learn more.
         """.trimIndent()
         inceptionYear = "2023"
         licenses {
             license {
                 name = "Apache-2.0 License"
-                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         }
         developers {
@@ -211,15 +159,4 @@ mavenPublishing {
             url = "https://github.com/mahozad/${project.name}/actions"
         }
     }
-}
-
-/*
- * Uses signing.* properties defined in gradle.properties in ~/.gradle/ or project root
- * Can also pass from command line like below:
- * ./gradlew task -Psigning.secretKeyRingFile=... -Psigning.password=... -Psigning.keyId=...
- * See https://docs.gradle.org/current/userguide/signing_plugin.html
- * and https://stackoverflow.com/a/67115705
- */
-signing {
-    sign(publishing.publications)
 }

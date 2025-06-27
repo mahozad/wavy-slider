@@ -1,6 +1,6 @@
-[![Kotlin version]][Kotlin release]
-[![Compose Multiplatform version]][Compose Multiplatform release]
-[![Latest Maven Central release]][Library on Maven Central]
+[![Kotlin badge]][Kotlin release]
+[![Compose Multiplatform badge]][Compose Multiplatform release]
+[![Maven Central badge]][Library Maven Central release]
 
 <br>
 
@@ -23,13 +23,14 @@ a regular Material Slider.
 Supported target platforms are Android, iOS, Desktop (JVM), and JavaScript (Kotlin/JS and Kotlin/Wasm).
 
 ## Demo
+
 For a live, interactive Web demo go to https://mahozad.ir/wavy-slider.  
 For real-world apps in various platforms using the library, see the [showcase](showcase) directory.
 
 ## Usage
 
 ```kotlin
-implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0-rc")
+implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
 ```
 
 <details>
@@ -42,7 +43,7 @@ If you target a subset of the library supported platforms, add the library to yo
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0-rc")
+            implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
             // ...
         }
 ```
@@ -54,12 +55,12 @@ add the library separately to each supported target:
 kotlin {
     val desktopMain /* OR jvmMain */ by getting {
         dependencies {
-            implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0-rc")
+            implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
             // ...
         }
     }
     androidMain.dependencies {
-        implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0-rc")
+        implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
         // ...
     }
     // Other targets...
@@ -93,7 +94,60 @@ fun MyComposable() {
 }
 ```
 
+## FAQ
+
+<details><summary>How to create a wavy <i>divider</i> that is still and fixed and not animated?</summary>
+
+```kotlin
+WavySlider3(
+    value = 1f,
+    onValueChange = {},
+    thumb = {},
+    track = {
+        SliderDefaults.Track(
+            it,
+            enabled = false,
+            thumbTrackGapSize = 0.dp,
+            waveThickness = 1.dp,
+            waveVelocity = 0.dp to RIGHT,
+            animationSpecs = WaveAnimationSpecs(
+                waveAppearanceAnimationSpec = snap(),
+                waveVelocityAnimationSpec = snap(),
+                waveHeightAnimationSpec = snap()
+            )
+        )
+    }
+)
+```
+</details>
+
+<details><summary>How to flatten the wave on click/drag or make the slider wavy only on click/drag?</summary>
+
+See https://github.com/mahozad/wavy-slider/issues/8#issuecomment-1903921917.
+</details>
+
+<details><summary>How to disable the initial/starting/appearance (aka composition) animation of the wave?</summary>
+
+Use the Compose `snap()` animation spec (make sure to import the proper M2/M3 `SliderDefaults` object):
+```kotlin
+animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(waveAppearanceAnimationSpec = snap())
+```
+</details>
+
+<details><summary>How to get or use the default value of properties like waveHeight, waveLength, or waveVelocity?</summary>
+
+Use the properties available in `SliderDefaults` (make sure to import the proper M2/M3 `SliderDefaults` object).
+</details>
+
+<details><summary>How is the wavy slider component used in its website showcase (i.e. in an HTML/CSS/JavaScript page)?</summary>
+
+Compose Multiplatform and its underlying Kotlin Multiplatform, support compiling Kotlin code to JavaScript (Kotlin/JS)
+or WASM (Kotlin/Wasm). The project showcase website is in fact also made with Compose Multiplatform framework with
+the help of a little bit of regular HTML and CSS code.
+</details>
+
 ## Related
+
   - AOSP native squiggly progress: [Main branch][Android main branch implementation] ❖ [Android 14][Android 14 branch implementation] ❖ [Android 13][Android 13 branch implementation]
   - LinearWavyProgressIndicator (available since [Material 3 v1.4.0-alpha01][Material 3 v1.4.0-alpha01])
   - Squiggly slider (Android-only): https://github.com/saket/squiggly-slider
@@ -111,12 +165,12 @@ fun MyComposable() {
     + [Squiggly Seekbar with Animation in Flutter](https://stackoverflow.com/q/75889414/8583692)
     + [Is it possible to make a squiggly line?](https://stackoverflow.com/q/17285514/8583692)
 
-[Kotlin version]: https://img.shields.io/badge/Kotlin-2.2.0--Beta2-303030.svg?labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOC45MyAxOC45MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyYWRpYWxHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHI9IjIxLjY3OSIgY3g9IjIyLjQzMiIgY3k9IjMuNDkzIiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIDEgLTQuMTMgLTIuNzE4KSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgPHN0b3Agc3RvcC1jb2xvcj0iI2U0NDg1NyIgb2Zmc2V0PSIuMDAzIi8+CiAgICA8c3RvcCBzdG9wLWNvbG9yPSIjYzcxMWUxIiBvZmZzZXQ9Ii40NjkiLz4KICAgIDxzdG9wIHN0b3AtY29sb3I9IiM3ZjUyZmYiIG9mZnNldD0iMSIvPgogIDwvcmFkaWFsR3JhZGllbnQ+CiAgPHBhdGggZmlsbD0idXJsKCNncmFkaWVudCkiIGQ9Ik0gMTguOTMsMTguOTIgSCAwIFYgMCBIIDE4LjkzIEwgOS4yNyw5LjMyIFoiLz4KPC9zdmc+Cg==
-[Compose Multiplatform version]: https://img.shields.io/badge/Compose_Multiplatform-1.8.0-303030.svg?labelColor=303030&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAj5JREFUOI2Vk0FIVFEUhv9znBllplBIF7loK1jtJKhFNG/EVtYicNkmKghCMpJGq0HoPcWQVi2KUMqdixaJi0KdXVBILQojs4wCaTGC4LyX+N47fwtFpnEKOnDh3p//fudeDr+QRK3KukGHCscAwCjXi4PphVo+qQZkhzaa61J6m8RhAfpisS01HQOwZin0F29kftYEdDxCsqnkX6HgIonR+YHM00pjzg26oXRBPrNw30ixgM1dgDMcnFFyyIAphpn7xQI2Tw6XW5LQO0L+isPQKxaa1rNDaJCkf02BHhMpzOfTzxUA1GyCxEcFxjcOIu50/b4kZQnkZQJ9mkwuOV5wqaUdYSIhTwBZFto4AOj2R+S7qEwZMNtU8lcoGAPximZHDegAsCjgw7XP/rJFnDHBhEB+AABIIueW35FEdsQ/67hl5jz/AklUrpxX7nfcMp27wYnKO/rHCAwhANDkffW4DPJhZxtV6lpt/N+qCRCND+3RDHs0AEhUHii6KIxXSZnq9PxJTUhetrQ+VrsH4TlAvlgUfd3zAgMau0aD1uLNhm8WBm0CjBDoiSN8ijReJHBaRAYtTB8pFvaXukaDVgMadwFC6bWIM47n54GWaHYgM5CwunaASwBe1yXQNptPewDgeH7eIs4IpXcXMDeYnl5vzhxTINCUv+B4/vkXtxpWQEwK8Phlf3o15wbdmvLfCFgfh5njc4Pp6e3mVWHqHN44AOidnTC9NVpJRE+BKP0zTNW1HWc8IMxIvfq3OP8GvjkzgYHHZZMAAAAASUVORK5CYII=
-[Latest Maven Central release]: https://img.shields.io/maven-central/v/ir.mahozad.multiplatform/wavy-slider?label=Maven%20Central&labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE2IDE2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzPgogICAgPHN0eWxlPi5he2ZpbGw6bm9uZTt9LmJ7Y2xpcC1wYXRoOnVybCgjYSk7fS5je2ZpbGw6I2ZmZjt9PC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iYSI+CiAgICAgIDxyZWN0IGNsYXNzPSJhIiB4PSIxNC43IiB5PSIxMSIgd2lkdGg9IjE3MSIgaGVpZ2h0PSIxNTEiLz4KICAgIDwvY2xpcFBhdGg+CiAgICA8Y2xpcFBhdGggaWQ9ImNsaXBQYXRoMTMiPgogICAgICA8cmVjdCBjbGFzcz0iYSIgeD0iMTQuNyIgeT0iMTEiIHdpZHRoPSIxNzEiIGhlaWdodD0iMTUxIi8+CiAgICA8L2NsaXBQYXRoPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iYyIgdHJhbnNmb3JtPSJtYXRyaXgoLjE2NCAwIDAgLjE2NCAtOC4zNyAtMS44MSkiIGQ9Im0xMDAgMTEtNDIuMyAyNC40djQ4LjlsNDIuMyAyNC40IDQyLjMtMjQuNHYtNDguOXptMzAuMiA2Ni4zLTMwLjIgMTcuNC0zMC4yLTE3LjR2LTM0LjlsMzAuMi0xNy40IDMwLjIgMTcuNHoiIGNsaXAtcGF0aD0idXJsKCNjbGlwUGF0aDEzKSIvPgo8L3N2Zz4K
-[Kotlin release]: https://github.com/JetBrains/kotlin/releases/tag/v2.2.0-Beta2
-[Compose Multiplatform release]: https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.8.0
-[Library on Maven Central]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/2.1.0-rc/
+[Kotlin badge]: https://img.shields.io/badge/Kotlin-2.2.0-303030.svg?labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOC45MyAxOC45MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyYWRpYWxHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHI9IjIxLjY3OSIgY3g9IjIyLjQzMiIgY3k9IjMuNDkzIiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIDEgLTQuMTMgLTIuNzE4KSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgPHN0b3Agc3RvcC1jb2xvcj0iI2U0NDg1NyIgb2Zmc2V0PSIuMDAzIi8+CiAgICA8c3RvcCBzdG9wLWNvbG9yPSIjYzcxMWUxIiBvZmZzZXQ9Ii40NjkiLz4KICAgIDxzdG9wIHN0b3AtY29sb3I9IiM3ZjUyZmYiIG9mZnNldD0iMSIvPgogIDwvcmFkaWFsR3JhZGllbnQ+CiAgPHBhdGggZmlsbD0idXJsKCNncmFkaWVudCkiIGQ9Ik0gMTguOTMsMTguOTIgSCAwIFYgMCBIIDE4LjkzIEwgOS4yNyw5LjMyIFoiLz4KPC9zdmc+Cg==
+[Maven Central badge]: https://img.shields.io/maven-central/v/ir.mahozad.multiplatform/wavy-slider?label=Maven%20Central&labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE2IDE2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzPgogICAgPHN0eWxlPi5he2ZpbGw6bm9uZTt9LmJ7Y2xpcC1wYXRoOnVybCgjYSk7fS5je2ZpbGw6I2ZmZjt9PC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iYSI+CiAgICAgIDxyZWN0IGNsYXNzPSJhIiB4PSIxNC43IiB5PSIxMSIgd2lkdGg9IjE3MSIgaGVpZ2h0PSIxNTEiLz4KICAgIDwvY2xpcFBhdGg+CiAgICA8Y2xpcFBhdGggaWQ9ImNsaXBQYXRoMTMiPgogICAgICA8cmVjdCBjbGFzcz0iYSIgeD0iMTQuNyIgeT0iMTEiIHdpZHRoPSIxNzEiIGhlaWdodD0iMTUxIi8+CiAgICA8L2NsaXBQYXRoPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iYyIgdHJhbnNmb3JtPSJtYXRyaXgoLjE2NCAwIDAgLjE2NCAtOC4zNyAtMS44MSkiIGQ9Im0xMDAgMTEtNDIuMyAyNC40djQ4LjlsNDIuMyAyNC40IDQyLjMtMjQuNHYtNDguOXptMzAuMiA2Ni4zLTMwLjIgMTcuNC0zMC4yLTE3LjR2LTM0LjlsMzAuMi0xNy40IDMwLjIgMTcuNHoiIGNsaXAtcGF0aD0idXJsKCNjbGlwUGF0aDEzKSIvPgo8L3N2Zz4K
+[Compose Multiplatform badge]: https://img.shields.io/badge/Compose_Multiplatform-1.8.2-303030.svg?labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjU2IiB2aWV3Qm94PSIwIDAgNTAgNTYiIHdpZHRoPSI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PHJhZGlhbEdyYWRpZW50IGlkPSJhIiBjeD0iMCIgY3k9IjAiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoNDIuMTMxNSAwIDAgNDIuMTMxOCAxNi4xMzA2IDE0LjQ0MTIpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTM4M2VjIi8+PHN0b3Agb2Zmc2V0PSIuODY2OTkiIHN0b3AtY29sb3I9IiM3ZjUyZmYiLz48L3JhZGlhbEdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIzNy4xNzE5IiB4Mj0iMTAuOTczMyIgeTE9Ii4zNzY2MzgiIHkyPSIzMC4wMzUzIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMzM2MzZmYiLz48c3RvcCBvZmZzZXQ9Ii44Nzg0MyIgc3RvcC1jb2xvcj0iIzUzODNlYyIvPjwvbGluZWFyR3JhZGllbnQ+PHBhdGggZD0ibTQ5LjI1IDE0djI4bC0yNC4yNSAxNC0yNC4yNS0xNHYtMjhsMjQuMjUtMTR6IiBmaWxsPSIjNjA3NWYyIi8+PHBhdGggZD0ibTM0LjUgMjIuNXYxMWwtOS41IDUuNXYxN2wyNC4yNS0xNHYtMjh6IiBmaWxsPSIjNmI1N2ZmIi8+PHBhdGggZD0ibTI1IDM5LTkuNS01LjV2LTExbC0xNC43NS04LjV2MjhsMjQuMjUgMTR6IiBmaWxsPSJ1cmwoI2EpIi8+PHBhdGggZD0ibTE1LjUgMjIuNSA5LjUtNS41IDkuNSA1LjUgMTQuNzUtOC41LTI0LjI1LTE0LTI0LjI1IDE0eiIgZmlsbD0idXJsKCNiKSIvPjxwYXRoIGQ9Im0yNSAxNyA5LjUyNjMgNS41djExbC05LjUyNjMgNS41LTkuNTI2My01LjV2LTExeiIgZmlsbD0iIzAwMCIvPjwvc3ZnPg==
+[Kotlin release]: https://github.com/JetBrains/kotlin/releases/tag/v2.2.0
+[Compose Multiplatform release]: https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.8.2
+[Library Maven Central release]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/2.1.0/
 [Material Slider]: https://m3.material.io/components/sliders/overview
 [Android 13 media controls]: https://www.xda-developers.com/android-13-beta-1-media-controls-animation/
 [Jetpack Compose]: https://developer.android.com/jetpack/compose

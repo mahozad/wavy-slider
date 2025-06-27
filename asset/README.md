@@ -3,7 +3,7 @@ The [logo-styles.css](logo-styles.css) and [logo-icon.svg](logo-icon.svg) are us
 ---
 
 To produce the [demo Animated PNGs](demo-light.png) did as follows:
-1. Executed the visual test *Wavy slider demo*
+1. Executed the app located in demo directory beside this file
 2. Made sure its window is not minimized (to prevent FFmpeg error)
 3. Executed *FFmpeg v5.1-gpl* `./ffmpeg.exe -f gdigrab -framerate 30 -i title="WavySliderDemo" -plays 0 out.apng`  
    If the entire result is black, use `System.setProperty("skiko.renderApi", "OPENGL")` before the call to `application(...`  

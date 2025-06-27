@@ -1,23 +1,22 @@
 [versions]
-gradle = "8.14"
+gradle = "8.14.2"
 java = "17"
-kotlin = "2.2.0-Beta2"
-kotlin-compatibility = "0.17.0"
-compose-multiplatform = "1.8.0"
-agp = "8.9.2" # Android Gradle plugin
+kotlin = "2.2.0"
+kotlin-compatibility = "0.18.0"
+compose-multiplatform = "1.8.2"
+android-gradlePlugin = "8.9.3" # AGP
 android-minSdk = "21"
-android-compileSdk = "35"
-android-targetSdk = "35"
+android-targetSdk = "36"
+android-compileSdk = "36"
 androidx-activityCompose = "1.10.1"
 androidx-core-ktx = "1.16.0"
-androidx-appcompat = "1.7.0"
-maven-publish = "0.31.0"
+androidx-appcompat = "1.7.1"
+maven-publish = "0.33.0"
 dokka = "2.0.0"
 
 [libraries]
-kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core-ktx" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 
 [plugins]
@@ -25,7 +24,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlin-compatibility" }
-android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+android-application = { id = "com.android.application", version.ref = "android-gradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "android-gradlePlugin" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
