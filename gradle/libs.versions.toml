@@ -2,7 +2,7 @@
 gradle = "8.14.2"
 java = "17"
 kotlin = "2.2.0"
-kotlin-compatibility = "0.17.0"
+kotlin-compatibility = "0.18.0"
 compose-multiplatform = "1.8.2"
 agp = "8.9.3" # Android Gradle plugin
 android-minSdk = "21"
@@ -10,8 +10,8 @@ android-compileSdk = "35"
 android-targetSdk = "35"
 androidx-activityCompose = "1.10.1"
 androidx-core-ktx = "1.16.0"
-androidx-appcompat = "1.7.0"
-maven-publish = "0.31.0"
+androidx-appcompat = "1.7.1"
+maven-publish = "0.33.0"
 dokka = "2.0.0"
 
 [libraries]

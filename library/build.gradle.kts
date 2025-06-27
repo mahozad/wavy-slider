@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -106,10 +105,7 @@ publishing {
 mavenPublishing {
     // GitHub and other Maven repos are defined above
     // Should set Gradle mavenCentralUsername and mavenCentralPassword gradle properties
-    publishToMavenCentral(
-        host = SonatypeHost.CENTRAL_PORTAL,
-        automaticRelease = false
-    )
+    publishToMavenCentral(automaticRelease = false)
 
     // For information about signing.* properties, see the gradle.properties file
     signAllPublications()
