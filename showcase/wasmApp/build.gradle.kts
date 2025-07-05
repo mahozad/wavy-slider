@@ -13,12 +13,9 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
-        @Suppress("unused")
-        val wasmJsMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(projects.showcase.shared)
-            }
+        wasmJsMain.dependencies {
+            implementation(compose.runtime)
+            implementation(projects.showcase.shared)
         }
     }
 }
