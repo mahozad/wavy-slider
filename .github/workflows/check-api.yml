@@ -8,7 +8,7 @@ on:
 jobs:
   check-api-compatibility:
     name: Check API compatibility
-    runs-on: windows-latest
+    runs-on: macos-latest # Can be Windows or Linux too
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
