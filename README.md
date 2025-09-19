@@ -153,6 +153,7 @@ the help of a little bit of regular HTML and CSS code.
   - Squiggly slider (Android-only): https://github.com/saket/squiggly-slider
   - Wave slider (Android-only): https://github.com/galaxygoldfish/waveslider
   - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
+  - WavyLineView (Android XML): https://github.com/andyxialm/WavyLineView
   - Sliders with custom styles: https://github.com/krottv/compose-sliders
   - Customizable seeker/slider: https://github.com/2307vivek/Seeker
   - Squiggly text underlines: https://github.com/saket/ExtendedSpans
