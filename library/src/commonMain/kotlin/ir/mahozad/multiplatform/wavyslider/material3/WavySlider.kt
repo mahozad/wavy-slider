@@ -675,7 +675,7 @@ private fun WavySliderImpl(
                     .wrapContentWidth()
                     .onSizeChanged {
                         @Suppress("INVISIBLE_REFERENCE")
-                        state.thumbWidth = it.width.toFloat()
+                        state.thumbWidth = it.width
                     }
             ) {
                 thumb(state)
