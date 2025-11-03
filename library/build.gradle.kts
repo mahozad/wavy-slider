@@ -88,7 +88,7 @@ publishing {
     repositories {
         maven {
             name = "CustomLocal"
-            url = uri("file://${layout.buildDirectory.get()}/local-repository")
+            url = layout.buildDirectory.dir("local-repository").get().asFile.toURI()
         }
         maven {
             name = "GitHubPackages"
