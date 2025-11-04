@@ -79,11 +79,11 @@ import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
 @Composable
 fun MyComposable() {
     var fraction by remember { mutableStateOf(0.5f) }
-    WavySlider3( // OR WavySlider2( see the imports above that use "as ..."
+    WavySlider3( // OR WavySlider2. See the imports above that use "as ..."
         value = fraction,
         onValueChange = { fraction = it },
-        waveLength = 16.dp,     // Set this to 0.dp to make the Slider flat
-        waveHeight = 16.dp,     // Set this to 0.dp to make the Slider flat
+        waveLength = 16.dp,     // Setting this to 0.dp results in a Slider
+        waveHeight = 16.dp,     // Setting this to 0.dp results in a Slider
         waveVelocity = 15.dp to HEAD, // Speed per second and its direction
         waveThickness = 4.dp,   // Defaults to 4.dp irregardless of variant
         trackThickness = 4.dp,  // Defaults to a thickness based on variant
@@ -96,7 +96,8 @@ fun MyComposable() {
 
 ## FAQ
 
-<details><summary>How to create a wavy <i>divider</i> that is still and fixed and not animated?</summary>
+<details>
+<summary>How to create a wavy <b><i>divider</i></b> that is still and fixed and static and not animated?</summary>
 
 ```kotlin
 WavySlider3(
@@ -121,29 +122,34 @@ WavySlider3(
 ```
 </details>
 
-<details><summary>How to flatten the wave on click/drag or make the slider wavy only on click/drag?</summary>
+<details>
+<summary>How to flatten the wave on click/drag, or conversely, make it wavy only on click/drag?</summary>
 
-See https://github.com/mahozad/wavy-slider/issues/8#issuecomment-1903921917.
+See the solution in https://github.com/mahozad/wavy-slider/issues/8#issuecomment-1903921917.
 </details>
 
-<details><summary>How to disable the initial/starting/appearance (aka composition) animation of the wave?</summary>
+<details>
+<summary>How to disable the initial/starting/appearance (aka composition) spread/expand animation?</summary>
 
 Use the Compose `snap()` animation spec (make sure to import the proper M2/M3 `SliderDefaults` object):
+
 ```kotlin
 animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(waveAppearanceAnimationSpec = snap())
 ```
 </details>
 
-<details><summary>How to get or use the default value of properties like waveHeight, waveLength, or waveVelocity?</summary>
+<details>
+<summary>How to get or use or see the default value of parameters like waveHeight, animationSpecs, etc?</summary>
 
 Use the properties available in `SliderDefaults` (make sure to import the proper M2/M3 `SliderDefaults` object).
 </details>
 
-<details><summary>How is the wavy slider component used in its website showcase (i.e. in an HTML/CSS/JavaScript page)?</summary>
+<details>
+<summary>How is the wavy slider component used in its website (aka in a regular HTML/CSS/JavaScript page)?</summary>
 
-Compose Multiplatform and its underlying Kotlin Multiplatform, support compiling Kotlin code to JavaScript (Kotlin/JS)
-or WASM (Kotlin/Wasm). The project showcase website is in fact also made with Compose Multiplatform framework with
-the help of a little bit of regular HTML and CSS code.
+Compose Multiplatform and its underlying Kotlin Multiplatform, support JavaScript and WebAssembly.
+The project website is also made with Compose Multiplatform (and compiled to Wasm) with some additional regular HTML and CSS code.
+The source code of the website is available at [*website-source*](https://github.com/mahozad/wavy-slider/tree/website-source) branch.
 </details>
 
 ## Related
