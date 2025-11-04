@@ -52,10 +52,6 @@ fun App() {
 
         WavyDivider()
 
-        // FIXME: Some of the sliders have broken layout because all the sliders are using the same state instance
-        //  Is it a bug at all or is it intended?
-        //  It happens because there are `state.something = ...` assignments in the material3.WavySlider
-
         Slider3(state)
         Slider3(
             state = state,

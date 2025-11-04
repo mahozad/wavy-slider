@@ -1,7 +1,9 @@
 /*
  *
  *
- * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.2/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
+ * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.9.3/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt
+ * To adapt changes from new CMP versions, diff the current Slider reference implementation from GitHub (above link)
+ * with the new Slider implementation from newer CMP version tag in GitHub (can use IntelliJ IDEA blank diff window)
  *
  *
  */
@@ -12,9 +14,9 @@ package ir.mahozad.multiplatform.wavyslider.material3
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.progressSemantics
@@ -32,6 +34,14 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.key.Key.Companion.DirectionDown
+import androidx.compose.ui.input.key.Key.Companion.DirectionLeft
+import androidx.compose.ui.input.key.Key.Companion.DirectionRight
+import androidx.compose.ui.input.key.Key.Companion.DirectionUp
+import androidx.compose.ui.input.key.KeyEventType.Companion.KeyUp
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
@@ -235,7 +245,7 @@ fun SliderDefaults.Track(
     ) {
         val sliderStart = Offset(0f, center.y)
         val sliderEnd = Offset(size.width, center.y)
-        val sliderValueFraction = @Suppress("INVISIBLE_REFERENCE") sliderState.coercedValueAsFraction
+        val sliderValueFraction = sliderState.coercedValueAsFraction
         val sliderValueOffset = Offset(sliderStart.x + (sliderEnd.x - sliderStart.x) * sliderValueFraction, center.y)
         drawTrack(
             waveLength = waveLength,
@@ -522,16 +532,14 @@ fun WavySlider(
             waveThickness = waveThickness,
             trackThickness = trackThickness,
             incremental = incremental,
-            animationSpecs= animationSpecs
+            animationSpecs = animationSpecs
         )
     }
 ) {
     val state = remember(valueRange) {
         SliderState(value, 0, onValueChangeFinished, valueRange)
     }
-    @Suppress("INVISIBLE_REFERENCE")
     state.onValueChangeFinished = onValueChangeFinished
-    @Suppress("INVISIBLE_REFERENCE")
     state.onValueChange = onValueChange
     state.value = value
     WavySlider(
@@ -630,14 +638,14 @@ fun WavySlider(
             waveThickness = waveThickness,
             trackThickness = trackThickness,
             incremental = incremental,
-            animationSpecs= animationSpecs
+            animationSpecs = animationSpecs
         )
     }
 ) {
     WavySliderImpl(
         state = state,
-        modifier = modifier,
         enabled = enabled,
+        modifier = modifier,
         interactionSource = interactionSource,
         thumb = thumb,
         track = track
@@ -656,27 +664,29 @@ private fun WavySliderImpl(
 ) {
     @Suppress("INVISIBLE_REFERENCE")
     state.isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    @Suppress("INVISIBLE_REFERENCE")
+    val reverseDirection = state.isRtl
     val press = Modifier.sliderTapModifier(state, interactionSource, enabled)
     val drag = Modifier.draggable(
-        orientation = Orientation.Horizontal,
-        reverseDirection = @Suppress("INVISIBLE_REFERENCE") state.isRtl,
+        orientation = @Suppress("INVISIBLE_REFERENCE") state.orientation,
+        reverseDirection = reverseDirection,
         enabled = enabled,
         interactionSource = interactionSource,
         onDragStopped = { @Suppress("INVISIBLE_REFERENCE") state.gestureEndAction.invoke() },
-        startDragImmediately = @Suppress("INVISIBLE_REFERENCE") state.isDragging,
+        startDragImmediately = state.isDragging,
         state = state
     )
+    val thumbModifier = Modifier.layoutId(SliderComponents.THUMB).wrapContentWidth()
 
     Layout(
         content = {
             Box(
-                modifier = Modifier
-                    .layoutId(SliderComponents.THUMB)
-                    .wrapContentWidth()
-                    .onSizeChanged {
-                        @Suppress("INVISIBLE_REFERENCE")
-                        state.thumbWidth = it.width
-                    }
+                modifier = thumbModifier.onSizeChanged {
+                    @Suppress("INVISIBLE_REFERENCE")
+                    state.thumbWidth = it.width
+                    @Suppress("INVISIBLE_REFERENCE")
+                    state.thumbHeight = it.height
+                }
             ) {
                 thumb(state)
             }
@@ -687,24 +697,33 @@ private fun WavySliderImpl(
             .requiredSizeIn(minWidth = ThumbWidth, minHeight = TrackHeight)
             .sliderSemantics(state, enabled)
             .focusable(enabled, interactionSource)
+            .slideOnKeyEvents(
+                enabled,
+                state.steps,
+                state.valueRange,
+                state.value,
+                reverseDirection,
+                state.onValueChange,
+                state.onValueChangeFinished
+            )
             .then(press)
             .then(drag)
     ) { measurables, constraints ->
         val thumbPlaceable = measurables.fastFirst { it.layoutId == SliderComponents.THUMB }.measure(constraints)
-        val trackPlaceable = measurables
-                .fastFirst { it.layoutId == SliderComponents.TRACK }
-                .measure(constraints.offset(horizontal = -thumbPlaceable.width).copy(minHeight = 0))
-
+        val trackMeasurable = measurables.fastFirst { it.layoutId == SliderComponents.TRACK }
+        val trackPlaceable = trackMeasurable.measure(
+            constraints.offset(horizontal = -thumbPlaceable.width).copy(minHeight = 0)
+        )
+        val valueAsFraction = state.coercedValueAsFraction
         val sliderWidth = thumbPlaceable.width + trackPlaceable.width
         val sliderHeight = max(trackPlaceable.height, thumbPlaceable.height)
+        val trackOffsetX = thumbPlaceable.width / 2
+        val trackOffsetY = (sliderHeight - trackPlaceable.height) / 2
+        val thumbOffsetX = (trackPlaceable.width * valueAsFraction).roundToInt()
+        val thumbOffsetY = (sliderHeight - thumbPlaceable.height) / 2
 
         @Suppress("INVISIBLE_REFERENCE")
-        state.updateDimensions(trackPlaceable.height.toFloat(), sliderWidth)
-
-        val trackOffsetX = thumbPlaceable.width / 2
-        val thumbOffsetX = ((trackPlaceable.width) * @Suppress("INVISIBLE_REFERENCE") state.coercedValueAsFraction).roundToInt()
-        val trackOffsetY = (sliderHeight - trackPlaceable.height) / 2
-        val thumbOffsetY = (sliderHeight - thumbPlaceable.height) / 2
+        state.updateDimensions(newTotalWidth = sliderWidth, newTotalHeight = sliderHeight)
 
         layout(sliderWidth, sliderHeight) {
             trackPlaceable.placeRelative(trackOffsetX, trackOffsetY)
@@ -749,8 +768,8 @@ private fun Modifier.sliderSemantics(state: SliderState, enabled: Boolean): Modi
                     false
                 } else {
                     if (resolvedValue != state.value) {
-                        if (@Suppress("INVISIBLE_REFERENCE") state.onValueChange != null) {
-                            @Suppress("INVISIBLE_REFERENCE") state.onValueChange?.let {
+                        if (state.onValueChange != null) {
+                            state.onValueChange?.let {
                                 it(resolvedValue)
                             }
                         } else {
@@ -800,18 +819,6 @@ private fun Modifier.sliderTapModifier(
 private enum class SliderComponents {
     THUMB,
     TRACK
-}
-
-private fun DrawScope.drawStopIndicator(
-    offset: Offset,
-    size: Dp,
-    color: Color
-) {
-    drawCircle(
-        color = color,
-        center = offset,
-        radius = size.toPx() / 2f
-    )
 }
 
 // This is named trackPath in the original compose-multiplatform-core code
@@ -875,7 +882,7 @@ private inline fun DrawScope.drawTrackInactivePart(
     if (thickness <= 0.dp) return
     val cornerSize = thickness.toPx() / 2
     val insideCornerSize = trackInsideCornerSize.toPx()
-    var endGap = if (thumbTrackGapSize > 0.dp) {
+    val endGap = if (thumbTrackGapSize > 0.dp) {
         (thumbWidth.toPx() / 2) + thumbTrackGapSize.toPx()
     } else {
         0f
@@ -922,7 +929,7 @@ private inline fun DrawScope.drawTrackActivePart(
 ) {
     if (waveThickness <= 0.dp) return
     val startCornerRadius = waveThickness.toPx() / 2
-    var endGap = if (thumbTrackGapSize > 0.dp) {
+    val endGap = if (thumbTrackGapSize > 0.dp) {
         (thumbWidth.toPx() / 2) + thumbTrackGapSize.toPx()
     } else {
         0f
@@ -984,4 +991,51 @@ private inline fun DrawScope.createFlatPath(
             bottomLeftCornerRadius = startCorner
         )
     )
+}
+
+private fun Modifier.slideOnKeyEvents(
+    enabled: Boolean,
+    steps: Int,
+    valueRange: ClosedFloatingPointRange<Float>,
+    value: Float,
+    reverseDirection: Boolean,
+    onValueChangeState: ((Float) -> Unit)?,
+    onValueChangeFinishedState: (() -> Unit)?
+): Modifier {
+    return this.onKeyEvent {
+        if (!enabled) return@onKeyEvent false
+        if (onValueChangeState == null) return@onKeyEvent false
+        when (it.type) {
+            androidx.compose.ui.input.key.KeyEventType.KeyDown -> {
+                val rangeLength = abs(valueRange.endInclusive - valueRange.start)
+                val actualSteps = if (steps > 0) steps + 1 else 100
+                val delta = rangeLength / actualSteps
+                val sign = if (reverseDirection) -1 else 1
+                when (it.key) {
+                    DirectionUp -> {
+                        onValueChangeState((value + sign * delta).coerceIn(valueRange))
+                        true
+                    }
+                    DirectionDown -> {
+                        onValueChangeState((value - sign * delta).coerceIn(valueRange))
+                        true
+                    }
+                    DirectionRight -> {
+                        onValueChangeState((value + sign * delta).coerceIn(valueRange))
+                        true
+                    }
+                    DirectionLeft -> {
+                        onValueChangeState((value - sign * delta).coerceIn(valueRange))
+                        true
+                    }
+                    else -> false
+                }
+            }
+            KeyUp -> {
+                onValueChangeFinishedState?.invoke()
+                true
+            }
+            else -> false
+        }
+    }
 }

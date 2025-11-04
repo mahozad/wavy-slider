@@ -466,19 +466,20 @@ class VisualTest {
 
     @Test
     fun `Test 23`() = runVisualTest(
-        provided = "When speed of waveVelocity is set to a very large quantity",
+        provided = "When speed of waveVelocity is set to a large quantity",
         expected = "Should have fast speed"
     ) { value, onChange ->
         var speed by remember { mutableStateOf(16.dp) }
+        val animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(waveVelocityAnimationSpec = snap())
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Material 2:")
-            WavySlider2(value, onChange, waveVelocity = speed to TAIL)
+            WavySlider2(value, onChange, waveVelocity = speed to TAIL, animationSpecs = animationSpecs)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Material 3:")
-            WavySlider3(value, onChange, waveVelocity = speed to TAIL)
+            WavySlider3(value, onChange, waveVelocity = speed to TAIL, animationSpecs = animationSpecs)
         }
-        Button(onClick = { speed = if (speed == 16.dp) 5_000_000.dp else 16.dp }) {
+        Button(onClick = { speed = if (speed == 16.dp) 500.dp else 16.dp }) {
             Text(text = "Toggle speed")
         }
     }
@@ -800,6 +801,7 @@ class VisualTest {
         var isTestPassed: Boolean? = null
         val green = Color(0xff539c05)
         val red = Color(0xffb11406)
+        // TODO: Replace with singleWindowApplication() when https://youtrack.jetbrains.com/issue/CMP-9235 is fixed
         application(exitProcessOnExit = false) {
             Window(
                 title = nameOfTestFunction,
