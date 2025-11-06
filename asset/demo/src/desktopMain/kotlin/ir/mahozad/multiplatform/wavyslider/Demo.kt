@@ -36,7 +36,7 @@ fun main() {
             transparent = true,
             resizable = false,
             state = rememberWindowState(
-                size = DpSize(640.dp, Dp.Companion.Unspecified),
+                size = DpSize(640.dp, Dp.Unspecified),
                 position = WindowPosition(Alignment.Center)
             ),
             onCloseRequest = ::exitApplication
@@ -79,7 +79,7 @@ fun main() {
                             trackThickness = 4.dp
                         )
                         @OptIn(ExperimentalMaterial3Api::class)
-                        (WavySlider(
+                        WavySlider(
                             value,
                             onValueChange,
                             track = {
@@ -95,7 +95,7 @@ fun main() {
                                 )
                             },
                             thumb = { Box(Modifier.size(18.dp).rotate(45f).background(Color(0xff727d1a))) }
-                        ))
+                        )
                         WavySlider(value, onValueChange, colors = colorsM3, waveHeight = 0.dp)
                     }
                 }

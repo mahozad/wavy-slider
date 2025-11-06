@@ -104,7 +104,7 @@ publishing {
 
 mavenPublishing {
     // GitHub and other Maven repos are defined above
-    // Should set Gradle mavenCentralUsername and mavenCentralPassword gradle properties
+    // Should set Gradle mavenCentralUsername and mavenCentralPassword Gradle properties
     publishToMavenCentral(automaticRelease = false)
 
     // For information about signing.* properties, see the gradle.properties file

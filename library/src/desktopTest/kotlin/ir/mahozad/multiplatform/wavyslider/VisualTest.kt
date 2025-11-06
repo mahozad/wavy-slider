@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -24,7 +23,6 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.*
-import ir.mahozad.multiplatform.wavyslider.material3.Track
 import ir.mahozad.multiplatform.wavyslider.material3.WaveAnimationSpecs
 import kotlinx.coroutines.delay
 import org.junit.Test
@@ -65,7 +63,7 @@ class VisualTest {
                         verticalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxHeight().padding(16.dp)
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp),) {
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             var value by remember { mutableStateOf(0.5f) }
                             if (showRegularSliders) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -869,7 +867,7 @@ class VisualTest {
                 Also, when toggling the height, at the moment the wave completely flattens,
                 there should be almost no abrupt change in where the line starts (almost invisible).
             """.trimIndent()
-        ) { value, onChange ->
+        ) { _, _ ->
             var density by remember { mutableStateOf(1.20f) }
             var waveHeight by remember { mutableStateOf(10.dp) }
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {

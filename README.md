@@ -20,7 +20,7 @@ Some users call it the **sperm**.
 
 The library can be used in [Jetpack Compose][Jetpack Compose] and [Compose Multiplatform][Compose Multiplatform] projects like
 a regular Material Slider.  
-Supported target platforms are Android, iOS, Desktop (JVM), and JavaScript (Kotlin/JS and Kotlin/Wasm).
+Supported target platforms are Android, iOS, Desktop (JVM), and Web (Kotlin/JS and Kotlin/Wasm).
 
 ## Demo
 
