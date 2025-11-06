@@ -764,8 +764,34 @@ class VisualTest {
         assert(isPassed)
     }
 
+    /**
+     * Also see [ScreenshotTest.`Should be able to create a horizontal static, fixed, still, not-animated wavy 'divider' (same code as in the related FAQ in README)`].
+     */
     @Test
     fun `Test 28`() {
+        val isPassed = testApp(
+            name = object {}.javaClass.enclosingMethod.name,
+            given = """
+                When the appearance (aka composition) animationSpec is set to snap()
+                (in other words, the appearance animation is disabled)
+            """.trimIndent(),
+            expected = "Should immediately and instantly be in the full final target state"
+        ) { value, onChange ->
+            var isShown by remember { mutableStateOf(false) }
+            Button(onClick = { isShown = !isShown }) {
+                Text(text = "Toggle")
+            }
+            val animationSpecs = SliderDefaults.WaveAnimationSpecs.copy(waveAppearanceAnimationSpec = snap())
+            if (isShown) {
+                WavySlider2(value, onChange, animationSpecs = animationSpecs)
+                WavySlider3(value, onChange, animationSpecs = animationSpecs)
+            }
+        }
+        assert(isPassed)
+    }
+
+    @Test
+    fun `Test 29`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When direction of waveVelocity is relative (HEAD or TAIL) and container layout is toggled",
@@ -796,7 +822,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 29`() {
+    fun `Test 30`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the width of the container of the component is changed",
@@ -819,7 +845,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 30`() {
+    fun `Test 31`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When a custom valueRange (4f..20f) is set",
@@ -858,7 +884,7 @@ class VisualTest {
      * Also, another less visually-perfect workaround would be to set the path join to StrokeJoin.Bevel for the wavyPath.
      */
     @Test
-    fun `Test 31`() {
+    fun `Test 32`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When the screen density is some fractional value",
@@ -898,7 +924,7 @@ class VisualTest {
         assert(isPassed)
     }
     @Test
-    fun `Test 32`() {
+    fun `Test 33`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When sliders appear on the screen (composition)",
@@ -928,7 +954,7 @@ class VisualTest {
 
     // See https://github.com/JetBrains/compose-multiplatform/issues/4199
     @Test
-    fun `Test 33`() {
+    fun `Test 34`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "Measure FPS of the app",
@@ -956,7 +982,7 @@ class VisualTest {
     }
 
     @Test
-    fun `Test 34`() {
+    fun `Test 35`() {
         val isPassed = testApp(
             name = object {}.javaClass.enclosingMethod.name,
             given = "When there are many wavy sliders",

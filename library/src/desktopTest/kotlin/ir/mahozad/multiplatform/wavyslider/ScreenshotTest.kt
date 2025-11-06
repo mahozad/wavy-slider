@@ -223,6 +223,7 @@ class ScreenshotTest {
 
     /**
      * Update the related FAQ in README too if this test fails and needs update.
+     * Also see [VisualTest.`Test 28`].
      */
     @OptIn(ExperimentalMaterial3Api::class)
     @Test
