@@ -35,7 +35,7 @@ class ScreenshotTest {
     @Test
     fun `When waveHeight is 0, should be exactly like a regular Slider`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-1.png"
+        goldenShot = "reference-1.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveHeight = 0.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveHeight = 0.dp)
@@ -44,7 +44,7 @@ class ScreenshotTest {
     @Test
     fun `When waveLength is 0, should be exactly like a regular Slider`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-1.png"
+        goldenShot = "reference-1.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveLength = 0.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveLength = 0.dp)
@@ -53,7 +53,7 @@ class ScreenshotTest {
     @Test
     fun `When waveLength is negative, should have the same behaviour as if waveLength was 0`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-1.png"
+        goldenShot = "reference-1.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveLength = (-48).dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveLength = (-48).dp)
@@ -62,7 +62,7 @@ class ScreenshotTest {
     @Test
     fun `When waveThickness is 0, should have the wave disappeared`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-2.png"
+        goldenShot = "reference-2.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveThickness = 0.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveThickness = 0.dp)
@@ -72,7 +72,7 @@ class ScreenshotTest {
     fun `When waveThickness is negative, should have the same behaviour as if the thickness was 0`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 100),
-            referenceName = "reference-2.png"
+            goldenShot = "reference-2.png"
         ) {
             WavySlider2(value = 0.5f, onValueChange = {}, waveThickness = (-10).dp)
             WavySlider3(value = 0.5f, onValueChange = {}, waveThickness = (-10).dp)
@@ -81,7 +81,7 @@ class ScreenshotTest {
     @Test
     fun `When waveThickness is a large value, should have proper wave thickness`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-3.png"
+        goldenShot = "reference-3.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, waveThickness = 9.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, waveThickness = 9.dp)
@@ -90,7 +90,7 @@ class ScreenshotTest {
     @Test
     fun `When trackThickness is 0, should have the track disappeared`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-4.png"
+        goldenShot = "reference-4.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = 0.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = 0.dp)
@@ -99,7 +99,7 @@ class ScreenshotTest {
     @Test
     fun `When trackThickness is negative, should have the same behaviour as if the thickness was 0`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-4.png"
+        goldenShot = "reference-4.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = (-10).dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, waveHeight = 0.dp, trackThickness = (-10).dp)
@@ -108,7 +108,7 @@ class ScreenshotTest {
     @Test
     fun `When trackThickness is a large value, should have proper track thickness`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-5.png"
+        goldenShot = "reference-5.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, trackThickness = 18.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveVelocity = 0.dp to HEAD, trackThickness = 18.dp)
@@ -118,7 +118,7 @@ class ScreenshotTest {
     fun `When waveHeight is more than thumb height, should take into account the height of wave in component overall height and also the component overall height should be exactly equal to the wave height`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 126),
-            referenceName = "reference-6.png"
+            goldenShot = "reference-6.png"
         ) {
             WavySlider2(value = 0.5f, onValueChange = {}, waveHeight = 57.dp, modifier = Modifier.border(1.dp, Color.Red))
             Spacer(Modifier.height(2.dp))
@@ -129,7 +129,7 @@ class ScreenshotTest {
     fun `When waveHeight is negative, Should have the same behaviour as if the size was positive (except that the phase may be shifted)`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 126),
-            referenceName = "reference-6.png"
+            goldenShot = "reference-6.png"
         ) {
             WavySlider2(value = 0.5f, onValueChange = {}, waveHeight = (-57).dp, modifier = Modifier.border(1.dp, Color.Red))
             Spacer(Modifier.height(2.dp))
@@ -140,7 +140,7 @@ class ScreenshotTest {
     fun `When container layout direction is LTR and incremental is true, should have proper gradual height (from the thumb with most height to the tail with least height`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 100),
-            referenceName = "reference-7.png"
+            goldenShot = "reference-7.png"
         ) {
             WavySlider2(value = 0.7f, onValueChange = {}, waveHeight = 16.dp, incremental = true)
             WavySlider3(value = 0.7f, onValueChange = {}, waveHeight = 16.dp, incremental = true)
@@ -150,7 +150,7 @@ class ScreenshotTest {
     fun `When container layout direction is RTL and incremental is true, should have proper gradual height (from the thumb with most height to the tail with least height`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 100),
-            referenceName = "reference-8.png"
+            goldenShot = "reference-8.png"
         ) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 WavySlider2(value = 0.7f, onValueChange = {}, waveHeight = 16.dp, incremental = true)
@@ -161,7 +161,7 @@ class ScreenshotTest {
     @Test
     fun `When waveLength is a large value, should have proper wave length`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-9.png"
+        goldenShot = "reference-9.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, waveLength = 128.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, waveLength = 128.dp)
@@ -170,7 +170,7 @@ class ScreenshotTest {
     @Test
     fun `When waveLength is larger than slider total length, the wave should be displayed properly`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 100),
-        referenceName = "reference-10.png"
+        goldenShot = "reference-10.png"
     ) {
         WavySlider2(value = 0.5f, onValueChange = {}, modifier = Modifier.width(400.dp), waveHeight = 24.dp, waveLength = 500.dp)
         WavySlider3(value = 0.5f, onValueChange = {}, modifier = Modifier.width(400.dp), waveHeight = 24.dp, waveLength = 500.dp)
@@ -180,7 +180,7 @@ class ScreenshotTest {
     fun `When waveThickness is the default value of Material 3 Slider, the wave should be like that of the Material 3 Slider`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 100),
-            referenceName = "reference-11.png"
+            goldenShot = "reference-11.png"
         ) {
             Slider(value = 0.5f, onValueChange = {})
             WavySlider3(value = 0.5f, onValueChange = {}, waveThickness = 16.dp, waveHeight = 0.dp)
@@ -191,18 +191,16 @@ class ScreenshotTest {
     fun `When a custom thumb is set, the custom thumb should be displayed and its height be taken into account in overall component height`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 130),
-            referenceName = "reference-12.png"
+            goldenShot = "reference-12.png"
         ) {
-            val thumb: @Composable (SliderState) -> Unit = @Composable {
-                Box(Modifier.width(6.dp).height(128.dp).background(Color.Red))
-            }
+            val thumb = @Composable { _: SliderState -> Box(Modifier.width(6.dp).height(128.dp).background(Color.Red)) }
             WavySlider3(value = 0.5f, onValueChange = {}, thumb = thumb, modifier = Modifier.border(1.dp, Color.Green))
         }
 
     @Test
     fun `When the screen density is something low, should have everything scaled proportionally`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 50),
-        referenceName = "reference-13.png"
+        goldenShot = "reference-13.png"
     ) {
         CompositionLocalProvider(LocalDensity provides Density(0.43f)) {
             WavySlider2(value = 0.5f, onValueChange = {})
@@ -213,7 +211,7 @@ class ScreenshotTest {
     @Test
     fun `When the screen density is something high, should have everything scaled proportionally`() = runScreenshotTest(
         windowSize = IntSize(width = 400, height = 250),
-        referenceName = "reference-14.png"
+        goldenShot = "reference-14.png"
     ) {
         CompositionLocalProvider(LocalDensity provides Density(2.43f)) {
             WavySlider2(value = 0.5f, onValueChange = {})
@@ -230,7 +228,7 @@ class ScreenshotTest {
     fun `Should be able to create a horizontal static, fixed, still, not-animated wavy 'divider' (same code as in the related FAQ in README)`() =
         runScreenshotTest(
             windowSize = IntSize(width = 400, height = 50),
-            referenceName = "reference-15.png"
+            goldenShot = "reference-15.png"
         ) {
             WavySlider3(
                 modifier = Modifier.border(Dp.Hairline, Color.Green),
@@ -258,7 +256,7 @@ class ScreenshotTest {
     @OptIn(InternalComposeUiApi::class, ExperimentalTestApi::class)
     private fun runScreenshotTest(
         windowSize: IntSize,
-        referenceName: String,
+        goldenShot: String,
         content: @Composable ColumnScope.() -> Unit
     ) = runDesktopComposeUiTest(windowSize.width, windowSize.height) {
         val tempDirectory = createTempDirectory()
@@ -272,7 +270,7 @@ class ScreenshotTest {
             ?: error("Could not encode image as png")
         val screenshotPath = tempDirectory / "screenshot.png"
         screenshotPath.writeBytes(screenshotData.bytes)
-        val reference = ClassLoader.getSystemResource(referenceName)
+        val reference = ClassLoader.getSystemResource(goldenShot)
         assert(screenshotData.bytes contentEquals reference.readBytes()) {
             "The screenshot '$screenshotPath' does not match the reference '$reference'"
         }
