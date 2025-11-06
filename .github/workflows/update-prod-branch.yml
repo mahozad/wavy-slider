@@ -1,0 +1,18 @@
+name: Fast-forward the prod branch if the commit has release tag
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  merge-into-prod:
+    name: Rebase (fast forward) the prod branch onto the main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - uses: emiliopedrollo/auto-merge@v1.2.0
+        with:
+          target_branch: 'prod'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
