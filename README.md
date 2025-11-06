@@ -106,11 +106,12 @@ WavySlider3(
     thumb = {},
     track = {
         SliderDefaults.Track(
-            it,
+            sliderState = it,
             enabled = false,
+            colors = SliderDefaults.colors(disabledActiveTrackColor = Color.Magenta),
             thumbTrackGapSize = 0.dp,
             waveThickness = 1.dp,
-            waveVelocity = 0.dp to RIGHT,
+            waveVelocity = 0.dp to HEAD,
             animationSpecs = WaveAnimationSpecs(
                 waveAppearanceAnimationSpec = snap(),
                 waveVelocityAnimationSpec = snap(),

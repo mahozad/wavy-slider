@@ -1,10 +1,12 @@
 package ir.mahozad.multiplatform.wavyslider
 
+import androidx.compose.animation.core.snap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,11 +18,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runDesktopComposeUiTest
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
+import ir.mahozad.multiplatform.wavyslider.material3.Track
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Image
 import org.junit.Test
@@ -220,6 +220,39 @@ class ScreenshotTest {
             WavySlider3(value = 0.5f, onValueChange = {})
         }
     }
+
+    /**
+     * Update the related FAQ in README too if this test fails and needs update.
+     */
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Test
+    fun `Should be able to create a horizontal static, fixed, still, not-animated wavy 'divider' (same code as in the related FAQ in README)`() =
+        runScreenshotTest(
+            windowSize = IntSize(width = 400, height = 50),
+            referenceName = "reference-15.png"
+        ) {
+            WavySlider3(
+                modifier = Modifier.border(Dp.Hairline, Color.Green),
+                value = 1f,
+                onValueChange = {},
+                thumb = {},
+                track = {
+                    SliderDefaults.Track(
+                        sliderState = it,
+                        enabled = false,
+                        colors = SliderDefaults.colors(disabledActiveTrackColor = Color.Magenta),
+                        thumbTrackGapSize = 0.dp,
+                        waveThickness = 1.dp,
+                        waveVelocity = 0.dp to HEAD,
+                        animationSpecs = WaveAnimationSpecs(
+                            waveAppearanceAnimationSpec = snap(),
+                            waveVelocityAnimationSpec = snap(),
+                            waveHeightAnimationSpec = snap()
+                        )
+                    )
+                }
+            )
+        }
 
     @OptIn(InternalComposeUiApi::class, ExperimentalTestApi::class)
     private fun runScreenshotTest(
