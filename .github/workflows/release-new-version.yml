@@ -23,9 +23,9 @@ jobs:
       packages: write
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up a specific Java version
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: "temurin" # OR adopt OR microsoft OR...
           java-version: "17"
@@ -60,7 +60,7 @@ jobs:
           -PmavenCentralPassword="$CENTRAL_PORTAL_PASSWORD"
           --stacktrace
       - name: Store the publication at the bottom of the workflow summary page
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: resultPublication
           path: |
