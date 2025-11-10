@@ -1,0 +1,27 @@
+name: Update Kotlin and Compose Multiplatform badges in README to versions used in latest stable version of library
+
+on:
+  push:
+    tags:
+      # The Kotlin and CMP versions shown in README are the ones used in the latest stable version of our library,
+      # not necessarily the versions in new commits if those commits are not part of our library new stable release
+      - "v[0-9]+.[0-9]+.*"
+
+jobs:
+  update-readme:
+    permissions:
+      contents: write
+    name: Update the README.md
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v5
+        with:
+          ref: "main"
+      - name: Run the Kotlin script
+        run: kotlin .github/scripts/update-readme-badge-versions.kts
+      - name: Commit the changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          file_pattern: README.md
+          commit_message: Update Kotlin and Compose Multiplatform badges in README

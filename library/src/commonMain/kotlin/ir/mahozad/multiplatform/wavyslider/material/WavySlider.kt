@@ -1,7 +1,9 @@
 /*
  *
  *
- * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.8.2/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+ * Based on https://github.com/JetBrains/compose-multiplatform-core/blob/v1.9.3/compose/material/material/src/commonMain/kotlin/androidx/compose/material/Slider.kt
+ * To adapt changes from new CMP versions, diff the current Slider reference implementation from GitHub (above link)
+ * with the new Slider implementation from newer CMP version tag in GitHub (can use IntelliJ IDEA blank diff window)
  *
  *
  */

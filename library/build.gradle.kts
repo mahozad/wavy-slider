@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "ir.mahozad.multiplatform"
-version = "2.1.0"
+version = "2.2.0"
 
 kotlin {
     androidTarget { publishLibraryVariants("release") }
@@ -55,8 +55,6 @@ android {
 
 dokka {
     moduleName = "Wavy Slider"
-    // TODO: Remove this after https://github.com/Kotlin/dokka/issues/3885 is resolved
-    dokkaGeneratorIsolation = ClassLoaderIsolation()
     dokkaSourceSets.configureEach {
         reportUndocumented = true
         enableJdkDocumentationLink = true
@@ -88,7 +86,7 @@ publishing {
     repositories {
         maven {
             name = "CustomLocal"
-            url = uri("file://${layout.buildDirectory.get()}/local-repository")
+            url = layout.buildDirectory.dir("local-repository").get().asFile.toURI()
         }
         maven {
             name = "GitHubPackages"
@@ -104,7 +102,7 @@ publishing {
 
 mavenPublishing {
     // GitHub and other Maven repos are defined above
-    // Should set Gradle mavenCentralUsername and mavenCentralPassword gradle properties
+    // Should set Gradle mavenCentralUsername and mavenCentralPassword Gradle properties
     publishToMavenCentral(automaticRelease = false)
 
     // For information about signing.* properties, see the gradle.properties file
