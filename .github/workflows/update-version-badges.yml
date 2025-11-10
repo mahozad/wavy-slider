@@ -24,4 +24,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           file_pattern: README.md
-          commit_message: Update Kotlin and Compose Multiplatform badges in README
+          commit_message: Update Kotlin and CMP badges in README
+          commit_user_name: badge-updater
