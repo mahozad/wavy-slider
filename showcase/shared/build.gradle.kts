@@ -36,7 +36,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
-            implementation(compose.components.resources)
+            api(compose.components.resources)
             api(projects.wavySlider)
         }
         androidMain.dependencies {

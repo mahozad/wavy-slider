@@ -14,7 +14,6 @@ kotlin {
     }
     sourceSets {
         wasmJsMain.dependencies {
-            implementation(compose.runtime)
             implementation(projects.showcase.shared)
         }
     }

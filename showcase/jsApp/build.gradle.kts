@@ -11,8 +11,6 @@ kotlin {
     }
     sourceSets {
         jsMain.dependencies {
-            implementation(compose.html.core)
-            implementation(compose.runtime)
             implementation(projects.showcase.shared)
         }
     }
