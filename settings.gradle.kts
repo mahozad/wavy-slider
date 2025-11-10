@@ -7,7 +7,7 @@ include(":library")
 // If the project name were not set here, it would be published with its directory/folder name ("library")
 // (suffixed with proper platform type added by Kotlin Multiplatform).
 project(":library").name = "wavy-slider"
-include(":showcase")
+include(":website")
 // :showcase:iosApp is managed by Xcode and its build system
 // See https://kotlinlang.org/docs/multiplatform-mobile-understand-project-structure.html#root-project
 

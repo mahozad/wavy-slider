@@ -447,8 +447,7 @@ fun Code(
  * See [this SO post](https://stackoverflow.com/q/42791492)
  * and [this Kotlin guide](https://kotlinlang.org/docs/wasm-js-interop.html).
  */
-fun roundTo2Decimals(@Suppress("unused") number: Float): JsNumber =
-    js("number.toFixed(2)")
+fun roundTo2Decimals(@Suppress("unused") number: Float): JsNumber = js("number.toFixed(2)")
 
 fun getM3ColorScheme(): ColorScheme =
     if (isThemeDark()) darkScheme else lightScheme

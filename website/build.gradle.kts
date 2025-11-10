@@ -11,19 +11,16 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         outputModuleName = "app"
+        binaries.executable()
         browser {
             commonWebpackConfig {
                 outputFileName = "app.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serves source files to be able to debug inside browser
-                        add(project.projectDir.path)
-                    }
+                    // Serves source files to be able to debug inside browser
+                    static(project.projectDir.path)
                 }
             }
         }
-        nodejs()
-        binaries.executable()
     }
     sourceSets {
         wasmJsMain.dependencies {
@@ -31,7 +28,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.components.resources)
-            implementation(project(":wavy-slider"))
+            implementation(projects.wavySlider)
         }
     }
 }
