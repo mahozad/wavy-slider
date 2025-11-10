@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "ir.mahozad.multiplatform"
-version = "2.1.0"
+version = "2.2.0"
 
 kotlin {
     androidTarget { publishLibraryVariants("release") }

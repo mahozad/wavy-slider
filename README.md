@@ -30,7 +30,7 @@ For real-world apps in various platforms using the library, see the [showcase](s
 ## Usage
 
 ```kotlin
-implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
+implementation("ir.mahozad.multiplatform:wavy-slider:2.2.0")
 ```
 
 <details>
@@ -43,7 +43,7 @@ If you target a subset of the library supported platforms, add the library to yo
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
+            implementation("ir.mahozad.multiplatform:wavy-slider:2.2.0")
             // ...
         }
 ```
@@ -55,12 +55,12 @@ add the library separately to each supported target:
 kotlin {
     val desktopMain /* OR jvmMain */ by getting {
         dependencies {
-            implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
+            implementation("ir.mahozad.multiplatform:wavy-slider:2.2.0")
             // ...
         }
     }
     androidMain.dependencies {
-        implementation("ir.mahozad.multiplatform:wavy-slider:2.1.0")
+        implementation("ir.mahozad.multiplatform:wavy-slider:2.2.0")
         // ...
     }
     // Other targets...
@@ -178,7 +178,7 @@ The source code of the website is available at [*website-source*](https://github
 [Compose Multiplatform badge]: https://img.shields.io/badge/Compose_Multiplatform-1.8.2-303030.svg?labelColor=303030&logo=data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjU2IiB2aWV3Qm94PSIwIDAgNTAgNTYiIHdpZHRoPSI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PHJhZGlhbEdyYWRpZW50IGlkPSJhIiBjeD0iMCIgY3k9IjAiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoNDIuMTMxNSAwIDAgNDIuMTMxOCAxNi4xMzA2IDE0LjQ0MTIpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTM4M2VjIi8+PHN0b3Agb2Zmc2V0PSIuODY2OTkiIHN0b3AtY29sb3I9IiM3ZjUyZmYiLz48L3JhZGlhbEdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIzNy4xNzE5IiB4Mj0iMTAuOTczMyIgeTE9Ii4zNzY2MzgiIHkyPSIzMC4wMzUzIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMzM2MzZmYiLz48c3RvcCBvZmZzZXQ9Ii44Nzg0MyIgc3RvcC1jb2xvcj0iIzUzODNlYyIvPjwvbGluZWFyR3JhZGllbnQ+PHBhdGggZD0ibTQ5LjI1IDE0djI4bC0yNC4yNSAxNC0yNC4yNS0xNHYtMjhsMjQuMjUtMTR6IiBmaWxsPSIjNjA3NWYyIi8+PHBhdGggZD0ibTM0LjUgMjIuNXYxMWwtOS41IDUuNXYxN2wyNC4yNS0xNHYtMjh6IiBmaWxsPSIjNmI1N2ZmIi8+PHBhdGggZD0ibTI1IDM5LTkuNS01LjV2LTExbC0xNC43NS04LjV2MjhsMjQuMjUgMTR6IiBmaWxsPSJ1cmwoI2EpIi8+PHBhdGggZD0ibTE1LjUgMjIuNSA5LjUtNS41IDkuNSA1LjUgMTQuNzUtOC41LTI0LjI1LTE0LTI0LjI1IDE0eiIgZmlsbD0idXJsKCNiKSIvPjxwYXRoIGQ9Im0yNSAxNyA5LjUyNjMgNS41djExbC05LjUyNjMgNS41LTkuNTI2My01LjV2LTExeiIgZmlsbD0iIzAwMCIvPjwvc3ZnPg==
 [Kotlin release]: https://github.com/JetBrains/kotlin/releases/tag/v2.2.0
 [Compose Multiplatform release]: https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.8.2
-[Library Maven Central release]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/2.1.0/
+[Library Maven Central release]: https://repo1.maven.org/maven2/ir/mahozad/multiplatform/wavy-slider/2.2.0/
 [Material Slider]: https://m3.material.io/components/sliders/overview
 [Android 13 media controls]: https://www.xda-developers.com/android-13-beta-1-media-controls-animation/
 [Jetpack Compose]: https://developer.android.com/jetpack/compose
