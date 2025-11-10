@@ -55,8 +55,6 @@ android {
 
 dokka {
     moduleName = "Wavy Slider"
-    // TODO: Remove this after https://github.com/Kotlin/dokka/issues/3885 is resolved
-    dokkaGeneratorIsolation = ClassLoaderIsolation()
     dokkaSourceSets.configureEach {
         reportUndocumented = true
         enableJdkDocumentationLink = true
