@@ -28,8 +28,11 @@ import ir.mahozad.multiplatform.wavyslider.WaveDirection.HEAD
 import ir.mahozad.multiplatform.wavyslider.WaveDirection.TAIL
 import ir.mahozad.wavyslider.Res
 import ir.mahozad.wavyslider.RobotoSlab_Regular
+import ir.mahozad.wavyslider.copy
 import kotlinx.browser.document
+import kotlinx.browser.window
 import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.painterResource
 import org.w3c.dom.Element
 import org.w3c.dom.get
 import kotlin.math.roundToInt
@@ -425,16 +428,29 @@ fun Code(
         appendLine()
         withStyle(SpanStyle(color = codeTheme.identifier)) { append(")") }
     }
-    // Makes it possible for user to select the code (for copy/paste)
-    SelectionContainer {
-        Text(
-            text = code,
-            fontSize = 14.sp,
-            fontFamily = FontFamily.Monospace,
-            lineHeight = 25.sp,
-            letterSpacing = 1.sp,
-            modifier = modifier
-        )
+    Box {
+        // Makes it possible for user to select the code with mouse (for copy/paste)
+        SelectionContainer {
+            Text(
+                text = code,
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Monospace,
+                lineHeight = 25.sp,
+                letterSpacing = 1.sp,
+                modifier = modifier
+            )
+        }
+        val codeToCopy = code
+            .lines()
+            .dropWhile { it.startsWith("import") }
+            .dropWhile { it.isBlank() }
+            .joinToString("\n")
+        IconButton(
+            onClick = { window.navigator.clipboard.writeText(codeToCopy) },
+            modifier = Modifier.align(Alignment.TopEnd).offset(x = (-4).dp, y = 12.dp)
+        ) {
+            Icon(painter = painterResource(Res.drawable.copy), contentDescription = "Copy code")
+        }
     }
 }
 
