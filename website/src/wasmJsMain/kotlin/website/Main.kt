@@ -314,28 +314,30 @@ fun Code(
     val valueRounded = remember(value) { roundTo2Decimals(value) }
     val codeTheme = if (isThemeDark()) codeColorsDark(colorOnSurface) else codeColorsLight(colorOnSurface)
 
-    /* Equivalent to the following code */ /* language=kotlin */ """
-        import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
-        import ...wavyslider.WaveDirection.*
-
-        var value by remember {
-            mutableFloatStateOf(${valueRounded}f)
-        }
-
-        WavySlider(
-            value = value,
-            onValueChange = { value = it },
-            enabled = ${if (isEnabled) "true" else "false"},
-            waveLength = ${waveLength.value.roundToInt()}.dp,
-            waveHeight = ${waveHeight.value.roundToInt()}.dp,
-            waveVelocity = ${waveSpeed.value.roundToInt()}.dp to ${if (isBackward) "TAIL" else "HEAD"},
-            waveThickness = ${waveThickness.value.roundToInt()}.dp,
-            trackThickness = ${trackThickness.value.roundToInt()}.dp,
-            incremental = ${if (isIncremental) "true" else "false"},
-            animationSpecs = ...
-        )
-    """.trimIndent()
-
+    /**
+     * Equivalent to the following code:
+     * ```kotlin
+     * import ...wavyslider.${if (isMaterial3) "material3" else "material"}.WavySlider
+     * import ...wavyslider.WaveDirection.*
+     *
+     * var value by remember {
+     *     mutableFloatStateOf(${valueRounded}f)
+     * }
+     *
+     * WavySlider(
+     *     value = value,
+     *     onValueChange = { value = it },
+     *     enabled = ${if (isEnabled) "true" else "false"},
+     *     waveLength = ${waveLength.value.roundToInt()}.dp,
+     *     waveHeight = ${waveHeight.value.roundToInt()}.dp,
+     *     waveVelocity = ${waveSpeed.value.roundToInt()}.dp to ${if (isBackward) "TAIL" else "HEAD"},
+     *     waveThickness = ${waveThickness.value.roundToInt()}.dp,
+     *     trackThickness = ${trackThickness.value.roundToInt()}.dp,
+     *     incremental = ${if (isIncremental) "true" else "false"},
+     *     animationSpecs = ...
+     * )
+     * ```
+     */
     val code = buildAnnotatedString {
         withStyle(SpanStyle(color = codeTheme.keyword, fontSize = 13.sp)) { append("import ") }
         withStyle(SpanStyle(color = codeTheme.identifier, fontSize = 13.sp)) {
