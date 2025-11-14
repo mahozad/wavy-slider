@@ -1,11 +1,12 @@
 package website
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Colors
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -14,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -31,11 +34,13 @@ import ir.mahozad.wavyslider.RobotoSlab_Regular
 import ir.mahozad.wavyslider.copy
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.w3c.dom.Element
 import org.w3c.dom.get
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.material.MaterialTheme as MaterialTheme2
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
 import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
@@ -447,12 +452,49 @@ fun Code(
             .dropWhile { it.startsWith("import") }
             .dropWhile { it.isBlank() }
             .joinToString("\n")
-        IconButton(
-            onClick = { window.navigator.clipboard.writeText(codeToCopy) },
-            modifier = Modifier.align(Alignment.TopEnd).offset(x = (-4).dp, y = 12.dp)
-        ) {
-            Icon(painter = painterResource(Res.drawable.copy), contentDescription = "Copy code")
+        CopyButton(
+            textToCopy = codeToCopy,
+            modifier = Modifier.offset(x = (-8).dp, y = 16.dp).align(Alignment.TopEnd)
+        )
+    }
+}
+
+@Composable
+fun CopyButton(textToCopy: String, modifier: Modifier) {
+    val defaultColor = LocalContentColor.current
+    val successColor = getM3ColorScheme().inversePrimary
+    var currentColor by remember(defaultColor) { mutableStateOf(defaultColor) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val hoverColor = LocalContentColor.current.copy(alpha = 0.12f)
+    val backgroundColor = if (isHovered) hoverColor else Color.Transparent
+    LaunchedEffect(currentColor) {
+        if (currentColor == successColor) {
+            delay(500.milliseconds)
+            currentColor = defaultColor
         }
+    }
+    // Using Box instead of IconButton to disable click ripple effect
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .clickable(
+                indication = null, // null disables click ripple
+                interactionSource = interactionSource,
+                onClick = {
+                    currentColor = successColor
+                    window.navigator.clipboard.writeText(textToCopy)
+                }
+            )
+    ) {
+        Icon(
+            tint = currentColor,
+            painter = painterResource(Res.drawable.copy),
+            contentDescription = "Copy code"
+        )
     }
 }
 
