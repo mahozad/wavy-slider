@@ -42,7 +42,7 @@ import ir.mahozad.multiplatform.wavyslider.material.WavySlider as WavySlider2
 import ir.mahozad.multiplatform.wavyslider.material3.WavySlider as WavySlider3
 
 /**
- * To generate the website, see the README in the website branch.
+ * To generate the website, see the README in the "website" branch.
  */
 fun main() {
     @OptIn(ExperimentalComposeUiApi::class)
