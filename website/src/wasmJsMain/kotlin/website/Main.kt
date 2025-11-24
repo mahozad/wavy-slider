@@ -85,6 +85,8 @@ fun Content(layoutDirection: LayoutDirection) {
     var isBackward by remember { mutableStateOf(true) }
     var isMaterial3 by remember { mutableStateOf(true) }
     var isIncremental by remember { mutableStateOf(false) }
+    // TODO: Maybe use org.jetbrains.compose.resources.preloadFont function because
+    //  when the compose container is loaded/rendered, for a moment the texts are shown as square shape
     val fontRobotoSlab = FontFamily(Font(Res.font.RobotoSlab_Regular))
     val verticalScrollState = rememberScrollState(initial = 0)
     // VerticalScrollbar(
