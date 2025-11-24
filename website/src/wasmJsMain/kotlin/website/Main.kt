@@ -88,6 +88,8 @@ fun Content(layoutDirection: LayoutDirection) {
     // TODO: Maybe use org.jetbrains.compose.resources.preloadFont function because
     //  when the compose container is loaded/rendered, for a moment the texts are shown as square shape
     val fontRobotoSlab = FontFamily(Font(Res.font.RobotoSlab_Regular))
+    // FIXME: Make the Compose height auto and show the browser scrollbar (especially for mobile devices)
+    //  https://youtrack.jetbrains.com/issue/CMP-9319/The-compose-container-height-is-clipped-vertically-in-web
     val verticalScrollState = rememberScrollState(initial = 0)
     // VerticalScrollbar(
     //     modifier = Modifier.fillMaxHeight(),
