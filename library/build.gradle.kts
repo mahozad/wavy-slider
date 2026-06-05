@@ -14,7 +14,13 @@ group = "ir.mahozad.multiplatform"
 version = "2.2.0"
 
 kotlin {
-    androidTarget { publishLibraryVariants("release") }
+    jvmToolchain(libs.versions.java.get().toInt())
+
+    android {
+        namespace = "ir.mahozad.multiplatform.wavyslider"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
     jvm(name = "desktop") // Windows, Linux, macOS (with Java runtime)
     js(IR) { browser() }  // Kotlin/JS drawing to a canvas
     @OptIn(ExperimentalWasmDsl::class)
@@ -38,18 +44,6 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
             }
         }
-    }
-}
-
-android {
-    namespace = "ir.mahozad.multiplatform.wavyslider"
-    defaultConfig {
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
-        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
 }
 

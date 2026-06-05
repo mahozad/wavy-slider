@@ -9,7 +9,13 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+    jvmToolchain(libs.versions.java.get().toInt())
+
+    android {
+        namespace = "showcase.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
     jvm(name = "desktop")
     js(IR) { browser() }
     @OptIn(ExperimentalWasmDsl::class)
@@ -50,24 +56,5 @@ kotlin {
                 implementation(compose.desktop.common)
             }
         }
-    }
-}
-
-android {
-    namespace = "showcase"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
-        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
-    }
-    kotlin {
-        jvmToolchain(libs.versions.java.get().toInt())
     }
 }

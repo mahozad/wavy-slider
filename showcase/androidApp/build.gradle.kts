@@ -1,23 +1,19 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.application)
 }
 
+dependencies {
+    implementation(projects.showcase.shared)
+}
+
 kotlin {
-    androidTarget()
-    sourceSets {
-        androidMain.dependencies {
-            implementation(projects.showcase.shared)
-        }
-    }
+    jvmToolchain(libs.versions.java.get().toInt())
 }
 
 android {
-    namespace = "showcase"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-
+    namespace = "showcase.wavyslider"
     defaultConfig {
         applicationId = "showcase.WavySlider"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -25,12 +21,5 @@ android {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
-        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
-    }
-    kotlin {
-        jvmToolchain(libs.versions.java.get().toInt())
     }
 }

@@ -13,4 +13,6 @@ tasks.wrapper {
     networkTimeout = 60_000 // milliseconds
     distributionType = Wrapper.DistributionType.ALL
     validateDistributionUrl = false
+    retries = 3
+    retryBackOffMs = 30_000
 }
