@@ -95,14 +95,18 @@ val SliderDefaults.Incremental: Boolean get() = defaultIncremental
 val SliderDefaults.WaveAnimationSpecs: WaveAnimationSpecs get() = defaultWaveAnimationSpecs
 
 private val TrackInsideCornerSize = 2.dp
-private val TrackHeight = @Suppress("INVISIBLE_REFERENCE")
-            androidx.compose.material3.tokens.SliderTokens.InactiveTrackHeight
-private val ThumbTrackGapSize = @Suppress("INVISIBLE_REFERENCE")
-            androidx.compose.material3.tokens.SliderTokens.ActiveHandleLeadingSpace
-private val ThumbWidth = @Suppress("INVISIBLE_REFERENCE")
-            androidx.compose.material3.tokens.SliderTokens.HandleWidth
-private val ThumbHeight = @Suppress("INVISIBLE_REFERENCE")
-            androidx.compose.material3.tokens.SliderTokens.HandleHeight
+private val TrackHeight =
+    @Suppress("INVISIBLE_REFERENCE")
+    androidx.compose.material3.tokens.SliderTokens.InactiveTrackHeight
+private val ThumbTrackGapSize =
+    @Suppress("INVISIBLE_REFERENCE")
+    androidx.compose.material3.tokens.SliderTokens.ActiveHandleLeadingSpace
+private val ThumbWidth =
+    @Suppress("INVISIBLE_REFERENCE")
+    androidx.compose.material3.tokens.SliderTokens.HandleWidth
+private val ThumbHeight =
+    @Suppress("INVISIBLE_REFERENCE")
+    androidx.compose.material3.tokens.SliderTokens.HandleHeight
 private val ThumbSize = DpSize(ThumbWidth, ThumbHeight)
 
 /**
