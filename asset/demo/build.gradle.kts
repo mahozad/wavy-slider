@@ -9,8 +9,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.wavySlider)
-            // Needed because of build errors; TODO: remove if the app runs successfully
-            implementation(compose.desktop.windows_x64)
+            implementation(compose.desktop.currentOs)
         }
     }
 }
