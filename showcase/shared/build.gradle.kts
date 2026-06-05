@@ -39,10 +39,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            api(compose.components.resources)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.material)
+            implementation(libs.compose.runtime)
+            api(libs.compose.resources)
             api(projects.wavySlider)
         }
         androidMain.dependencies {
@@ -53,7 +54,7 @@ kotlin {
         @Suppress("unused")
         val desktopMain by getting {
             dependencies {
-                implementation(compose.desktop.common)
+                implementation(libs.compose.desktop)
             }
         }
     }

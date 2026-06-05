@@ -31,17 +31,16 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(compose.foundation)
-            api(compose.material3)
-            api(compose.material)
-            api(compose.runtime)
+            api(libs.compose.foundation)
+            api(libs.compose.material3)
+            api(libs.compose.material)
+            api(libs.compose.runtime)
         }
         @Suppress("unused")
         val desktopTest by getting {
             dependencies {
-                implementation(compose.desktop.uiTestJUnit4)
-                // Needed because of build errors; TODO: remove if tests run
-                implementation(compose.desktop.windows_x64)
+                implementation(libs.compose.uiTest.junit4)
+                implementation(compose.desktop.currentOs)
             }
         }
     }
