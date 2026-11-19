@@ -105,33 +105,52 @@ theme-switch {
 #loading {
     display: flex;
     position: fixed;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    font-size: 30px;
-    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    width: min(420px, calc(100vw - 40px));
+    gap: 16px;
     inset-block-start: 45%;
-
-    @media (width < 400px) {
-        font-size: 20px;
-    }
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    color: var(--text-color);
+    transition: transform 120ms ease, opacity 120ms ease;
 
     @media (height < 400px) {
         inset-block-start: 50%;
     }
+}
 
-    img {
-        height: 30px;
-        animation: spin 2s ease infinite;
-        @media (width < 400px) {
-            height: 24px;
-        }
+#loading-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 24px;
+
+    @media (width < 400px) {
+        font-size: 18px;
     }
 }
 
-@keyframes spin {
-    100% {
-        transform: rotate(180deg);
+#progress {
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--primary-color) 22%, transparent);
+
+    #progress-bar {
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background-color: var(--primary-color);
+        opacity: 1;
+        transition: width 300ms linear;
+
+        &.loading-error {
+            width: 100%;
+            background-color: #c43b3b;
+        }
     }
 }
 
@@ -146,19 +165,14 @@ theme-switch {
        and https://css-tricks.com/css-borders-using-masks
        and https://css-generators.com/custom-borders */
     --s: 20px; /* Size of the wave */
-    --_s: calc(var(--s)*4) 51% repeat-x;
-    --_r: calc(1.345*var(--s)) at left 50%;
-    --_g1: #000 99%,#0000 101%;
-    --_g2: #0000 99%,#000 101%;
-    --mask:
-      radial-gradient(var(--_r) top    calc(var(--s)* 1.9),var(--_g1))
-       calc(50% - 2*var(--s) - var(--_i,0px)) 0/var(--_s),
-      radial-gradient(var(--_r) top    calc(var(--s)*-0.9),var(--_g2))
-       calc(50% - var(--_i,0px)) var(--s)/var(--_s),
-      radial-gradient(var(--_r) bottom calc(var(--s)* 1.9),var(--_g1))
-       calc(50% - 2*var(--s) + var(--_i,0px)) 100%/var(--_s),
-      radial-gradient(var(--_r) bottom calc(var(--s)*-0.9),var(--_g2))
-       calc(50% + var(--_i,0px)) calc(100% - var(--s))/var(--_s);
+    --_s: calc(var(--s) * 4) 51% repeat-x;
+    --_r: calc(1.345 * var(--s)) at left 50%;
+    --_g1: #000 99%, #0000 101%;
+    --_g2: #0000 99%, #000 101%;
+    --mask: radial-gradient(var(--_r) top calc(var(--s) * 1.9), var(--_g1)) calc(50% - 2 * var(--s) - var(--_i, 0px)) 0/var(--_s),
+    radial-gradient(var(--_r) top calc(var(--s) * -0.9), var(--_g2)) calc(50% - var(--_i, 0px)) var(--s)/var(--_s),
+    radial-gradient(var(--_r) bottom calc(var(--s) * 1.9), var(--_g1)) calc(50% - 2 * var(--s) + var(--_i, 0px)) 100%/var(--_s),
+    radial-gradient(var(--_r) bottom calc(var(--s) * -0.9), var(--_g2)) calc(50% + var(--_i, 0px)) calc(100% - var(--s))/var(--_s);
     -webkit-mask: var(--mask);
-            mask: var(--mask);
+    mask: var(--mask);
 }
