@@ -155,8 +155,12 @@ The source code of the website is available at [*website-source*](https://github
 
 ## Related
 
-  - AOSP native squiggly progress: [Main branch][Android main branch implementation] ❖ [Android 14][Android 14 branch implementation] ❖ [Android 13][Android 13 branch implementation]
-  - LinearWavyProgressIndicator (available since [Material 3 v1.4.0-alpha01][Material 3 v1.4.0-alpha01])
+  - AOSP native squiggly progress:
+    [Main branch][Android main branch implementation] ❖
+    [Android 17][Android 17 branch implementation] ❖
+    [Android 14][Android 14 branch implementation] ❖
+    [Android 13][Android 13 branch implementation]
+  - Linear/Circular wavy progress indicator (stable since [Compose Material 3 v1.5.0][Compose Material 3 v1.5.0])
   - Squiggly slider (Android-only): https://github.com/saket/squiggly-slider
   - Wave slider (Android-only): https://github.com/galaxygoldfish/waveslider
   - Squiggly seekbar (Flutter): https://github.com/hannesgith/squiggly_slider
@@ -184,6 +188,7 @@ The source code of the website is available at [*website-source*](https://github
 [Jetpack Compose]: https://developer.android.com/jetpack/compose
 [Compose Multiplatform]: https://github.com/JetBrains/compose-multiplatform
 [Android main branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/media/controls/ui/drawable/SquigglyProgress.kt
+[Android 17 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android17-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/drawable/SquigglyProgress.kt
 [Android 14 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android14-release/packages/SystemUI/src/com/android/systemui/media/controls/ui/SquigglyProgress.kt
 [Android 13 branch implementation]: https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android13-release/packages/SystemUI/src/com/android/systemui/media/SquigglyProgress.kt
-[Material 3 v1.4.0-alpha01]: https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/WavyProgressIndicator.kt#L132
+[Compose Material 3 v1.5.0]: https://github.com/androidx/androidx/blob/androidx-main/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/WavyProgressIndicator.kt#L119
